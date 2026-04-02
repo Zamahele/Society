@@ -1,0 +1,111 @@
+@model SocietyApp.Models.DeathClaim
+@{ ViewData["Title"] = "Claim Details"; }
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Claim Details</h2>
+    <a asp-action="Index" class="btn btn-outline-secondary">Back to Claims</a>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header bg-dark text-white">Claim Information</div>
+            <div class="card-body">
+                <p><strong>Membership:</strong> @Model.Membership.MembershipNumber</p>
+                <p><strong>Member:</strong> @Model.Membership.User.FullName</p>
+                <p><strong>Bank:</strong> @Model.Membership.User.BankName — @Model.Membership.User.BankAccountNumber (@Model.Membership.User.BankAccountName)</p>
+                <p><strong>Deceased:</strong> @Model.DeceasedFullName</p>
+                <p><strong>Type:</strong> @Model.DeceasedType @(Model.Dependant != null ? $"({Model.Dependant.FullName})" : "")</p>
+                <p><strong>Date of Death:</strong> @Model.DateOfDeath.ToString("dd MMM yyyy")</p>
+                <p><strong>Claim Date:</strong> @Model.ClaimDate.ToString("dd MMM yyyy")</p>
+                <p>
+                    <strong>Status:</strong>
+                    @{
+                        var badge = Model.ClaimStatus switch
+                        {
+                            SocietyApp.Models.ClaimStatus.FullyPaid => "bg-success",
+                            SocietyApp.Models.ClaimStatus.Approved => "bg-primary",
+                            SocietyApp.Models.ClaimStatus.Rejected => "bg-danger",
+                            SocietyApp.Models.ClaimStatus.PartiallyPaid => "bg-info text-dark",
+                            _ => "bg-warning text-dark"
+                        };
+                    }
+                    <span class="badge @badge">@Model.ClaimStatus</span>
+                </p>
+                @if (Model.RejectionReason != null)
+                {
+                    <p class="text-danger"><strong>Rejection Reason:</strong> @Model.RejectionReason</p>
+                }
+                @if (Model.DeathCertificateFileName != null)
+                {
+                    <a asp-action="DownloadCertificate" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-dark mt-2">
+                        Download Death Certificate
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header bg-dark text-white">Payout Tracking</div>
+            <div class="card-body">
+                <p><strong>Cash (R@Model.CashAmount):</strong> @(Model.CashPaidDate.HasValue ? "Paid on " + Model.CashPaidDate.Value.ToString("dd MMM yyyy") : "Not yet paid")</p>
+                <p><strong>Voucher (R@Model.VoucherAmount):</strong> @(Model.VoucherPaidDate.HasValue ? "Paid on " + Model.VoucherPaidDate.Value.ToString("dd MMM yyyy") + (Model.VoucherReference != null ? $" — Ref: {Model.VoucherReference}" : "") : "Not yet paid")</p>
+            </div>
+        </div>
+
+        @if (User.IsInRole("Admin") || User.IsInRole("Clerk"))
+        {
+            <div class="card">
+                <div class="card-header bg-dark text-white">Actions</div>
+                <div class="card-body d-flex flex-column gap-2">
+
+                    @if (Model.ClaimStatus == SocietyApp.Models.ClaimStatus.Submitted)
+                    {
+                        <form asp-action="MoveToReview" method="post">
+                            <input type="hidden" name="id" value="@Model.Id" />
+                            <button type="submit" class="btn btn-warning w-100">Move to Under Review</button>
+                        </form>
+                    }
+
+                    @if (User.IsInRole("Admin") && Model.ClaimStatus == SocietyApp.Models.ClaimStatus.UnderReview)
+                    {
+                        <form asp-action="Approve" method="post">
+                            <input type="hidden" name="id" value="@Model.Id" />
+                            <button type="submit" class="btn btn-success w-100">Approve Claim</button>
+                        </form>
+                        <form asp-action="Reject" method="post">
+                            <input type="hidden" name="id" value="@Model.Id" />
+                            <div class="mb-2">
+                                <input type="text" name="reason" class="form-control" placeholder="Rejection reason (required)" required />
+                            </div>
+                            <button type="submit" class="btn btn-danger w-100">Reject Claim</button>
+                        </form>
+                    }
+
+                    @if (User.IsInRole("Admin") && (Model.ClaimStatus == SocietyApp.Models.ClaimStatus.Approved || Model.ClaimStatus == SocietyApp.Models.ClaimStatus.PartiallyPaid))
+                    {
+                        @if (!Model.CashPaidDate.HasValue)
+                        {
+                            <form asp-action="RecordCash" method="post">
+                                <input type="hidden" name="id" value="@Model.Id" />
+                                <button type="submit" class="btn btn-outline-success w-100">Record R@Model.CashAmount Cash Payout</button>
+                            </form>
+                        }
+                        @if (!Model.VoucherPaidDate.HasValue)
+                        {
+                            <form asp-action="RecordVoucher" method="post">
+                                <input type="hidden" name="id" value="@Model.Id" />
+                                <div class="mb-2">
+                                    <input type="text" name="voucherReference" class="form-control" placeholder="Voucher reference number" required />
+                                </div>
+                                <button type="submit" class="btn btn-outline-primary w-100">Record R@Model.VoucherAmount Voucher Payout</button>
+                            </form>
+                        }
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>

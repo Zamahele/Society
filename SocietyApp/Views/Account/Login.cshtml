@@ -1,0 +1,32 @@
+@model SocietyApp.ViewModels.LoginViewModel
+@{ ViewData["Title"] = "Login"; }
+
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <h2 class="mb-4">Society Login</h2>
+        <form asp-action="Login" method="post">
+            <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+            <div class="mb-3">
+                <label asp-for="IDNumber" class="form-label"></label>
+                <input asp-for="IDNumber" class="form-control" placeholder="Enter your ID Number" />
+                <span asp-validation-for="IDNumber" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label"></label>
+                <input asp-for="Password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="mb-3 form-check">
+                <input asp-for="RememberMe" class="form-check-input" />
+                <label asp-for="RememberMe" class="form-check-label"></label>
+            </div>
+            <button type="submit" class="btn btn-dark w-100">Login</button>
+        </form>
+        <hr />
+        <p class="text-center">New member? <a asp-action="Register">Register here</a></p>
+    </div>
+</div>
+
+@section Scripts { @{await Html.RenderPartialAsync("_ValidationScriptsPartial");} }

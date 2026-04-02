@@ -1,0 +1,37 @@
+@model SocietyApp.ViewModels.SubmitMonthlyPaymentViewModel
+@{ ViewData["Title"] = "Submit Monthly Payment"; }
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <h2 class="mb-3">Submit Monthly Payment</h2>
+        <div class="alert alert-info">
+            Please pay <strong>R150</strong> via EFT using <strong>@Model.MembershipNumber</strong> as your reference, then fill in the details below.
+        </div>
+        <form asp-action="SubmitMonthly" method="post">
+            <input type="hidden" asp-for="MembershipId" />
+            <input type="hidden" asp-for="MembershipNumber" />
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+            <div class="mb-3">
+                <label asp-for="ForMonth" class="form-label"></label>
+                <input asp-for="ForMonth" class="form-control" type="date" />
+                <span asp-validation-for="ForMonth" class="text-danger"></span>
+                <small class="text-muted">Select any date in the month you are paying for.</small>
+            </div>
+            <div class="mb-3">
+                <label asp-for="PaymentReference" class="form-label"></label>
+                <input asp-for="PaymentReference" class="form-control" />
+                <span asp-validation-for="PaymentReference" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="PaymentDate" class="form-label"></label>
+                <input asp-for="PaymentDate" class="form-control" type="date" />
+                <span asp-validation-for="PaymentDate" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-dark">Submit</button>
+            <a asp-controller="Members" asp-action="Dashboard" class="btn btn-outline-secondary ms-2">Cancel</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts { @{await Html.RenderPartialAsync("_ValidationScriptsPartial");} }

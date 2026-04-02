@@ -1,0 +1,36 @@
+@model IEnumerable<SocietyApp.Models.Membership>
+@{ ViewData["Title"] = "All Members"; }
+
+<h2 class="mb-4">All Members</h2>
+
+<table class="table table-bordered table-hover">
+    <thead class="table-dark">
+        <tr><th>Membership No</th><th>Name</th><th>ID Number</th><th>Phone</th><th>Dependants</th><th>Status</th><th>Joined</th><th></th></tr>
+    </thead>
+    <tbody>
+        @foreach (var m in Model)
+        {
+            <tr>
+                <td>@m.MembershipNumber</td>
+                <td>@m.User.FullName</td>
+                <td>@m.User.IDNumber</td>
+                <td>@m.User.Phone</td>
+                <td>@m.Dependants.Count</td>
+                <td>
+                    @{
+                        var badge = m.Status switch
+                        {
+                            SocietyApp.Models.MembershipStatus.Active => "bg-success",
+                            SocietyApp.Models.MembershipStatus.Pending => "bg-warning text-dark",
+                            SocietyApp.Models.MembershipStatus.Suspended => "bg-danger",
+                            _ => "bg-secondary"
+                        };
+                    }
+                    <span class="badge @badge">@m.Status</span>
+                </td>
+                <td>@m.DateIssued.ToString("dd MMM yyyy")</td>
+                <td><a asp-action="MemberDetails" asp-route-id="@m.Id" class="btn btn-sm btn-outline-dark">View</a></td>
+            </tr>
+        }
+    </tbody>
+</table>

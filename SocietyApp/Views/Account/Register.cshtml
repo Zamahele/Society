@@ -1,0 +1,81 @@
+@model SocietyApp.ViewModels.RegisterViewModel
+@{ ViewData["Title"] = "Register"; }
+
+<div class="row justify-content-center">
+    <div class="col-md-7">
+        <h2 class="mb-4">New Member Registration</h2>
+        <form asp-action="Register" method="post">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+            <h5 class="mt-3 mb-3 text-muted">Personal Details</h5>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="FullName" class="form-label"></label>
+                    <input asp-for="FullName" class="form-control" />
+                    <span asp-validation-for="FullName" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="IDNumber" class="form-label"></label>
+                    <input asp-for="IDNumber" class="form-control" placeholder="13-digit SA ID Number" />
+                    <span asp-validation-for="IDNumber" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Phone" class="form-label"></label>
+                    <input asp-for="Phone" class="form-control" />
+                    <span asp-validation-for="Phone" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="DateOfBirth" class="form-label"></label>
+                    <input asp-for="DateOfBirth" class="form-control" type="date" />
+                    <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Address" class="form-label"></label>
+                <input asp-for="Address" class="form-control" />
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+
+            <h5 class="mt-3 mb-3 text-muted">Banking Details (for payouts)</h5>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label asp-for="BankName" class="form-label"></label>
+                    <input asp-for="BankName" class="form-control" />
+                    <span asp-validation-for="BankName" class="text-danger"></span>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label asp-for="BankAccountName" class="form-label"></label>
+                    <input asp-for="BankAccountName" class="form-control" />
+                    <span asp-validation-for="BankAccountName" class="text-danger"></span>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label asp-for="BankAccountNumber" class="form-label"></label>
+                    <input asp-for="BankAccountNumber" class="form-control" />
+                    <span asp-validation-for="BankAccountNumber" class="text-danger"></span>
+                </div>
+            </div>
+
+            <h5 class="mt-3 mb-3 text-muted">Create Password</h5>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Password" class="form-label"></label>
+                    <input asp-for="Password" class="form-control" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="ConfirmPassword" class="form-label"></label>
+                    <input asp-for="ConfirmPassword" class="form-control" />
+                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-dark w-100 mt-2">Register</button>
+        </form>
+        <hr />
+        <p class="text-center">Already a member? <a asp-action="Login">Login here</a></p>
+    </div>
+</div>
+
+@section Scripts { @{await Html.RenderPartialAsync("_ValidationScriptsPartial");} }

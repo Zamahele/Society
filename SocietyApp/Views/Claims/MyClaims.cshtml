@@ -1,0 +1,45 @@
+@model IEnumerable<SocietyApp.Models.DeathClaim>
+@{ ViewData["Title"] = "My Claims"; }
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>My Claims</h2>
+    <a asp-action="Submit" class="btn btn-dark">+ New Claim</a>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">No claims submitted yet.</div>
+}
+else
+{
+    <table class="table table-bordered table-hover">
+        <thead class="table-dark">
+            <tr><th>Deceased</th><th>Date of Death</th><th>Claim Date</th><th>Cash</th><th>Voucher</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+            @foreach (var c in Model)
+            {
+                <tr>
+                    <td>@c.DeceasedFullName</td>
+                    <td>@c.DateOfDeath.ToString("dd MMM yyyy")</td>
+                    <td>@c.ClaimDate.ToString("dd MMM yyyy")</td>
+                    <td>@(c.CashPaidDate.HasValue ? "Paid " + c.CashPaidDate.Value.ToString("dd MMM yyyy") : "Pending")</td>
+                    <td>@(c.VoucherPaidDate.HasValue ? "Paid " + c.VoucherPaidDate.Value.ToString("dd MMM yyyy") : "Pending")</td>
+                    <td>
+                        @{
+                            var badge = c.ClaimStatus switch
+                            {
+                                SocietyApp.Models.ClaimStatus.FullyPaid => "bg-success",
+                                SocietyApp.Models.ClaimStatus.Approved => "bg-primary",
+                                SocietyApp.Models.ClaimStatus.Rejected => "bg-danger",
+                                SocietyApp.Models.ClaimStatus.PartiallyPaid => "bg-info text-dark",
+                                _ => "bg-warning text-dark"
+                            };
+                        }
+                        <span class="badge @badge">@c.ClaimStatus</span>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

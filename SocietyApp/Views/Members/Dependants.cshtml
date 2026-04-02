@@ -1,0 +1,45 @@
+@model IEnumerable<SocietyApp.Models.MemberDependant>
+@{ ViewData["Title"] = "Dependants"; }
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>My Dependants</h2>
+    @if ((bool)ViewBag.CanAdd)
+    {
+        <a asp-action="AddDependant" class="btn btn-dark">+ Add Dependant</a>
+    }
+    else
+    {
+        <span class="text-muted">Maximum of 10 dependants reached</span>
+    }
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">No dependants registered yet.</div>
+}
+else
+{
+    <table class="table table-bordered table-hover">
+        <thead class="table-dark">
+            <tr><th>Name</th><th>ID Number</th><th>Date of Birth</th><th>Relationship</th><th>Date Added</th><th></th></tr>
+        </thead>
+        <tbody>
+            @foreach (var d in Model)
+            {
+                <tr>
+                    <td>@d.FullName</td>
+                    <td>@d.IDNumber</td>
+                    <td>@d.DateOfBirth.ToString("dd MMM yyyy")</td>
+                    <td>@d.Relationship</td>
+                    <td>@d.DateAdded.ToString("dd MMM yyyy")</td>
+                    <td>
+                        <form asp-action="RemoveDependant" method="post" onsubmit="return confirm('Remove this dependant?')">
+                            <input type="hidden" name="id" value="@d.Id" />
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

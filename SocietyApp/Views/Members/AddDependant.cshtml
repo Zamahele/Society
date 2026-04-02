@@ -1,0 +1,39 @@
+@model SocietyApp.ViewModels.AddDependantViewModel
+@{ ViewData["Title"] = "Add Dependant"; }
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <h2 class="mb-4">Add Dependant</h2>
+        <form asp-action="AddDependant" method="post">
+            <input type="hidden" asp-for="MembershipId" />
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+            <div class="mb-3">
+                <label asp-for="FullName" class="form-label"></label>
+                <input asp-for="FullName" class="form-control" />
+                <span asp-validation-for="FullName" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="IDNumber" class="form-label"></label>
+                <input asp-for="IDNumber" class="form-control" />
+                <span asp-validation-for="IDNumber" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="DateOfBirth" class="form-label"></label>
+                <input asp-for="DateOfBirth" class="form-control" type="date" />
+                <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Relationship" class="form-label"></label>
+                <select asp-for="Relationship" class="form-select"
+                    asp-items="Html.GetEnumSelectList<SocietyApp.Models.DependantRelationship>()"></select>
+                <span asp-validation-for="Relationship" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-dark">Add Dependant</button>
+            <a asp-action="Dependants" class="btn btn-outline-secondary ms-2">Cancel</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts { @{await Html.RenderPartialAsync("_ValidationScriptsPartial");} }

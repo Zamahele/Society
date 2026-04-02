@@ -59,4 +59,8 @@ app.MapControllerRoute(
 
 app.MapRazorPages();
 
+// Seed roles and default admin on startup
+using (var scope = app.Services.CreateScope())
+    await DbSeeder.SeedAsync(scope.ServiceProvider);
+
 app.Run();

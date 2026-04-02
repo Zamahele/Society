@@ -1,0 +1,58 @@
+@model SocietyApp.ViewModels.SubmitClaimViewModel
+@{ ViewData["Title"] = "Submit Claim"; }
+
+<div class="row justify-content-center">
+    <div class="col-md-7">
+        <h2 class="mb-3">Submit Death Claim</h2>
+        <div class="alert alert-warning">
+            Payout: <strong>R15,000 cash</strong> + <strong>R15,000 grocery voucher</strong>. A death certificate is required.
+        </div>
+        <form asp-action="Submit" method="post" enctype="multipart/form-data">
+            <input type="hidden" asp-for="MembershipId" />
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+            <div class="mb-3">
+                <label asp-for="DeceasedType" class="form-label"></label>
+                <select asp-for="DeceasedType" class="form-select"
+                    asp-items="Html.GetEnumSelectList<SocietyApp.Models.DeceasedType>()"
+                    id="deceasedTypeSelect"></select>
+            </div>
+
+            @if (Model.Dependants.Any())
+            {
+                <div class="mb-3" id="dependantSection">
+                    <label asp-for="DependantId" class="form-label"></label>
+                    <select asp-for="DependantId" class="form-select">
+                        <option value="">-- Select Dependant --</option>
+                        @foreach (var d in Model.Dependants)
+                        {
+                            <option value="@d.Id">@d.FullName (@d.Relationship)</option>
+                        }
+                    </select>
+                </div>
+            }
+
+            <div class="mb-3">
+                <label asp-for="DeceasedFullName" class="form-label"></label>
+                <input asp-for="DeceasedFullName" class="form-control" />
+                <span asp-validation-for="DeceasedFullName" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="DateOfDeath" class="form-label"></label>
+                <input asp-for="DateOfDeath" class="form-control" type="date" />
+                <span asp-validation-for="DateOfDeath" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="DeathCertificate" class="form-label"></label>
+                <input asp-for="DeathCertificate" class="form-control" type="file" accept=".pdf,.jpg,.jpeg,.png" />
+                <span asp-validation-for="DeathCertificate" class="text-danger"></span>
+                <small class="text-muted">Accepted formats: PDF, JPG, PNG</small>
+            </div>
+
+            <button type="submit" class="btn btn-dark">Submit Claim</button>
+            <a asp-action="MyClaims" class="btn btn-outline-secondary ms-2">Cancel</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts { @{await Html.RenderPartialAsync("_ValidationScriptsPartial");} }

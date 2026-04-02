@@ -1,0 +1,80 @@
+@model SocietyApp.Models.Membership
+@{ ViewData["Title"] = "Member Details"; }
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>@Model.User.FullName — @Model.MembershipNumber</h2>
+    <a asp-action="Members" class="btn btn-outline-secondary">Back</a>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header bg-dark text-white">Member Info</div>
+            <div class="card-body">
+                <p><strong>ID Number:</strong> @Model.User.IDNumber</p>
+                <p><strong>Phone:</strong> @Model.User.Phone</p>
+                <p><strong>Address:</strong> @Model.User.Address</p>
+                <p><strong>Bank:</strong> @Model.User.BankName</p>
+                <p><strong>Account:</strong> @Model.User.BankAccountNumber (@Model.User.BankAccountName)</p>
+                <p><strong>Status:</strong> <span class="badge bg-secondary">@Model.Status</span></p>
+                <p><strong>Joined:</strong> @Model.DateIssued.ToString("dd MMM yyyy")</p>
+                @if (Model.DateActivated.HasValue)
+                {
+                    <p><strong>Activated:</strong> @Model.DateActivated.Value.ToString("dd MMM yyyy")</p>
+                }
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header bg-dark text-white">Dependants (@Model.Dependants.Count)</div>
+            <ul class="list-group list-group-flush">
+                @foreach (var d in Model.Dependants)
+                {
+                    <li class="list-group-item">@d.FullName <span class="text-muted small">(@d.Relationship)</span></li>
+                }
+            </ul>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header bg-dark text-white">Monthly Payment History</div>
+            <div class="card-body p-0">
+                <table class="table table-sm mb-0">
+                    <thead><tr><th>Month</th><th>Reference</th><th>Status</th><th>Confirmed By</th></tr></thead>
+                    <tbody>
+                        @foreach (var p in (IEnumerable<SocietyApp.Models.MonthlyPayment>)ViewBag.MonthlyHistory)
+                        {
+                            <tr>
+                                <td>@p.ForMonth.ToString("MMM yyyy")</td>
+                                <td>@p.PaymentReference</td>
+                                <td><span class="badge @(p.Status == SocietyApp.Models.MonthlyPaymentStatus.Confirmed ? "bg-success" : p.Status == SocietyApp.Models.MonthlyPaymentStatus.Missed ? "bg-danger" : "bg-warning text-dark")">@p.Status</span></td>
+                                <td>@(p.ConfirmedByClerk?.FullName ?? "-")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-dark text-white">Claims</div>
+            <div class="card-body p-0">
+                <table class="table table-sm mb-0">
+                    <thead><tr><th>Deceased</th><th>Date</th><th>Status</th><th></th></tr></thead>
+                    <tbody>
+                        @foreach (var c in (IEnumerable<SocietyApp.Models.DeathClaim>)ViewBag.Claims)
+                        {
+                            <tr>
+                                <td>@c.DeceasedFullName</td>
+                                <td>@c.ClaimDate.ToString("dd MMM yyyy")</td>
+                                <td><span class="badge bg-secondary">@c.ClaimStatus</span></td>
+                                <td><a asp-controller="Claims" asp-action="Details" asp-route-id="@c.Id" class="btn btn-sm btn-outline-dark">View</a></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

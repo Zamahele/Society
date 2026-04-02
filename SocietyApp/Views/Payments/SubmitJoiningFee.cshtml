@@ -1,0 +1,31 @@
+@model SocietyApp.ViewModels.SubmitJoiningFeeViewModel
+@{ ViewData["Title"] = "Submit Joining Fee"; }
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <h2 class="mb-3">Submit Joining Fee Payment</h2>
+        <div class="alert alert-info">
+            Please pay <strong>R150</strong> via EFT to the society's bank account using <strong>@Model.MembershipNumber</strong> as your payment reference, then fill in the details below.
+        </div>
+        <form asp-action="SubmitJoiningFee" method="post">
+            <input type="hidden" asp-for="MembershipId" />
+            <input type="hidden" asp-for="MembershipNumber" />
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+            <div class="mb-3">
+                <label asp-for="PaymentReference" class="form-label"></label>
+                <input asp-for="PaymentReference" class="form-control" />
+                <span asp-validation-for="PaymentReference" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="PaymentDate" class="form-label"></label>
+                <input asp-for="PaymentDate" class="form-control" type="date" />
+                <span asp-validation-for="PaymentDate" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-dark">Submit</button>
+            <a asp-controller="Members" asp-action="Dashboard" class="btn btn-outline-secondary ms-2">Cancel</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts { @{await Html.RenderPartialAsync("_ValidationScriptsPartial");} }

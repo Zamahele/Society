@@ -1,0 +1,108 @@
+@model SocietyApp.Models.Membership
+@{ ViewData["Title"] = "My Membership"; }
+
+<h2 class="mb-4">My Membership</h2>
+
+<div class="row">
+    <div class="col-md-5">
+        <div class="card mb-4">
+            <div class="card-header bg-dark text-white">Membership Card</div>
+            <div class="card-body">
+                <h4 class="card-title">@Model.MembershipNumber</h4>
+                <p class="mb-1"><strong>Name:</strong> @Model.User.FullName</p>
+                <p class="mb-1"><strong>ID Number:</strong> @Model.User.IDNumber</p>
+                <p class="mb-1"><strong>Phone:</strong> @Model.User.Phone</p>
+                <p class="mb-1">
+                    <strong>Status:</strong>
+                    @{
+                        var badgeClass = Model.Status switch
+                        {
+                            SocietyApp.Models.MembershipStatus.Active => "bg-success",
+                            SocietyApp.Models.MembershipStatus.Pending => "bg-warning text-dark",
+                            SocietyApp.Models.MembershipStatus.Suspended => "bg-danger",
+                            _ => "bg-secondary"
+                        };
+                    }
+                    <span class="badge @badgeClass">@Model.Status</span>
+                </p>
+                <p class="mb-1"><strong>Joined:</strong> @Model.DateIssued.ToString("dd MMM yyyy")</p>
+                @if (Model.DateActivated.HasValue)
+                {
+                    <p class="mb-1"><strong>Activated:</strong> @Model.DateActivated.Value.ToString("dd MMM yyyy")</p>
+                }
+                <p class="mb-1"><strong>Dependants:</strong> @Model.Dependants.Count / 10</p>
+            </div>
+        </div>
+
+        @if (Model.Status == SocietyApp.Models.MembershipStatus.Pending)
+        {
+            <div class="alert alert-warning">
+                Your membership is pending. Please pay the joining fee of <strong>R150</strong> using your membership number <strong>@Model.MembershipNumber</strong> as the EFT reference, then submit proof below.
+                <div class="mt-2">
+                    <a asp-controller="Payments" asp-action="SubmitJoiningFee" class="btn btn-sm btn-dark">Submit Joining Fee</a>
+                </div>
+            </div>
+        }
+
+        @if (Model.Status == SocietyApp.Models.MembershipStatus.Suspended)
+        {
+            <div class="alert alert-danger">
+                Your membership is suspended due to a missed monthly payment. Please pay R150 and submit your payment to reactivate.
+                <div class="mt-2">
+                    <a asp-controller="Payments" asp-action="SubmitMonthly" class="btn btn-sm btn-danger">Submit Monthly Payment</a>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="col-md-7">
+        <div class="card mb-4">
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                Monthly Payment History
+                <a asp-controller="Payments" asp-action="SubmitMonthly" class="btn btn-sm btn-outline-light">+ Submit Payment</a>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-sm mb-0">
+                    <thead><tr><th>Month</th><th>Amount</th><th>Reference</th><th>Status</th></tr></thead>
+                    <tbody>
+                        @foreach (var p in (IEnumerable<SocietyApp.Models.MonthlyPayment>)ViewBag.MonthlyPayments)
+                        {
+                            <tr>
+                                <td>@p.ForMonth.ToString("MMM yyyy")</td>
+                                <td>R@p.Amount</td>
+                                <td>@p.PaymentReference</td>
+                                <td>
+                                    <span class="badge @(p.Status == SocietyApp.Models.MonthlyPaymentStatus.Confirmed ? "bg-success" : p.Status == SocietyApp.Models.MonthlyPaymentStatus.Missed ? "bg-danger" : "bg-warning text-dark")">
+                                        @p.Status
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                Claims
+                <a asp-controller="Claims" asp-action="Submit" class="btn btn-sm btn-outline-light">+ New Claim</a>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-sm mb-0">
+                    <thead><tr><th>Deceased</th><th>Date</th><th>Status</th></tr></thead>
+                    <tbody>
+                        @foreach (var c in (IEnumerable<SocietyApp.Models.DeathClaim>)ViewBag.Claims)
+                        {
+                            <tr>
+                                <td>@c.DeceasedFullName</td>
+                                <td>@c.ClaimDate.ToString("dd MMM yyyy")</td>
+                                <td><span class="badge bg-secondary">@c.ClaimStatus</span></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

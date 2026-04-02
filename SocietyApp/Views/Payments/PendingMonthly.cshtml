@@ -1,0 +1,39 @@
+@model IEnumerable<SocietyApp.Models.MonthlyPayment>
+@{ ViewData["Title"] = "Pending Monthly Payments"; }
+
+<h2 class="mb-4">Pending Monthly Payments</h2>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">No pending monthly payments.</div>
+}
+else
+{
+    <table class="table table-bordered table-hover">
+        <thead class="table-dark">
+            <tr><th>Membership No</th><th>Member Name</th><th>For Month</th><th>Amount</th><th>Reference</th><th>Payment Date</th><th>Action</th></tr>
+        </thead>
+        <tbody>
+            @foreach (var p in Model)
+            {
+                <tr>
+                    <td>@p.Membership.MembershipNumber</td>
+                    <td>@p.Membership.User.FullName</td>
+                    <td>@p.ForMonth.ToString("MMM yyyy")</td>
+                    <td>R@p.Amount</td>
+                    <td>@p.PaymentReference</td>
+                    <td>@(p.PaymentDate?.ToString("dd MMM yyyy") ?? "-")</td>
+                    <td>
+                        <form asp-action="ConfirmMonthly" method="post" style="display:inline">
+                            <input type="hidden" name="id" value="@p.Id" />
+                            <button type="submit" class="btn btn-sm btn-success"
+                                onclick="return confirm('Confirm this monthly payment?')">
+                                Confirm
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

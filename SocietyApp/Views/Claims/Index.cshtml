@@ -1,0 +1,42 @@
+@model IEnumerable<SocietyApp.Models.DeathClaim>
+@{ ViewData["Title"] = "All Claims"; }
+
+<h2 class="mb-4">All Claims</h2>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">No claims in the system.</div>
+}
+else
+{
+    <table class="table table-bordered table-hover">
+        <thead class="table-dark">
+            <tr><th>Membership No</th><th>Member</th><th>Deceased</th><th>Claim Date</th><th>Status</th><th></th></tr>
+        </thead>
+        <tbody>
+            @foreach (var c in Model)
+            {
+                <tr>
+                    <td>@c.Membership.MembershipNumber</td>
+                    <td>@c.Membership.User.FullName</td>
+                    <td>@c.DeceasedFullName</td>
+                    <td>@c.ClaimDate.ToString("dd MMM yyyy")</td>
+                    <td>
+                        @{
+                            var badge = c.ClaimStatus switch
+                            {
+                                SocietyApp.Models.ClaimStatus.FullyPaid => "bg-success",
+                                SocietyApp.Models.ClaimStatus.Approved => "bg-primary",
+                                SocietyApp.Models.ClaimStatus.Rejected => "bg-danger",
+                                SocietyApp.Models.ClaimStatus.PartiallyPaid => "bg-info text-dark",
+                                _ => "bg-warning text-dark"
+                            };
+                        }
+                        <span class="badge @badge">@c.ClaimStatus</span>
+                    </td>
+                    <td><a asp-action="Details" asp-route-id="@c.Id" class="btn btn-sm btn-outline-dark">View</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
