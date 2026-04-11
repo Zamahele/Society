@@ -4,43 +4,51 @@
 
 <div class="row g-3 mb-4">
     <div class="col-md-3">
-        <div class="card text-white bg-dark">
-            <div class="card-body text-center">
-                <h1 class="display-4">@ViewBag.TotalMembers</h1>
-                <p class="mb-0">Total Members</p>
+        <a asp-controller="Admin" asp-action="Members" class="text-decoration-none">
+            <div class="card text-white bg-dark h-100 dashboard-card">
+                <div class="card-body text-center">
+                    <h1 class="display-4">@ViewBag.TotalMembers</h1>
+                    <p class="mb-0">Total Members</p>
+                </div>
             </div>
-        </div>
+        </a>
     </div>
     <div class="col-md-3">
-        <div class="card text-white bg-success">
-            <div class="card-body text-center">
-                <h1 class="display-4">@ViewBag.ActiveMembers</h1>
-                <p class="mb-0">Active</p>
+        <a asp-controller="Admin" asp-action="Members" class="text-decoration-none">
+            <div class="card text-white bg-success h-100 dashboard-card">
+                <div class="card-body text-center">
+                    <h1 class="display-4">@ViewBag.ActiveMembers</h1>
+                    <p class="mb-0">Active</p>
+                </div>
             </div>
-        </div>
+        </a>
     </div>
     <div class="col-md-3">
-        <div class="card text-dark bg-warning">
-            <div class="card-body text-center">
-                <h1 class="display-4">@ViewBag.PendingMembers</h1>
-                <p class="mb-0">Pending</p>
+        <a asp-controller="Admin" asp-action="Members" class="text-decoration-none">
+            <div class="card text-dark bg-warning h-100 dashboard-card">
+                <div class="card-body text-center">
+                    <h1 class="display-4">@ViewBag.PendingMembers</h1>
+                    <p class="mb-0">Pending</p>
+                </div>
             </div>
-        </div>
+        </a>
     </div>
     <div class="col-md-3">
-        <div class="card text-white bg-danger">
-            <div class="card-body text-center">
-                <h1 class="display-4">@ViewBag.SuspendedMembers</h1>
-                <p class="mb-0">Suspended</p>
+        <a asp-controller="Admin" asp-action="Members" class="text-decoration-none">
+            <div class="card text-white bg-danger h-100 dashboard-card">
+                <div class="card-body text-center">
+                    <h1 class="display-4">@ViewBag.SuspendedMembers</h1>
+                    <p class="mb-0">Suspended</p>
+                </div>
             </div>
-        </div>
+        </a>
     </div>
 </div>
 
 <div class="row g-3">
     <div class="col-md-3">
         <a asp-controller="Claims" asp-action="Index" class="text-decoration-none">
-            <div class="card border-secondary">
+            <div class="card border-secondary h-100 dashboard-card">
                 <div class="card-body text-center">
                     <h1 class="display-4 text-secondary">@ViewBag.PendingClaims</h1>
                     <p class="mb-0 text-muted">Pending Claims</p>
@@ -50,7 +58,7 @@
     </div>
     <div class="col-md-3">
         <a asp-controller="Payments" asp-action="PendingJoiningFees" class="text-decoration-none">
-            <div class="card border-secondary">
+            <div class="card border-secondary h-100 dashboard-card">
                 <div class="card-body text-center">
                     <h1 class="display-4 text-secondary">@ViewBag.PendingJoiningFees</h1>
                     <p class="mb-0 text-muted">Joining Fee Confirmations</p>
@@ -60,7 +68,7 @@
     </div>
     <div class="col-md-3">
         <a asp-controller="Payments" asp-action="PendingMonthly" class="text-decoration-none">
-            <div class="card border-secondary">
+            <div class="card border-secondary h-100 dashboard-card">
                 <div class="card-body text-center">
                     <h1 class="display-4 text-secondary">@ViewBag.PendingMonthlyPayments</h1>
                     <p class="mb-0 text-muted">Monthly Confirmations</p>
@@ -69,11 +77,13 @@
         </a>
     </div>
     <div class="col-md-3">
-        <div class="card border-secondary">
-            <div class="card-body text-center">
-                <h1 class="display-4 text-secondary">@ViewBag.TotalClaims</h1>
-                <p class="mb-0 text-muted">Total Claims</p>
+        <a asp-controller="Claims" asp-action="Index" class="text-decoration-none">
+            <div class="card border-secondary h-100 dashboard-card">
+                <div class="card-body text-center">
+                    <h1 class="display-4 text-secondary">@ViewBag.TotalClaims</h1>
+                    <p class="mb-0 text-muted">Total Claims</p>
+                </div>
             </div>
-        </div>
+        </a>
     </div>
 </div>
