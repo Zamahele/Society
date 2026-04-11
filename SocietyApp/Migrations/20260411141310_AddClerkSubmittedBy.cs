@@ -56,8 +56,7 @@ namespace SocietyApp.Migrations
                 column: "SubmittedByClerkId",
                 principalSchema: "society",
                 principalTable: "AspNetUsers",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.SetNull);
+                principalColumn: "Id");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_JoiningFeePayments_AspNetUsers_SubmittedByClerkId",

@@ -93,7 +93,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
             e.HasOne(c => c.SubmittedByClerk)
                 .WithMany()
                 .HasForeignKey(c => c.SubmittedByClerkId)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.NoAction);
             e.HasOne(c => c.ProcessedByAdmin)
                 .WithMany()
                 .HasForeignKey(c => c.ProcessedByAdminId)

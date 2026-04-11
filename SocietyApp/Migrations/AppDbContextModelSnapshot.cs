@@ -569,7 +569,7 @@ namespace SocietyApp.Migrations
                     b.HasOne("SocietyApp.Models.ApplicationUser", "SubmittedByClerk")
                         .WithMany()
                         .HasForeignKey("SubmittedByClerkId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("Dependant");
 

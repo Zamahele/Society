@@ -12,7 +12,7 @@ using SocietyApp.Data;
 namespace SocietyApp.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260411140504_AddClerkSubmittedBy")]
+    [Migration("20260411141310_AddClerkSubmittedBy")]
     partial class AddClerkSubmittedBy
     {
         /// <inheritdoc />
@@ -572,7 +572,7 @@ namespace SocietyApp.Migrations
                     b.HasOne("SocietyApp.Models.ApplicationUser", "SubmittedByClerk")
                         .WithMany()
                         .HasForeignKey("SubmittedByClerkId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("Dependant");
 
