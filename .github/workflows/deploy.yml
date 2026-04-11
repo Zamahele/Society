@@ -77,24 +77,13 @@ jobs:
 
           echo "Deployment files prepared"
 
-      - name: Take app offline before deploy
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./publish/
-          server-dir: /gcweproperty.co.za/wwwroot/Society/
-          dangerous-clean-slate: false
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/node_modules/**
-            **/*
-            !app_offline.htm
-
-      - name: Wait for app to go offline
-        run: sleep 10
+      - name: Take app offline
+        run: |
+          curl -s --ftp-create-dirs \
+            -T ./publish/app_offline.htm \
+            "ftp://${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}@${{ secrets.FTP_SERVER }}/gcweproperty.co.za/wwwroot/Society/app_offline.htm"
+          echo "app_offline.htm uploaded — waiting 30s for IIS to release DLL locks..."
+          sleep 30
 
       - name: Deploy to FTP server
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -110,6 +99,12 @@ jobs:
             **/.git*/**
             **/node_modules/**
             app_offline.htm
+
+      - name: Bring app back online
+        run: |
+          curl -s -X "DELE /gcweproperty.co.za/wwwroot/Society/app_offline.htm" \
+            "ftp://${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}@${{ secrets.FTP_SERVER }}"
+          echo "app_offline.htm removed — app is back online"
 
       - name: Wait for application startup
         run: |
