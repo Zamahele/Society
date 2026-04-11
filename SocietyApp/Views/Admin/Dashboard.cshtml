@@ -48,40 +48,40 @@
 <div class="row g-3">
     <div class="col-md-3">
         <a asp-controller="Claims" asp-action="Index" class="text-decoration-none">
-            <div class="card border-secondary h-100 dashboard-card">
+            <div class="card text-white h-100 dashboard-card" style="background:#6f42c1;">
                 <div class="card-body text-center">
-                    <h1 class="display-4 text-secondary">@ViewBag.PendingClaims</h1>
-                    <p class="mb-0 text-muted">Pending Claims</p>
+                    <h1 class="display-4">@ViewBag.PendingClaims</h1>
+                    <p class="mb-0">Pending Claims</p>
                 </div>
             </div>
         </a>
     </div>
     <div class="col-md-3">
         <a asp-controller="Payments" asp-action="PendingJoiningFees" class="text-decoration-none">
-            <div class="card border-secondary h-100 dashboard-card">
+            <div class="card text-white bg-info h-100 dashboard-card">
                 <div class="card-body text-center">
-                    <h1 class="display-4 text-secondary">@ViewBag.PendingJoiningFees</h1>
-                    <p class="mb-0 text-muted">Joining Fee Confirmations</p>
+                    <h1 class="display-4">@ViewBag.PendingJoiningFees</h1>
+                    <p class="mb-0">Joining Fee Confirmations</p>
                 </div>
             </div>
         </a>
     </div>
     <div class="col-md-3">
         <a asp-controller="Payments" asp-action="PendingMonthly" class="text-decoration-none">
-            <div class="card border-secondary h-100 dashboard-card">
+            <div class="card text-white h-100 dashboard-card" style="background:#fd7e14;">
                 <div class="card-body text-center">
-                    <h1 class="display-4 text-secondary">@ViewBag.PendingMonthlyPayments</h1>
-                    <p class="mb-0 text-muted">Monthly Confirmations</p>
+                    <h1 class="display-4">@ViewBag.PendingMonthlyPayments</h1>
+                    <p class="mb-0">Monthly Confirmations</p>
                 </div>
             </div>
         </a>
     </div>
     <div class="col-md-3">
         <a asp-controller="Claims" asp-action="Index" class="text-decoration-none">
-            <div class="card border-secondary h-100 dashboard-card">
+            <div class="card text-white h-100 dashboard-card" style="background:#20c997;">
                 <div class="card-body text-center">
-                    <h1 class="display-4 text-secondary">@ViewBag.TotalClaims</h1>
-                    <p class="mb-0 text-muted">Total Claims</p>
+                    <h1 class="display-4">@ViewBag.TotalClaims</h1>
+                    <p class="mb-0">Total Claims</p>
                 </div>
             </div>
         </a>
