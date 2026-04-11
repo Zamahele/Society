@@ -15,6 +15,12 @@ namespace SocietyApp.Controllers
 
         public IActionResult Index()
         {
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                if (User.IsInRole("Admin") || User.IsInRole("Clerk"))
+                    return RedirectToAction("Dashboard", "Admin");
+                return RedirectToAction("Dashboard", "Members");
+            }
             return View();
         }
 

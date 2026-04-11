@@ -10,7 +10,18 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index">Society</a>
+            @if (User.IsInRole("Admin") || User.IsInRole("Clerk"))
+            {
+                <a class="navbar-brand fw-bold" asp-controller="Admin" asp-action="Dashboard">Ikhaya Burial Society</a>
+            }
+            else if (User.IsInRole("Member"))
+            {
+                <a class="navbar-brand fw-bold" asp-controller="Members" asp-action="Dashboard">Ikhaya Burial Society</a>
+            }
+            else
+            {
+                <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index">Ikhaya Burial Society</a>
+            }
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
