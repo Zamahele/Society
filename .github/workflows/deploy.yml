@@ -77,14 +77,6 @@ jobs:
 
           echo "Deployment files prepared"
 
-      - name: Take app offline
-        run: |
-          curl -s --ftp-create-dirs \
-            -T ./publish/app_offline.htm \
-            "ftp://${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}@${{ secrets.FTP_SERVER }}/gcweproperty.co.za/wwwroot/Society/app_offline.htm"
-          echo "app_offline.htm uploaded — waiting 30s for IIS to release DLL locks..."
-          sleep 30
-
       - name: Deploy to FTP server
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
@@ -98,42 +90,6 @@ jobs:
             **/.git*
             **/.git*/**
             **/node_modules/**
-            app_offline.htm
-
-      - name: Bring app back online
-        run: |
-          curl -s -X "DELE /gcweproperty.co.za/wwwroot/Society/app_offline.htm" \
-            "ftp://${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}@${{ secrets.FTP_SERVER }}"
-          echo "app_offline.htm removed — app is back online"
-
-      - name: Wait for application startup
-        run: |
-          echo "Waiting for application to initialize..."
-          sleep 60
-
-          MAX_ATTEMPTS=20
-          ATTEMPT=1
-
-          while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
-            echo "Testing application health (attempt $ATTEMPT/$MAX_ATTEMPTS)..."
-
-            if curl -f -s --max-time 15 "https://gcweproperty.co.za/Society/health" > /dev/null 2>&1; then
-              echo "Application is responding (HTTPS)"
-              break
-            elif curl -f -s --max-time 15 "http://gcweproperty.co.za/Society/health" > /dev/null 2>&1; then
-              echo "Application is responding (HTTP)"
-              break
-            else
-              echo "Not ready yet, waiting..."
-              if [ $ATTEMPT -eq $MAX_ATTEMPTS ]; then
-                echo "Proceeding — verify manually"
-              else
-                sleep 20
-              fi
-            fi
-
-            ATTEMPT=$((ATTEMPT + 1))
-          done
 
       - name: Deployment Summary
         run: |
