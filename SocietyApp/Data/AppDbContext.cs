@@ -18,6 +18,8 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     {
         base.OnModelCreating(builder);
 
+        builder.HasDefaultSchema("society");
+
         // Membership
         builder.Entity<Membership>(e =>
         {
