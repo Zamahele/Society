@@ -69,7 +69,7 @@
                         {
                             <tr>
                                 <td>@p.ForMonth.ToString("MMM yyyy")</td>
-                                <td>R@p.Amount</td>
+                                <td>R@(p.Amount)</td>
                                 <td>@p.PaymentReference</td>
                                 <td>
                                     <span class="badge @(p.Status == SocietyApp.Models.MonthlyPaymentStatus.Confirmed ? "bg-success" : p.Status == SocietyApp.Models.MonthlyPaymentStatus.Missed ? "bg-danger" : "bg-warning text-dark")">
