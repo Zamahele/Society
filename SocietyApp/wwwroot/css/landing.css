@@ -1,0 +1,97 @@
+/* Hero */
+.hero {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    min-height: 85vh;
+    display: flex;
+    align-items: center;
+}
+
+.hero h1 { font-size: 3rem; font-weight: 800; }
+.hero p  { font-size: 1.2rem; opacity: 0.9; }
+
+/* Section headings */
+.section-title {
+    font-weight: 700;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+.section-divider {
+    width: 60px;
+    height: 4px;
+    background: #0f3460;
+    margin: 0 auto 2.5rem;
+    border-radius: 2px;
+}
+
+/* Step cards */
+.step-circle {
+    width: 60px;
+    height: 60px;
+    background: #0f3460;
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0 auto 1rem;
+}
+
+/* Benefit cards */
+.benefit-card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    transition: transform 0.2s;
+}
+.benefit-card:hover { transform: translateY(-4px); }
+.benefit-icon { font-size: 2.5rem; }
+
+/* Banking section */
+.banking-section { background: #f8f9fa; }
+.bank-detail-row { border-bottom: 1px solid #dee2e6; padding: 0.75rem 0; }
+.bank-detail-row:last-child { border-bottom: none; }
+
+/* Committee */
+.committee-card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    transition: transform 0.2s;
+}
+.committee-card:hover { transform: translateY(-4px); }
+.committee-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #0f3460;
+}
+.avatar-placeholder {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: #0f3460;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0 auto;
+    border: 4px solid #e9ecef;
+}
+
+/* Contact */
+.contact-section { background: #1a1a2e; }
+.contact-icon {
+    width: 48px;
+    height: 48px;
+    background: #0f3460;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 0.5rem;
+}

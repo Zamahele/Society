@@ -1,8 +1,248 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@{
+    ViewData["Title"] = "Welcome";
+    Layout = "_LayoutLanding";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<!-- HERO -->
+<section class="hero text-white">
+    <div class="container text-center">
+        <h1 class="hero-title">Ikhaya Burial Society</h1>
+        <p class="mt-3 mb-4 col-md-8 mx-auto">
+            We stand with families in their most difficult moments. Affordable monthly contributions,
+            guaranteed payouts, and a community that cares.
+        </p>
+        <a asp-controller="Account" asp-action="Register" class="btn btn-warning btn-lg me-3 px-5">Join Now</a>
+        <a asp-controller="Account" asp-action="Login" class="btn btn-outline-light btn-lg px-5">Member Login</a>
+        <div class="row justify-content-center mt-5 g-4">
+            <div class="col-auto">
+                <div class="text-warning fw-bold fs-4">R15,000</div>
+                <small>Cash Payout</small>
+            </div>
+            <div class="col-auto px-4 border-start border-end border-secondary">
+                <div class="text-warning fw-bold fs-4">R15,000</div>
+                <small>Grocery Voucher</small>
+            </div>
+            <div class="col-auto">
+                <div class="text-warning fw-bold fs-4">R150/mo</div>
+                <small>Monthly Contribution</small>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how-it-works" class="py-5">
+    <div class="container">
+        <h2 class="section-title text-center">How It Works</h2>
+        <div class="section-divider"></div>
+        <div class="row g-4 text-center">
+            <div class="col-md-3">
+                <div class="step-circle">1</div>
+                <h5 class="fw-bold">Register Online</h5>
+                <p class="text-muted">Create your account with your ID number and personal details. Takes less than 5 minutes.</p>
+            </div>
+            <div class="col-md-3">
+                <div class="step-circle">2</div>
+                <h5 class="fw-bold">Pay Joining Fee</h5>
+                <p class="text-muted">Make a once-off joining fee payment of <strong>R150</strong> to activate your membership.</p>
+            </div>
+            <div class="col-md-3">
+                <div class="step-circle">3</div>
+                <h5 class="fw-bold">Pay Monthly</h5>
+                <p class="text-muted">Keep your membership active with a <strong>R150</strong> monthly contribution via EFT.</p>
+            </div>
+            <div class="col-md-3">
+                <div class="step-circle">4</div>
+                <h5 class="fw-bold">Claim When Needed</h5>
+                <p class="text-muted">Submit a death claim after the 6-month waiting period. We process quickly and with care.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- BENEFITS -->
+<section id="benefits" class="py-5 bg-light">
+    <div class="container">
+        <h2 class="section-title text-center">What You Are Covered For</h2>
+        <div class="section-divider"></div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card benefit-card h-100 p-4 text-center">
+                    <div class="benefit-icon mb-3">&#128176;</div>
+                    <h5 class="fw-bold">Cash Payout</h5>
+                    <div class="display-6 fw-bold text-primary">R15,000</div>
+                    <p class="text-muted mt-2">Direct cash payment to assist with funeral and related costs.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card benefit-card h-100 p-4 text-center">
+                    <div class="benefit-icon mb-3">&#127873;</div>
+                    <h5 class="fw-bold">Grocery Voucher</h5>
+                    <div class="display-6 fw-bold text-primary">R15,000</div>
+                    <p class="text-muted mt-2">Grocery voucher to feed family and guests during the mourning period.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card benefit-card h-100 p-4 text-center">
+                    <div class="benefit-icon mb-3">&#128106;</div>
+                    <h5 class="fw-bold">Dependants Covered</h5>
+                    <div class="display-6 fw-bold text-primary">Up to 10</div>
+                    <p class="text-muted mt-2">Add up to 10 dependants — spouse, children, and extended family — under your membership.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-3 mt-4">
+            <div class="col-md-6">
+                <div class="alert alert-info mb-0">
+                    <strong>Waiting Period:</strong> 6 months from activation before a claim can be submitted.
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="alert alert-warning mb-0">
+                    <strong>Grace Period:</strong> Payments more than 30 days overdue will suspend claim eligibility.
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FEES -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="section-title text-center">Membership Fees</h2>
+        <div class="section-divider"></div>
+        <div class="row g-4 justify-content-center">
+            <div class="col-md-4 text-center">
+                <div class="card border-primary h-100 p-4">
+                    <h5 class="text-muted">Once-off Joining Fee</h5>
+                    <div class="display-4 fw-bold text-primary">R150</div>
+                    <p class="text-muted mt-2">Paid once to activate your membership. A clerk will confirm your payment.</p>
+                </div>
+            </div>
+            <div class="col-md-4 text-center">
+                <div class="card border-success h-100 p-4">
+                    <h5 class="text-muted">Monthly Contribution</h5>
+                    <div class="display-4 fw-bold text-success">R150</div>
+                    <p class="text-muted mt-2">Paid every month via EFT. Submit your proof of payment through the portal.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- BANKING DETAILS -->
+<section id="banking" class="py-5 banking-section">
+    <div class="container">
+        <h2 class="section-title text-center">Banking Details</h2>
+        <div class="section-divider"></div>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card shadow-sm p-4">
+                    <div class="bank-detail-row d-flex justify-content-between">
+                        <span class="text-muted">Bank</span>
+                        <strong>Standard Bank</strong>
+                    </div>
+                    <div class="bank-detail-row d-flex justify-content-between">
+                        <span class="text-muted">Account Name</span>
+                        <strong>Ikhaya Burial Society</strong>
+                    </div>
+                    <div class="bank-detail-row d-flex justify-content-between">
+                        <span class="text-muted">Account Number</span>
+                        <strong>012 345 678</strong>
+                    </div>
+                    <div class="bank-detail-row d-flex justify-content-between">
+                        <span class="text-muted">Branch Code</span>
+                        <strong>051 001</strong>
+                    </div>
+                    <div class="bank-detail-row d-flex justify-content-between">
+                        <span class="text-muted">Account Type</span>
+                        <strong>Current Account</strong>
+                    </div>
+                    <div class="bank-detail-row d-flex justify-content-between">
+                        <span class="text-muted">Reference</span>
+                        <strong>Your Membership Number</strong>
+                    </div>
+                    <div class="alert alert-warning mt-3 mb-0">
+                        <small>Always use your <strong>membership number</strong> as payment reference so your payment can be matched.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- COMMITTEE -->
+<section id="committee" class="py-5">
+    <div class="container">
+        <h2 class="section-title text-center">Our Committee</h2>
+        <div class="section-divider"></div>
+        <div class="row g-4 justify-content-center">
+            <div class="col-md-3 text-center">
+                <div class="card committee-card p-4 h-100">
+                    <div class="avatar-placeholder mx-auto mb-3">T</div>
+                    <h6 class="fw-bold mb-1">Thabo Dlamini</h6>
+                    <span class="badge bg-primary mb-2">Chairperson</span>
+                    <p class="text-muted small mb-1">&#128222; 071 000 0001</p>
+                    <p class="text-muted small">&#9993; chairperson@ikhaya.co.za</p>
+                </div>
+            </div>
+            <div class="col-md-3 text-center">
+                <div class="card committee-card p-4 h-100">
+                    <div class="avatar-placeholder mx-auto mb-3" style="background:#198754;">N</div>
+                    <h6 class="fw-bold mb-1">Nomsa Khumalo</h6>
+                    <span class="badge bg-success mb-2">Secretary</span>
+                    <p class="text-muted small mb-1">&#128222; 071 000 0002</p>
+                    <p class="text-muted small">&#9993; secretary@ikhaya.co.za</p>
+                </div>
+            </div>
+            <div class="col-md-3 text-center">
+                <div class="card committee-card p-4 h-100">
+                    <div class="avatar-placeholder mx-auto mb-3" style="background:#dc3545;">S</div>
+                    <h6 class="fw-bold mb-1">Sipho Ndlovu</h6>
+                    <span class="badge bg-danger mb-2">Treasurer</span>
+                    <p class="text-muted small mb-1">&#128222; 071 000 0003</p>
+                    <p class="text-muted small">&#9993; treasurer@ikhaya.co.za</p>
+                </div>
+            </div>
+            <div class="col-md-3 text-center">
+                <div class="card committee-card p-4 h-100">
+                    <div class="avatar-placeholder mx-auto mb-3" style="background:#6f42c1;">Z</div>
+                    <h6 class="fw-bold mb-1">Zanele Mokoena</h6>
+                    <span class="badge bg-purple mb-2" style="background:#6f42c1;">Clerk</span>
+                    <p class="text-muted small mb-1">&#128222; 071 000 0004</p>
+                    <p class="text-muted small">&#9993; clerk@ikhaya.co.za</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="py-5 contact-section text-white">
+    <div class="container">
+        <h2 class="section-title text-center">Contact Us</h2>
+        <div class="section-divider" style="background:#f0ad4e;"></div>
+        <div class="row g-4 text-center">
+            <div class="col-md-4">
+                <div class="contact-icon mx-auto mb-2">&#128205;</div>
+                <h6 class="fw-bold">Office Address</h6>
+                <p class="text-muted small">123 Ubuntu Street<br>Soweto, Johannesburg<br>1804</p>
+            </div>
+            <div class="col-md-4">
+                <div class="contact-icon mx-auto mb-2">&#128222;</div>
+                <h6 class="fw-bold">Phone</h6>
+                <p class="text-muted small">071 000 0000<br>Monday – Friday: 08:00 – 17:00<br>Saturday: 09:00 – 13:00</p>
+            </div>
+            <div class="col-md-4">
+                <div class="contact-icon mx-auto mb-2">&#9993;</div>
+                <h6 class="fw-bold">Email</h6>
+                <p class="text-muted small">info@ikhaya.co.za<br>claims@ikhaya.co.za<br>&nbsp;</p>
+            </div>
+        </div>
+        <div class="text-center mt-4">
+            <a asp-controller="Account" asp-action="Register" class="btn btn-warning btn-lg px-5 me-3">Join Now</a>
+            <a asp-controller="Account" asp-action="Login" class="btn btn-outline-light btn-lg px-5">Login</a>
+        </div>
+    </div>
+</section>
