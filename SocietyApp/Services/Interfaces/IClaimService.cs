@@ -5,7 +5,7 @@ namespace SocietyApp.Services.Interfaces;
 public interface IClaimService
 {
     Task<ClaimEligibilityResult> CheckEligibilityAsync(int membershipId);
-    Task<DeathClaim> SubmitClaimAsync(int membershipId, DeathClaim claim, byte[]? certificate, string? fileName);
+    Task<DeathClaim> SubmitClaimAsync(int membershipId, DeathClaim claim, byte[]? certificate, string? fileName, string? submittedByClerkId = null);
     Task<DeathClaim?> GetByIdAsync(int claimId);
     Task<List<DeathClaim>> GetByMembershipAsync(int membershipId);
     Task<List<DeathClaim>> GetAllAsync();

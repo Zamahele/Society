@@ -53,13 +53,14 @@ public class ClaimService : IClaimService
         return result;
     }
 
-    public async Task<DeathClaim> SubmitClaimAsync(int membershipId, DeathClaim claim, byte[]? certificate, string? fileName)
+    public async Task<DeathClaim> SubmitClaimAsync(int membershipId, DeathClaim claim, byte[]? certificate, string? fileName, string? submittedByClerkId = null)
     {
         claim.MembershipId = membershipId;
         claim.ClaimDate = DateTime.UtcNow;
         claim.ClaimStatus = ClaimStatus.Submitted;
         claim.CashAmount = 15000m;
         claim.VoucherAmount = 15000m;
+        claim.SubmittedByClerkId = submittedByClerkId;
 
         if (certificate != null)
         {

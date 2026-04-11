@@ -49,6 +49,10 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
                 .WithMany(m => m.JoiningFeePayments)
                 .HasForeignKey(p => p.MembershipId)
                 .OnDelete(DeleteBehavior.Cascade);
+            e.HasOne(p => p.SubmittedByClerk)
+                .WithMany()
+                .HasForeignKey(p => p.SubmittedByClerkId)
+                .OnDelete(DeleteBehavior.SetNull);
             e.HasOne(p => p.ConfirmedByClerk)
                 .WithMany()
                 .HasForeignKey(p => p.ConfirmedByClerkId)
@@ -63,6 +67,10 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
                 .WithMany(m => m.MonthlyPayments)
                 .HasForeignKey(p => p.MembershipId)
                 .OnDelete(DeleteBehavior.Cascade);
+            e.HasOne(p => p.SubmittedByClerk)
+                .WithMany()
+                .HasForeignKey(p => p.SubmittedByClerkId)
+                .OnDelete(DeleteBehavior.SetNull);
             e.HasOne(p => p.ConfirmedByClerk)
                 .WithMany()
                 .HasForeignKey(p => p.ConfirmedByClerkId)
@@ -81,6 +89,10 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
             e.HasOne(c => c.Dependant)
                 .WithMany()
                 .HasForeignKey(c => c.DependantId)
+                .OnDelete(DeleteBehavior.SetNull);
+            e.HasOne(c => c.SubmittedByClerk)
+                .WithMany()
+                .HasForeignKey(c => c.SubmittedByClerkId)
                 .OnDelete(DeleteBehavior.SetNull);
             e.HasOne(c => c.ProcessedByAdmin)
                 .WithMany()

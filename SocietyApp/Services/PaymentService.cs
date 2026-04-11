@@ -17,7 +17,7 @@ public class PaymentService : IPaymentService
 
     // --------------- Joining Fee ---------------
 
-    public async Task<JoiningFeePayment> SubmitJoiningFeeAsync(int membershipId, string reference, DateTime paymentDate)
+    public async Task<JoiningFeePayment> SubmitJoiningFeeAsync(int membershipId, string reference, DateTime paymentDate, string? submittedByClerkId = null)
     {
         var payment = new JoiningFeePayment
         {
@@ -25,7 +25,8 @@ public class PaymentService : IPaymentService
             Amount = 150m,
             PaymentReference = reference,
             PaymentDate = paymentDate,
-            Status = PaymentStatus.Pending
+            Status = PaymentStatus.Pending,
+            SubmittedByClerkId = submittedByClerkId
         };
 
         _db.JoiningFeePayments.Add(payment);
@@ -75,7 +76,7 @@ public class PaymentService : IPaymentService
 
     // --------------- Monthly Payments ---------------
 
-    public async Task<MonthlyPayment> SubmitMonthlyPaymentAsync(int membershipId, DateTime forMonth, string reference, DateTime paymentDate)
+    public async Task<MonthlyPayment> SubmitMonthlyPaymentAsync(int membershipId, DateTime forMonth, string reference, DateTime paymentDate, string? submittedByClerkId = null)
     {
         var normalizedMonth = new DateTime(forMonth.Year, forMonth.Month, 1);
 
@@ -86,7 +87,8 @@ public class PaymentService : IPaymentService
             Amount = 150m,
             PaymentReference = reference,
             PaymentDate = paymentDate,
-            Status = MonthlyPaymentStatus.Pending
+            Status = MonthlyPaymentStatus.Pending,
+            SubmittedByClerkId = submittedByClerkId
         };
 
         _db.MonthlyPayments.Add(payment);

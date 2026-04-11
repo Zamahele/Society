@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SocietyApp.Models;
 using SocietyApp.Services.Interfaces;
 using SocietyApp.ViewModels;
+using System.IO;
 
 namespace SocietyApp.Controllers;
 
@@ -101,5 +102,158 @@ public class AdminController : Controller
         await _userManager.AddToRoleAsync(user, "Clerk");
         TempData["Success"] = $"Clerk account created for {model.FullName}.";
         return RedirectToAction(nameof(Dashboard));
+    }
+
+    // ---- Create Member (Admin + Clerk — walk-in at office) ----
+
+    [HttpGet]
+    public IActionResult CreateMember() => View(new CreateMemberViewModel());
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CreateMember(CreateMemberViewModel model)
+    {
+        if (!ModelState.IsValid) return View(model);
+
+        var user = new ApplicationUser
+        {
+            UserName = model.IDNumber,
+            IDNumber = model.IDNumber,
+            FullName = model.FullName,
+            Email = $"{model.IDNumber}@society.local",
+            Phone = model.Phone,
+            Address = model.Address,
+            DateOfBirth = model.DateOfBirth,
+            BankAccountName = model.BankAccountName,
+            BankAccountNumber = model.BankAccountNumber,
+            BankName = model.BankName,
+            DateRegistered = DateTime.UtcNow
+        };
+
+        var result = await _userManager.CreateAsync(user, model.Password);
+        if (!result.Succeeded)
+        {
+            foreach (var e in result.Errors)
+                ModelState.AddModelError(string.Empty, e.Description);
+            return View(model);
+        }
+
+        await _userManager.AddToRoleAsync(user, "Member");
+        await _membershipService.CreateAsync(user.Id);
+
+        TempData["Success"] = $"Member account created for {model.FullName}.";
+        return RedirectToAction(nameof(Members));
+    }
+
+    // ---- Submit Joining Fee on behalf of member (Admin + Clerk) ----
+
+    [HttpGet]
+    public async Task<IActionResult> SubmitJoiningFeeForMember(int membershipId)
+    {
+        var membership = await _membershipService.GetByIdAsync(membershipId);
+        if (membership == null) return NotFound();
+
+        return View(new SubmitJoiningFeeViewModel
+        {
+            MembershipId = membershipId,
+            MembershipNumber = membership.MembershipNumber
+        });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SubmitJoiningFeeForMember(SubmitJoiningFeeViewModel model)
+    {
+        if (!ModelState.IsValid) return View(model);
+
+        var clerk = await _userManager.GetUserAsync(User);
+        await _paymentService.SubmitJoiningFeeAsync(model.MembershipId, model.PaymentReference, model.PaymentDate, clerk!.Id);
+        TempData["Success"] = "Joining fee submitted on behalf of member.";
+        return RedirectToAction(nameof(MemberDetails), new { id = model.MembershipId });
+    }
+
+    // ---- Submit Monthly Payment on behalf of member (Admin + Clerk) ----
+
+    [HttpGet]
+    public async Task<IActionResult> SubmitMonthlyForMember(int membershipId)
+    {
+        var membership = await _membershipService.GetByIdAsync(membershipId);
+        if (membership == null) return NotFound();
+
+        return View(new SubmitMonthlyPaymentViewModel
+        {
+            MembershipId = membershipId,
+            MembershipNumber = membership.MembershipNumber
+        });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SubmitMonthlyForMember(SubmitMonthlyPaymentViewModel model)
+    {
+        if (!ModelState.IsValid) return View(model);
+
+        var clerk = await _userManager.GetUserAsync(User);
+        await _paymentService.SubmitMonthlyPaymentAsync(model.MembershipId, model.ForMonth, model.PaymentReference, model.PaymentDate, clerk!.Id);
+        TempData["Success"] = "Monthly payment submitted on behalf of member.";
+        return RedirectToAction(nameof(MemberDetails), new { id = model.MembershipId });
+    }
+
+    // ---- Submit Claim on behalf of member (Admin + Clerk) ----
+
+    [HttpGet]
+    public async Task<IActionResult> SubmitClaimForMember(int membershipId)
+    {
+        var membership = await _membershipService.GetByIdAsync(membershipId);
+        if (membership == null) return NotFound();
+
+        var eligibility = await _claimService.CheckEligibilityAsync(membershipId);
+        if (!eligibility.IsEligible)
+        {
+            ViewBag.Reasons = eligibility.Reasons;
+            return View("NotEligible");
+        }
+
+        var dependants = await _membershipService.GetDependantsAsync(membershipId);
+        return View(new SubmitClaimViewModel
+        {
+            MembershipId = membershipId,
+            Dependants = dependants
+        });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SubmitClaimForMember(SubmitClaimViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            model.Dependants = await _membershipService.GetDependantsAsync(model.MembershipId);
+            return View(model);
+        }
+
+        byte[]? certData = null;
+        string? certFileName = null;
+
+        if (model.DeathCertificate != null && model.DeathCertificate.Length > 0)
+        {
+            using var ms = new MemoryStream();
+            await model.DeathCertificate.CopyToAsync(ms);
+            certData = ms.ToArray();
+            certFileName = model.DeathCertificate.FileName;
+        }
+
+        var claim = new DeathClaim
+        {
+            DeceasedType = model.DeceasedType,
+            DependantId = model.DependantId,
+            DeceasedFullName = model.DeceasedFullName,
+            DateOfDeath = model.DateOfDeath
+        };
+
+        var clerk = await _userManager.GetUserAsync(User);
+        await _claimService.SubmitClaimAsync(model.MembershipId, claim, certData, certFileName, clerk!.Id);
+        TempData["Success"] = "Claim submitted on behalf of member.";
+        return RedirectToAction(nameof(MemberDetails), new { id = model.MembershipId });
     }
 }

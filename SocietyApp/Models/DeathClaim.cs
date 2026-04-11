@@ -27,6 +27,8 @@ public class DeathClaim
     public DateTime? VoucherPaidDate { get; set; }
 
     public string? RejectionReason { get; set; }
+    public string? SubmittedByClerkId { get; set; }
+    public ApplicationUser? SubmittedByClerk { get; set; }
     public string? ProcessedByAdminId { get; set; }
     public ApplicationUser? ProcessedByAdmin { get; set; }
 }
