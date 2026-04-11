@@ -1,32 +1,91 @@
-html {
-  font-size: 14px;
+/* ── Typography ── */
+html { font-size: 14px; }
+@media (min-width: 768px) { html { font-size: 16px; } }
+
+/* ── Focus rings ── */
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus,
+.form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #c9a84c;
 }
 
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+html { position: relative; min-height: 100%; }
+body { margin-bottom: 60px; background: #f4f5f7; }
+
+/* ── Theme palette ── */
+:root {
+  --navy:      #0f3460;
+  --navy-dark: #0a2444;
+  --gold:      #c9a84c;
+  --gold-light:#f0c96a;
+  --bg-page:   #f4f5f7;
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
+/* ── Navbar ── */
+.navbar.navbar-dark { background: var(--navy) !important; }
+.navbar-brand        { color: var(--gold) !important; font-size: 1.1rem; }
+.navbar-brand:hover  { color: var(--gold-light) !important; }
+.nav-link:hover      { color: var(--gold-light) !important; }
 
-html {
-  position: relative;
-  min-height: 100%;
-}
-
-body {
-  margin-bottom: 60px;
-}
-
+/* ── Dashboard stat cards ── */
 .dashboard-card {
   cursor: pointer;
+  border: none;
+  border-radius: 10px;
   transition: transform 0.15s, box-shadow 0.15s;
 }
-
 .dashboard-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(15, 52, 96, 0.2);
 }
+
+/* Card colour variants */
+.card-navy   { background: var(--navy);      color: #fff; }
+.card-navy2  { background: var(--navy-dark);  color: #fff; }
+.card-gold   { background: var(--gold);       color: #fff; }
+.card-slate  { background: #3d5a80;           color: #fff; }
+.card-teal   { background: #1d6a72;           color: #fff; }
+.card-rust   { background: #7a3b2e;           color: #fff; }
+.card-plum   { background: #4a2c5a;           color: #fff; }
+.card-olive  { background: #4a5e2e;           color: #fff; }
+
+/* ── Buttons ── */
+.btn-primary {
+  background: var(--navy);
+  border-color: var(--navy);
+}
+.btn-primary:hover {
+  background: var(--navy-dark);
+  border-color: var(--navy-dark);
+}
+.btn-gold {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: #fff;
+}
+.btn-gold:hover {
+  background: #b8933e;
+  border-color: #b8933e;
+  color: #fff;
+}
+
+/* ── Cards ── */
+.card {
+  border-radius: 10px;
+  border: 1px solid #e0e4ea;
+}
+.card-header {
+  background: var(--navy);
+  color: #fff;
+  border-radius: 10px 10px 0 0 !important;
+  font-weight: 600;
+}
+
+/* ── Tables ── */
+.table thead th {
+  background: var(--navy);
+  color: #fff;
+  border-color: var(--navy-dark);
+}
+
+/* ── Badges ── */
+.badge.bg-primary { background: var(--navy) !important; }
