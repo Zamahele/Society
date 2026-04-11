@@ -22,14 +22,14 @@ GO
 ALTER TABLE [society].[DeathClaims] ADD CONSTRAINT [FK_DeathClaims_AspNetUsers_SubmittedByClerkId] FOREIGN KEY ([SubmittedByClerkId]) REFERENCES [society].[AspNetUsers] ([Id]);
 GO
 
-ALTER TABLE [society].[JoiningFeePayments] ADD CONSTRAINT [FK_JoiningFeePayments_AspNetUsers_SubmittedByClerkId] FOREIGN KEY ([SubmittedByClerkId]) REFERENCES [society].[AspNetUsers] ([Id]) ON DELETE SET NULL;
+ALTER TABLE [society].[JoiningFeePayments] ADD CONSTRAINT [FK_JoiningFeePayments_AspNetUsers_SubmittedByClerkId] FOREIGN KEY ([SubmittedByClerkId]) REFERENCES [society].[AspNetUsers] ([Id]);
 GO
 
-ALTER TABLE [society].[MonthlyPayments] ADD CONSTRAINT [FK_MonthlyPayments_AspNetUsers_SubmittedByClerkId] FOREIGN KEY ([SubmittedByClerkId]) REFERENCES [society].[AspNetUsers] ([Id]) ON DELETE SET NULL;
+ALTER TABLE [society].[MonthlyPayments] ADD CONSTRAINT [FK_MonthlyPayments_AspNetUsers_SubmittedByClerkId] FOREIGN KEY ([SubmittedByClerkId]) REFERENCES [society].[AspNetUsers] ([Id]);
 GO
 
 INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-VALUES (N'20260411141310_AddClerkSubmittedBy', N'8.0.0');
+VALUES (N'20260411141832_AddClerkSubmittedBy', N'8.0.0');
 GO
 
 COMMIT;

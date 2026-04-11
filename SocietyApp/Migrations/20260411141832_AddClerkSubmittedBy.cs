@@ -65,8 +65,7 @@ namespace SocietyApp.Migrations
                 column: "SubmittedByClerkId",
                 principalSchema: "society",
                 principalTable: "AspNetUsers",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.SetNull);
+                principalColumn: "Id");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_MonthlyPayments_AspNetUsers_SubmittedByClerkId",
@@ -75,8 +74,7 @@ namespace SocietyApp.Migrations
                 column: "SubmittedByClerkId",
                 principalSchema: "society",
                 principalTable: "AspNetUsers",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.SetNull);
+                principalColumn: "Id");
         }
 
         /// <inheritdoc />
