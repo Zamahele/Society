@@ -84,7 +84,7 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./publish/
-          server-dir: /gcweproperty.co.za/wwwroot/Society/
+          server-dir: /ikhayasociety.co.za/wwwroot/
           dangerous-clean-slate: false
           exclude: |
             **/.git*
@@ -97,7 +97,7 @@ jobs:
           echo "SOCIETY APP DEPLOYMENT COMPLETED"
           echo "========================================="
           echo ""
-          echo "Application URL: http://gcweproperty.co.za/Society/"
-          echo "FTP Directory: /Society/wwwroot/"
+          echo "Application URL: http://ikhayasociety.co.za/wwwroot/"
+          echo "FTP Directory: /wwwroot/"
           echo ""
           echo "NOTE: Run migrations manually via SSMS using script.sql"
