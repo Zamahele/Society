@@ -65,6 +65,12 @@ app.MapRazorPages();
 
 // Seed roles and default admin on startup
 using (var scope = app.Services.CreateScope())
-    await DbSeeder.SeedAsync(scope.ServiceProvider);
+{
+    var services = scope.ServiceProvider;
+    var dbContext = services.GetRequiredService<AppDbContext>();
+
+    await dbContext.Database.MigrateAsync();
+    await DbSeeder.SeedAsync(services);
+}
 
 app.Run();
