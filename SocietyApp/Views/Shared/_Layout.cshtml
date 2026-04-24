@@ -15,15 +15,15 @@
         <div class="container">
             @if (User.IsInRole("Admin") || User.IsInRole("Clerk"))
             {
-                <a class="navbar-brand fw-bold" asp-controller="Admin" asp-action="Dashboard">Ikhaya Burial Society</a>
+                <a class="navbar-brand fw-bold" asp-controller="Admin" asp-action="Dashboard">Give Compassion NPC</a>
             }
             else if (User.IsInRole("Member"))
             {
-                <a class="navbar-brand fw-bold" asp-controller="Members" asp-action="Dashboard">Ikhaya Burial Society</a>
+                <a class="navbar-brand fw-bold" asp-controller="Members" asp-action="Dashboard">Give Compassion NPC</a>
             }
             else
             {
-                <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index">Ikhaya Burial Society</a>
+                <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index">Give Compassion NPC</a>
             }
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
