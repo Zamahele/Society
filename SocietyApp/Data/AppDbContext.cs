@@ -15,6 +15,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<DeathClaim> DeathClaims { get; set; }
     public DbSet<PublicSiteSettings> PublicSiteSettings { get; set; }
     public DbSet<CommitteeMember> CommitteeMembers { get; set; }
+    public DbSet<ErrorLog> ErrorLogs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -115,6 +116,15 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
             e.Property(c => c.FullName).HasMaxLength(150);
             e.Property(c => c.RoleTitle).HasMaxLength(80);
             e.Property(c => c.Phone).HasMaxLength(40);
+        });
+
+        builder.Entity<ErrorLog>(e =>
+        {
+            e.Property(l => l.RequestId).HasMaxLength(120);
+            e.Property(l => l.Path).HasMaxLength(500);
+            e.Property(l => l.Method).HasMaxLength(20);
+            e.Property(l => l.ErrorMessage).HasMaxLength(4000);
+            e.Property(l => l.UserId).HasMaxLength(450);
         });
     }
 }

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SocietyApp.Data;
+using SocietyApp.Middleware;
 using SocietyApp.Models;
 using SocietyApp.Services;
 using SocietyApp.Services.Interfaces;
@@ -41,9 +42,12 @@ builder.Services.AddRazorPages();
 
 var app = builder.Build();
 
+// Always show a friendly error page and avoid leaking exception details.
+app.UseExceptionHandler("/Home/Error");
+app.UseMiddleware<ErrorLoggingMiddleware>();
+
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
 
