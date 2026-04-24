@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using SocietyApp.Data;
 using SocietyApp.Models;
 using SocietyApp.Services.Interfaces;
 using SocietyApp.ViewModels;
@@ -12,16 +14,19 @@ namespace SocietyApp.Controllers;
 public class AdminController : Controller
 {
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly AppDbContext _dbContext;
     private readonly IMembershipService _membershipService;
     private readonly IPaymentService _paymentService;
     private readonly IClaimService _claimService;
 
     public AdminController(UserManager<ApplicationUser> userManager,
+        AppDbContext dbContext,
         IMembershipService membershipService,
         IPaymentService paymentService,
         IClaimService claimService)
     {
         _userManager = userManager;
+        _dbContext = dbContext;
         _membershipService = membershipService;
         _paymentService = paymentService;
         _claimService = claimService;
@@ -255,5 +260,108 @@ public class AdminController : Controller
         await _claimService.SubmitClaimAsync(model.MembershipId, claim, certData, certFileName, clerk!.Id);
         TempData["Success"] = "Claim submitted on behalf of member.";
         return RedirectToAction(nameof(MemberDetails), new { id = model.MembershipId });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> PublicContent()
+    {
+        var settings = await _dbContext.PublicSiteSettings.FirstOrDefaultAsync();
+        if (settings == null)
+        {
+            settings = new PublicSiteSettings();
+            _dbContext.PublicSiteSettings.Add(settings);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        var model = new PublicContentAdminViewModel
+        {
+            Settings = settings,
+            CommitteeMembers = await _dbContext.CommitteeMembers
+                .OrderBy(c => c.DisplayOrder)
+                .ThenBy(c => c.Id)
+                .ToListAsync()
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> PublicContent(PublicContentAdminViewModel model)
+    {
+        var settings = await _dbContext.PublicSiteSettings.FirstOrDefaultAsync();
+        if (settings == null)
+        {
+            settings = model.Settings;
+            _dbContext.PublicSiteSettings.Add(settings);
+        }
+        else
+        {
+            settings.OrganizationName = model.Settings.OrganizationName;
+            settings.RegistrationNumber = model.Settings.RegistrationNumber;
+            settings.EnterpriseType = model.Settings.EnterpriseType;
+            settings.EnterpriseStatus = model.Settings.EnterpriseStatus;
+            settings.RegistrationDate = model.Settings.RegistrationDate;
+            settings.BusinessStartDate = model.Settings.BusinessStartDate;
+            settings.FinancialYearEnd = model.Settings.FinancialYearEnd;
+            settings.MainBusinessObject = model.Settings.MainBusinessObject;
+            settings.PostalAddress = model.Settings.PostalAddress;
+            settings.RegisteredOfficeAddress = model.Settings.RegisteredOfficeAddress;
+            settings.BankName = model.Settings.BankName;
+            settings.BankAccountName = model.Settings.BankAccountName;
+            settings.BankAccountNumber = model.Settings.BankAccountNumber;
+            settings.BankBranchCode = model.Settings.BankBranchCode;
+            settings.BankAccountType = model.Settings.BankAccountType;
+            settings.ContactAddress = model.Settings.ContactAddress;
+            settings.ContactPhone1 = model.Settings.ContactPhone1;
+            settings.ContactPhone2 = model.Settings.ContactPhone2;
+            settings.ContactPhone3 = model.Settings.ContactPhone3;
+            settings.ContactEmailInfo = model.Settings.ContactEmailInfo;
+            settings.ContactEmailClaims = model.Settings.ContactEmailClaims;
+        }
+
+        await _dbContext.SaveChangesAsync();
+        TempData["Success"] = "Public site content updated.";
+        return RedirectToAction(nameof(PublicContent));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AddCommitteeMember(PublicContentAdminViewModel model)
+    {
+        if (string.IsNullOrWhiteSpace(model.NewMemberName) || string.IsNullOrWhiteSpace(model.NewMemberRole))
+        {
+            TempData["Error"] = "Member name and role are required.";
+            return RedirectToAction(nameof(PublicContent));
+        }
+
+        var maxOrder = await _dbContext.CommitteeMembers.Select(c => (int?)c.DisplayOrder).MaxAsync() ?? 0;
+        _dbContext.CommitteeMembers.Add(new CommitteeMember
+        {
+            FullName = model.NewMemberName.Trim(),
+            RoleTitle = model.NewMemberRole.Trim(),
+            Phone = model.NewMemberPhone?.Trim() ?? string.Empty,
+            DisplayOrder = maxOrder + 1,
+            IsActive = true
+        });
+
+        await _dbContext.SaveChangesAsync();
+        TempData["Success"] = "Committee member added.";
+        return RedirectToAction(nameof(PublicContent));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RemoveCommitteeMember(int id)
+    {
+        var member = await _dbContext.CommitteeMembers.FirstOrDefaultAsync(c => c.Id == id);
+        if (member != null)
+        {
+            _dbContext.CommitteeMembers.Remove(member);
+            await _dbContext.SaveChangesAsync();
+            TempData["Success"] = "Committee member removed.";
+        }
+
+        return RedirectToAction(nameof(PublicContent));
     }
 }

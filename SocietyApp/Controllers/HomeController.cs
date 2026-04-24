@@ -1,16 +1,21 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using SocietyApp.Data;
 using SocietyApp.Models;
+using SocietyApp.ViewModels;
 
 namespace SocietyApp.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly AppDbContext _dbContext;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, AppDbContext dbContext)
         {
             _logger = logger;
+            _dbContext = dbContext;
         }
 
         public IActionResult Index()
@@ -21,7 +26,21 @@ namespace SocietyApp.Controllers
                     return RedirectToAction("Dashboard", "Admin");
                 return RedirectToAction("Dashboard", "Members");
             }
-            return View();
+
+            var settings = _dbContext.PublicSiteSettings.FirstOrDefault() ?? new PublicSiteSettings();
+            var committee = _dbContext.CommitteeMembers
+                .Where(c => c.IsActive)
+                .OrderBy(c => c.DisplayOrder)
+                .ThenBy(c => c.Id)
+                .ToList();
+
+            var vm = new PublicLandingViewModel
+            {
+                Settings = settings,
+                CommitteeMembers = committee
+            };
+
+            return View(vm);
         }
 
         public IActionResult Privacy()

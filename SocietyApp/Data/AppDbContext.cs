@@ -13,6 +13,8 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<JoiningFeePayment> JoiningFeePayments { get; set; }
     public DbSet<MonthlyPayment> MonthlyPayments { get; set; }
     public DbSet<DeathClaim> DeathClaims { get; set; }
+    public DbSet<PublicSiteSettings> PublicSiteSettings { get; set; }
+    public DbSet<CommitteeMember> CommitteeMembers { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -98,6 +100,21 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
                 .WithMany()
                 .HasForeignKey(c => c.ProcessedByAdminId)
                 .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        builder.Entity<PublicSiteSettings>(e =>
+        {
+            e.Property(s => s.OrganizationName).HasMaxLength(200);
+            e.Property(s => s.RegistrationNumber).HasMaxLength(100);
+            e.Property(s => s.EnterpriseType).HasMaxLength(120);
+            e.Property(s => s.EnterpriseStatus).HasMaxLength(120);
+        });
+
+        builder.Entity<CommitteeMember>(e =>
+        {
+            e.Property(c => c.FullName).HasMaxLength(150);
+            e.Property(c => c.RoleTitle).HasMaxLength(80);
+            e.Property(c => c.Phone).HasMaxLength(40);
         });
     }
 }

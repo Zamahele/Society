@@ -1,0 +1,155 @@
+@model SocietyApp.ViewModels.PublicContentAdminViewModel
+@{ ViewData["Title"] = "Public Content"; }
+
+<h2 class="mb-4 fw-bold" style="color:var(--navy);">Public Content Management</h2>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="card p-4">
+            <h5 class="mb-3">Enterprise and Banking Details</h5>
+            <form asp-action="PublicContent" method="post">
+                <input asp-for="Settings.Id" type="hidden" />
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="Settings.OrganizationName" class="form-label">Organization Name</label>
+                        <input asp-for="Settings.OrganizationName" class="form-control" />
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Settings.RegistrationNumber" class="form-label">Registration Number</label>
+                        <input asp-for="Settings.RegistrationNumber" class="form-control" />
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Settings.EnterpriseType" class="form-label">Enterprise Type</label>
+                        <input asp-for="Settings.EnterpriseType" class="form-control" />
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Settings.EnterpriseStatus" class="form-label">Enterprise Status</label>
+                        <input asp-for="Settings.EnterpriseStatus" class="form-control" />
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Settings.RegistrationDate" class="form-label">Registration Date</label>
+                        <input asp-for="Settings.RegistrationDate" class="form-control" />
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Settings.BusinessStartDate" class="form-label">Business Start Date</label>
+                        <input asp-for="Settings.BusinessStartDate" class="form-control" />
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Settings.FinancialYearEnd" class="form-label">Financial Year End</label>
+                        <input asp-for="Settings.FinancialYearEnd" class="form-control" />
+                    </div>
+                    <div class="col-12">
+                        <label asp-for="Settings.MainBusinessObject" class="form-label">Main Business / Object</label>
+                        <input asp-for="Settings.MainBusinessObject" class="form-control" />
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Settings.PostalAddress" class="form-label">Postal Address</label>
+                        <textarea asp-for="Settings.PostalAddress" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Settings.RegisteredOfficeAddress" class="form-label">Registered Office Address</label>
+                        <textarea asp-for="Settings.RegisteredOfficeAddress" class="form-control" rows="3"></textarea>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="Settings.BankName" class="form-label">Bank Name</label>
+                        <input asp-for="Settings.BankName" class="form-control" />
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Settings.BankAccountName" class="form-label">Account Name</label>
+                        <input asp-for="Settings.BankAccountName" class="form-control" />
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Settings.BankAccountNumber" class="form-label">Account Number</label>
+                        <input asp-for="Settings.BankAccountNumber" class="form-control" />
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Settings.BankBranchCode" class="form-label">Branch Code</label>
+                        <input asp-for="Settings.BankBranchCode" class="form-control" />
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Settings.BankAccountType" class="form-label">Account Type</label>
+                        <input asp-for="Settings.BankAccountType" class="form-control" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Settings.ContactAddress" class="form-label">Contact Address</label>
+                        <textarea asp-for="Settings.ContactAddress" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="col-md-2">
+                        <label asp-for="Settings.ContactPhone1" class="form-label">Phone 1</label>
+                        <input asp-for="Settings.ContactPhone1" class="form-control" />
+                    </div>
+                    <div class="col-md-2">
+                        <label asp-for="Settings.ContactPhone2" class="form-label">Phone 2</label>
+                        <input asp-for="Settings.ContactPhone2" class="form-control" />
+                    </div>
+                    <div class="col-md-2">
+                        <label asp-for="Settings.ContactPhone3" class="form-label">Phone 3</label>
+                        <input asp-for="Settings.ContactPhone3" class="form-control" />
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Settings.ContactEmailInfo" class="form-label">Info Email/Line</label>
+                        <input asp-for="Settings.ContactEmailInfo" class="form-control" />
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Settings.ContactEmailClaims" class="form-label">Claims Email/Line</label>
+                        <input asp-for="Settings.ContactEmailClaims" class="form-control" />
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-dark mt-4">Save Public Content</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card p-4 mb-4">
+            <h5>Add Committee Member</h5>
+            <form asp-action="AddCommitteeMember" method="post">
+                <div class="mb-2">
+                    <label asp-for="NewMemberName" class="form-label">Full Name</label>
+                    <input asp-for="NewMemberName" class="form-control" />
+                </div>
+                <div class="mb-2">
+                    <label asp-for="NewMemberRole" class="form-label">Role</label>
+                    <input asp-for="NewMemberRole" class="form-control" />
+                </div>
+                <div class="mb-2">
+                    <label asp-for="NewMemberPhone" class="form-label">Phone</label>
+                    <input asp-for="NewMemberPhone" class="form-control" />
+                </div>
+                <button type="submit" class="btn btn-outline-dark">Add Member</button>
+            </form>
+        </div>
+
+        <div class="card p-4">
+            <h5>Current Committee</h5>
+            @if (!Model.CommitteeMembers.Any())
+            {
+                <p class="text-muted mb-0">No committee members yet.</p>
+            }
+            else
+            {
+                <ul class="list-group list-group-flush">
+                    @foreach (var member in Model.CommitteeMembers)
+                    {
+                        <li class="list-group-item px-0">
+                            <div class="d-flex justify-content-between align-items-start gap-2">
+                                <div>
+                                    <strong>@member.FullName</strong><br />
+                                    <small class="text-muted">@member.RoleTitle - @member.Phone</small>
+                                </div>
+                                <form asp-action="RemoveCommitteeMember" method="post">
+                                    <input type="hidden" name="id" value="@member.Id" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
+                                </form>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            }
+        </div>
+    </div>
+</div>
