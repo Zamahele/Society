@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Repos/InvoiceApp//**)",
+      "Read(//c/Repos/InvoiceApp/InvoiceApp.Web/**)",
+      "Read(//c/Repos/InvoiceApp/**)",
+      "Bash(dotnet ef:*)"
+    ]
+  }
+}

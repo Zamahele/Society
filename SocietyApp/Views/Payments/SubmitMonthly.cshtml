@@ -7,6 +7,22 @@
         <div class="alert alert-info">
             Please pay <strong>R150</strong> via EFT using <strong>@Model.MembershipNumber</strong> as your reference, then fill in the details below.
         </div>
+
+        <div class="card mb-4">
+            <div class="card-header bg-dark text-white">
+                <strong>Banking Details</strong>
+            </div>
+            <div class="card-body">
+                <table class="table table-sm mb-0">
+                    <tr><th>Bank</th><td>Capitec</td></tr>
+                    <tr><th>Account Name</th><td>Give Compassion NPC</td></tr>
+                    <tr><th>Account No</th><td>1054981680</td></tr>
+                    <tr><th>Branch Code</th><td>450105</td></tr>
+                    <tr><th>Account Type</th><td>Current</td></tr>
+                    <tr><th>Reference</th><td><strong>@Model.MembershipNumber</strong></td></tr>
+                </table>
+            </div>
+        </div>
         <form asp-action="SubmitMonthly" method="post">
             <input type="hidden" asp-for="MembershipId" />
             <input type="hidden" asp-for="MembershipNumber" />
