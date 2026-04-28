@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using SocietyApp.Controllers;
 using SocietyApp.Models;
 using SocietyApp.Services.Interfaces;
@@ -8,6 +10,14 @@ namespace SocietyApp.Tests.Controllers;
 
 public class AdminControllerTests
 {
+    private sealed class TestTempDataProvider : ITempDataProvider
+    {
+        public IDictionary<string, object> LoadTempData(HttpContext context) => new Dictionary<string, object>();
+        public void SaveTempData(HttpContext context, IDictionary<string, object> values)
+        {
+        }
+    }
+
     // ── Stubs ──────────────────────────────────────────────────────────
 
     private sealed class StubMembershipService : IMembershipService
@@ -66,13 +76,16 @@ public class AdminControllerTests
         StubClaimService? claims = null,
         StubPaymentServiceFull? payments = null)
     {
-        using var db = TestDbFactory.CreateContext();
-        return new AdminController(
+        var db = TestDbFactory.CreateContext();
+        var controller = new AdminController(
             userManager: null!,
             dbContext: db,
             membershipService: membership ?? new StubMembershipService(),
             paymentService: payments ?? new StubPaymentServiceFull(),
             claimService: claims ?? new StubClaimService());
+
+        controller.TempData = new TempDataDictionary(new DefaultHttpContext(), new TestTempDataProvider());
+        return controller;
     }
 
     // ── Tests ──────────────────────────────────────────────────────────
