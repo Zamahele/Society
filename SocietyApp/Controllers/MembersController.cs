@@ -38,9 +38,13 @@ public class MembersController : Controller
 
         var payments = await _paymentService.GetMonthlyHistoryAsync(membership.Id);
         var claims = await _claimService.GetByMembershipAsync(membership.Id);
+        var dependants = await _membershipService.GetDependantsAsync(membership.Id);
+        var canAdd = await _membershipService.CanAddDependantAsync(membership.Id);
 
         ViewBag.MonthlyPayments = payments;
         ViewBag.Claims = claims;
+        ViewBag.Dependants = dependants;
+        ViewBag.CanAdd = canAdd;
         return View(membership);
     }
 

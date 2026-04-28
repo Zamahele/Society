@@ -70,6 +70,97 @@
     </div>
 
     <div class="col-md-7">
+        @{
+            var dependants = (IEnumerable<SocietyApp.Models.MemberDependant>)ViewBag.Dependants;
+            bool canAdd = ViewBag.CanAdd;
+        }
+        <div class="card mb-4">
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                <span>Dependants (@dependants.Count() / 10)</span>
+                @if (canAdd)
+                {
+                    <button class="btn btn-sm btn-outline-light" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#addDependantForm">
+                        + Add Dependant
+                    </button>
+                }
+            </div>
+
+            <div class="collapse" id="addDependantForm">
+                <div class="card-body border-bottom">
+                    <form asp-action="AddDependant" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="MembershipId" value="@Model.Id" />
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <input name="FullName" class="form-control form-control-sm" placeholder="Full Name" required />
+                            </div>
+                            <div class="col-md-6">
+                                <input name="IDNumber" class="form-control form-control-sm" placeholder="ID Number" required />
+                            </div>
+                            <div class="col-md-6">
+                                <input name="DateOfBirth" type="date" class="form-control form-control-sm" required />
+                            </div>
+                            <div class="col-md-6">
+                                <select name="Relationship" class="form-select form-select-sm" required>
+                                    <option value="">-- Relationship --</option>
+                                    @foreach (var rel in Enum.GetValues<SocietyApp.Models.DependantRelationship>())
+                                    {
+                                        <option value="@rel">@rel</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-sm btn-dark">Save Dependant</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary"
+                                        data-bs-toggle="collapse" data-bs-target="#addDependantForm">Cancel</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card-body p-0">
+                @if (!dependants.Any())
+                {
+                    <p class="text-muted small p-3 mb-0">No dependants added yet.</p>
+                }
+                else
+                {
+                    <table class="table table-sm mb-0">
+                        <thead>
+                            <tr><th>Name</th><th>ID Number</th><th>DOB</th><th>Relationship</th><th></th></tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var d in dependants)
+                            {
+                                <tr>
+                                    <td>@d.FullName</td>
+                                    <td>@d.IDNumber</td>
+                                    <td>@d.DateOfBirth.ToString("dd MMM yyyy")</td>
+                                    <td>@d.Relationship</td>
+                                    <td class="text-end">
+                                        <form asp-action="RemoveDependant" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@d.Id" />
+                                            <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                    data-confirm="Remove @d.FullName as a dependant? This cannot be undone.">
+                                                Remove
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                @if (!canAdd)
+                {
+                    <p class="text-muted small px-3 py-2 mb-0">Maximum of 10 dependants reached.</p>
+                }
+            </div>
+        </div>
+
         <div class="card mb-4">
             <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
                 Monthly Payment History
