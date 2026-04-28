@@ -52,7 +52,34 @@
 <div class="row">
     <div class="col-md-4">
         <div class="card mb-4">
-            <div class="card-header bg-dark text-white">Member Info</div>
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                Member Info
+                <button class="btn btn-sm btn-outline-light" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#editProfileForm">Edit</button>
+            </div>
+            <div class="collapse" id="editProfileForm">
+                <div class="card-body border-bottom">
+                    <form asp-action="EditMemberProfile" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="membershipId" value="@Model.Id" />
+                        <div class="mb-2">
+                            <label class="form-label small fw-semibold">Full Name</label>
+                            <input name="fullName" class="form-control form-control-sm" value="@Model.User.FullName" required />
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label small fw-semibold">Phone</label>
+                            <input name="phone" class="form-control form-control-sm" value="@Model.User.Phone" />
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label small fw-semibold">Address</label>
+                            <input name="address" class="form-control form-control-sm" value="@Model.User.Address" />
+                        </div>
+                        <button type="submit" class="btn btn-sm btn-dark">Save</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary"
+                                data-bs-toggle="collapse" data-bs-target="#editProfileForm">Cancel</button>
+                    </form>
+                </div>
+            </div>
             <div class="card-body">
                 <p><strong>ID Number:</strong> @Model.User.IDNumber</p>
                 <p><strong>Phone:</strong> @Model.User.Phone</p>
@@ -114,11 +141,17 @@
                 {
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         <span>@d.FullName <span class="text-muted small">(@d.Relationship)</span></span>
-                        <form asp-action="RemoveDependantForMember" method="post" data-confirm="Remove this dependant? This cannot be undone.">
-                            <input type="hidden" name="membershipId" value="@Model.Id" />
-                            <input type="hidden" name="dependantId" value="@d.Id" />
-                            <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
-                        </form>
+                        <div class="d-flex gap-1">
+                            <a asp-action="EditDependantForMember"
+                               asp-route-dependantId="@d.Id" asp-route-membershipId="@Model.Id"
+                               class="btn btn-sm btn-outline-secondary">Edit</a>
+                            <form asp-action="RemoveDependantForMember" method="post"
+                                  data-confirm="Remove this dependant? This cannot be undone.">
+                                <input type="hidden" name="membershipId" value="@Model.Id" />
+                                <input type="hidden" name="dependantId" value="@d.Id" />
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
+                            </form>
+                        </div>
                     </li>
                 }
             </ul>
@@ -130,7 +163,7 @@
             <div class="card-header bg-dark text-white">Monthly Payment History</div>
             <div class="card-body p-0">
                 <table class="table table-sm mb-0">
-                    <thead><tr><th>Month</th><th>Reference</th><th>Status</th><th>Confirmed By</th></tr></thead>
+                    <thead><tr><th>Month</th><th>Reference</th><th>Status</th><th>Confirmed By</th><th></th></tr></thead>
                     <tbody>
                         @foreach (var p in (IEnumerable<SocietyApp.Models.MonthlyPayment>)ViewBag.MonthlyHistory)
                         {
@@ -139,6 +172,20 @@
                                 <td>@p.PaymentReference</td>
                                 <td><span class="badge @(p.Status == SocietyApp.Models.MonthlyPaymentStatus.Confirmed ? "bg-success" : p.Status == SocietyApp.Models.MonthlyPaymentStatus.Missed ? "bg-danger" : "bg-warning text-dark")">@p.Status</span></td>
                                 <td>@(p.ConfirmedByClerk?.FullName ?? "-")</td>
+                                <td>
+                                    @if (p.Status == SocietyApp.Models.MonthlyPaymentStatus.Pending)
+                                    {
+                                        <form asp-action="DeleteMonthlyPayment" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@p.Id" />
+                                            <input type="hidden" name="returnTo" value="MemberDetails" />
+                                            <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                    data-confirm="Delete this pending payment? This cannot be undone.">
+                                                Delete
+                                            </button>
+                                        </form>
+                                    }
+                                </td>
                             </tr>
                         }
                     </tbody>

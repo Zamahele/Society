@@ -134,6 +134,24 @@ public class PaymentService : IPaymentService
             .FirstOrDefaultAsync(p => p.Id == id);
     }
 
+    public async Task DeleteJoiningFeeAsync(int paymentId)
+    {
+        var payment = await _db.JoiningFeePayments.FindAsync(paymentId);
+        if (payment == null || payment.Status != PaymentStatus.Pending) return;
+
+        _db.JoiningFeePayments.Remove(payment);
+        await _db.SaveChangesAsync();
+    }
+
+    public async Task DeleteMonthlyPaymentAsync(int paymentId)
+    {
+        var payment = await _db.MonthlyPayments.FindAsync(paymentId);
+        if (payment == null || payment.Status != MonthlyPaymentStatus.Pending) return;
+
+        _db.MonthlyPayments.Remove(payment);
+        await _db.SaveChangesAsync();
+    }
+
     // --------------- Overdue Check ---------------
 
     public async Task<bool> IsOverdueAsync(int membershipId)

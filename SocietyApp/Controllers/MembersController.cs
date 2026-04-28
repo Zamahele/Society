@@ -168,6 +168,90 @@ public class MembersController : Controller
     }
 
     [HttpGet]
+    public async Task<IActionResult> EditProfile()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null) return Challenge();
+
+        return View(new EditProfileViewModel
+        {
+            FullName = user.FullName,
+            Phone = user.Phone,
+            Address = user.Address
+        });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditProfile(EditProfileViewModel model)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null) return Challenge();
+
+        if (!ModelState.IsValid) return View(model);
+
+        user.FullName = model.FullName.Trim();
+        user.Phone = model.Phone.Trim();
+        user.Address = model.Address.Trim();
+
+        var result = await _userManager.UpdateAsync(user);
+        if (result.Succeeded)
+        {
+            TempData["Success"] = "Profile updated successfully.";
+            return RedirectToAction(nameof(Dashboard));
+        }
+
+        foreach (var error in result.Errors)
+            ModelState.AddModelError(string.Empty, error.Description);
+
+        return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> EditDependant(int id)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        var membership = user == null ? null : await _membershipService.GetByUserIdAsync(user.Id);
+        if (membership == null) return RedirectToAction("Dashboard", "Admin");
+
+        var dependants = await _membershipService.GetDependantsAsync(membership.Id);
+        var dependant = dependants.FirstOrDefault(d => d.Id == id);
+        if (dependant == null) return NotFound();
+
+        return View(new EditDependantViewModel
+        {
+            Id = dependant.Id,
+            MembershipId = membership.Id,
+            FullName = dependant.FullName,
+            IDNumber = dependant.IDNumber,
+            DateOfBirth = dependant.DateOfBirth,
+            Relationship = dependant.Relationship
+        });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditDependant(EditDependantViewModel model)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        var membership = user == null ? null : await _membershipService.GetByUserIdAsync(user.Id);
+        if (membership == null) return RedirectToAction("Dashboard", "Admin");
+
+        var dependants = await _membershipService.GetDependantsAsync(membership.Id);
+        if (!dependants.Any(d => d.Id == model.Id))
+        {
+            TempData["Error"] = "Dependant not found for your membership.";
+            return RedirectToAction(nameof(Dashboard));
+        }
+
+        if (!ModelState.IsValid) return View(model);
+
+        await _membershipService.UpdateDependantAsync(model.Id, model.FullName.Trim(), model.IDNumber.Trim(), model.DateOfBirth, model.Relationship);
+        TempData["Success"] = "Dependant updated successfully.";
+        return RedirectToAction(nameof(Dashboard));
+    }
+
+    [HttpGet]
     public async Task<IActionResult> BankingDetails()
     {
         var user = await _userManager.GetUserAsync(User);

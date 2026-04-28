@@ -1,0 +1,48 @@
+@model SocietyApp.ViewModels.EditDependantViewModel
+@{ ViewData["Title"] = "Edit Dependant"; }
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="d-flex align-items-center mb-4 gap-3">
+            <a asp-action="Dashboard" class="btn btn-outline-secondary">&larr; Back</a>
+            <h2 class="mb-0">Edit Dependant</h2>
+        </div>
+
+        <div class="card">
+            <div class="card-body p-4">
+                <form asp-action="EditDependant" method="post">
+                    @Html.AntiForgeryToken()
+                    <input asp-for="Id" type="hidden" />
+                    <input asp-for="MembershipId" type="hidden" />
+
+                    <div class="mb-3">
+                        <label asp-for="FullName" class="form-label fw-semibold"></label>
+                        <input asp-for="FullName" class="form-control" />
+                        <span asp-validation-for="FullName" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="IDNumber" class="form-label fw-semibold"></label>
+                        <input asp-for="IDNumber" class="form-control" />
+                        <span asp-validation-for="IDNumber" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="DateOfBirth" class="form-label fw-semibold"></label>
+                        <input asp-for="DateOfBirth" class="form-control" type="date" />
+                        <span asp-validation-for="DateOfBirth" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Relationship" class="form-label fw-semibold"></label>
+                        <select asp-for="Relationship" class="form-select"
+                                asp-items="Html.GetEnumSelectList<SocietyApp.Models.DependantRelationship>()"></select>
+                        <span asp-validation-for="Relationship" class="text-danger small"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-dark">Save Changes</button>
+                    <a asp-action="Dashboard" class="btn btn-outline-secondary ms-2">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts { @{await Html.RenderPartialAsync("_ValidationScriptsPartial");} }

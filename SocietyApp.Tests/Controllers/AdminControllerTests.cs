@@ -36,6 +36,7 @@ public class AdminControllerTests
         public Task AddDependantAsync(MemberDependant dependant) => Task.CompletedTask;
         public Task<List<MemberDependant>> GetDependantsAsync(int membershipId) => Task.FromResult(new List<MemberDependant>());
         public Task RemoveDependantAsync(int dependantId) => Task.CompletedTask;
+        public Task UpdateDependantAsync(int dependantId, string fullName, string idNumber, DateTime dateOfBirth, SocietyApp.Models.DependantRelationship relationship) => Task.CompletedTask;
         public Task<MemberNominee?> GetNomineeAsync(int membershipId) => Task.FromResult<MemberNominee?>(null);
         public Task SaveNomineeAsync(int membershipId, string fullName, string idNumber, string phone, string relationship) => Task.CompletedTask;
         public Task RemoveNomineeAsync(int membershipId) => Task.CompletedTask;
@@ -72,6 +73,8 @@ public class AdminControllerTests
         public Task ConfirmMonthlyPaymentAsync(int paymentId, string clerkId) => Task.CompletedTask;
         public Task<List<MonthlyPayment>> GetMonthlyHistoryAsync(int membershipId) => Task.FromResult(new List<MonthlyPayment>());
         public Task<MonthlyPayment?> GetMonthlyPaymentByIdAsync(int id) => Task.FromResult<MonthlyPayment?>(null);
+        public Task DeleteJoiningFeeAsync(int paymentId) => Task.CompletedTask;
+        public Task DeleteMonthlyPaymentAsync(int paymentId) => Task.CompletedTask;
     }
 
     private static AdminController BuildController(

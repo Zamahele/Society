@@ -28,12 +28,19 @@ else
                         <td>R@(p.Amount)</td>
                         <td>@p.PaymentReference</td>
                         <td>@(p.PaymentDate?.ToString("dd MMM yyyy") ?? "-")</td>
-                        <td>
+                        <td class="d-flex gap-1">
                             <form asp-action="ConfirmMonthly" method="post">
                                 <input type="hidden" name="id" value="@p.Id" />
                                 <button type="submit" class="btn btn-sm btn-success"
                                     data-confirm="Confirm this monthly payment?">
                                     Confirm
+                                </button>
+                            </form>
+                            <form asp-action="DeleteMonthly" method="post">
+                                <input type="hidden" name="id" value="@p.Id" />
+                                <button type="submit" class="btn btn-sm btn-outline-danger"
+                                    data-confirm="Delete this payment record? This cannot be undone.">
+                                    Delete
                                 </button>
                             </form>
                         </td>
@@ -58,13 +65,22 @@ else
                             <div class="col-6"><strong>Payment Date:</strong> @(p.PaymentDate?.ToString("dd MMM yyyy") ?? "-")</div>
                             <div class="col-6"><strong>Reference:</strong> @p.PaymentReference</div>
                         </div>
-                        <form asp-action="ConfirmMonthly" method="post">
-                            <input type="hidden" name="id" value="@p.Id" />
-                            <button type="submit" class="btn btn-success w-100"
-                                data-confirm="Confirm this monthly payment?">
-                                Confirm Payment
-                            </button>
-                        </form>
+                        <div class="d-flex gap-2">
+                            <form asp-action="ConfirmMonthly" method="post" class="flex-grow-1">
+                                <input type="hidden" name="id" value="@p.Id" />
+                                <button type="submit" class="btn btn-success w-100"
+                                    data-confirm="Confirm this monthly payment?">
+                                    Confirm
+                                </button>
+                            </form>
+                            <form asp-action="DeleteMonthly" method="post">
+                                <input type="hidden" name="id" value="@p.Id" />
+                                <button type="submit" class="btn btn-outline-danger"
+                                    data-confirm="Delete this payment record? This cannot be undone.">
+                                    Delete
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>

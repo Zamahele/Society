@@ -120,4 +120,24 @@ public class PaymentsController : Controller
         TempData["Success"] = "Monthly payment confirmed.";
         return RedirectToAction(nameof(PendingMonthly));
     }
+
+    [Authorize(Roles = "Admin,Clerk")]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteJoiningFee(int id)
+    {
+        await _paymentService.DeleteJoiningFeeAsync(id);
+        TempData["Success"] = "Payment record deleted.";
+        return RedirectToAction(nameof(PendingJoiningFees));
+    }
+
+    [Authorize(Roles = "Admin,Clerk")]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteMonthly(int id)
+    {
+        await _paymentService.DeleteMonthlyPaymentAsync(id);
+        TempData["Success"] = "Payment record deleted.";
+        return RedirectToAction(nameof(PendingMonthly));
+    }
 }

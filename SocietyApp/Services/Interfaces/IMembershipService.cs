@@ -16,6 +16,7 @@ public interface IMembershipService
     Task AddDependantAsync(MemberDependant dependant);
     Task<List<MemberDependant>> GetDependantsAsync(int membershipId);
     Task RemoveDependantAsync(int dependantId);
+    Task UpdateDependantAsync(int dependantId, string fullName, string idNumber, DateTime dateOfBirth, DependantRelationship relationship);
     Task<MemberNominee?> GetNomineeAsync(int membershipId);
     Task SaveNomineeAsync(int membershipId, string fullName, string idNumber, string phone, string relationship);
     Task RemoveNomineeAsync(int membershipId);

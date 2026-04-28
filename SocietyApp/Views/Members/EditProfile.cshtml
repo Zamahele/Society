@@ -1,0 +1,40 @@
+@model SocietyApp.ViewModels.EditProfileViewModel
+@{ ViewData["Title"] = "Edit Profile"; }
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="d-flex align-items-center mb-4 gap-3">
+            <a asp-action="Dashboard" class="btn btn-outline-secondary">&larr; Back</a>
+            <h2 class="mb-0">Edit Profile</h2>
+        </div>
+
+        <div class="card">
+            <div class="card-body p-4">
+                <form asp-action="EditProfile" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <div class="mb-3">
+                        <label asp-for="FullName" class="form-label fw-semibold"></label>
+                        <input asp-for="FullName" class="form-control" />
+                        <span asp-validation-for="FullName" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Phone" class="form-label fw-semibold"></label>
+                        <input asp-for="Phone" class="form-control" />
+                        <span asp-validation-for="Phone" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Address" class="form-label fw-semibold"></label>
+                        <input asp-for="Address" class="form-control" />
+                        <span asp-validation-for="Address" class="text-danger small"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-dark">Save Changes</button>
+                    <a asp-action="Dashboard" class="btn btn-outline-secondary ms-2">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts { @{await Html.RenderPartialAsync("_ValidationScriptsPartial");} }

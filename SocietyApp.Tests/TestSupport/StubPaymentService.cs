@@ -35,4 +35,7 @@ internal sealed class StubPaymentService : IPaymentService
 
     public Task<MonthlyPayment?> GetMonthlyPaymentByIdAsync(int id)
         => throw new NotImplementedException();
+
+    public Task DeleteJoiningFeeAsync(int paymentId) => Task.CompletedTask;
+    public Task DeleteMonthlyPaymentAsync(int paymentId) => Task.CompletedTask;
 }

@@ -226,6 +226,183 @@ public class AdminController : Controller
         return RedirectToAction(nameof(Members));
     }
 
+    // ---- Edit Member Profile (Admin only) ----
+
+    [Authorize(Roles = "Admin")]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditMemberProfile(int membershipId, string fullName, string phone, string address)
+    {
+        var membership = await _membershipService.GetByIdAsync(membershipId);
+        if (membership == null) return NotFound();
+
+        if (string.IsNullOrWhiteSpace(fullName))
+        {
+            TempData["Error"] = "Full name is required.";
+            return RedirectToAction(nameof(MemberDetails), new { id = membershipId });
+        }
+
+        membership.User.FullName = fullName.Trim();
+        membership.User.Phone = phone?.Trim() ?? string.Empty;
+        membership.User.Address = address?.Trim() ?? string.Empty;
+        await _userManager.UpdateAsync(membership.User);
+
+        TempData["Success"] = "Member profile updated.";
+        return RedirectToAction(nameof(MemberDetails), new { id = membershipId });
+    }
+
+    // ---- Edit Dependant for member (Admin + Clerk) ----
+
+    [HttpGet]
+    public async Task<IActionResult> EditDependantForMember(int dependantId, int membershipId)
+    {
+        var membership = await _membershipService.GetByIdAsync(membershipId);
+        if (membership == null) return NotFound();
+
+        var dependant = membership.Dependants.FirstOrDefault(d => d.Id == dependantId);
+        if (dependant == null) return NotFound();
+
+        ViewBag.MemberName = membership.User.FullName;
+        ViewBag.MembershipNumber = membership.MembershipNumber;
+        return View(new EditDependantViewModel
+        {
+            Id = dependant.Id,
+            MembershipId = membershipId,
+            FullName = dependant.FullName,
+            IDNumber = dependant.IDNumber,
+            DateOfBirth = dependant.DateOfBirth,
+            Relationship = dependant.Relationship
+        });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditDependantForMember(EditDependantViewModel model)
+    {
+        var membership = await _membershipService.GetByIdAsync(model.MembershipId);
+        if (membership == null) return NotFound();
+
+        ViewBag.MemberName = membership.User.FullName;
+        ViewBag.MembershipNumber = membership.MembershipNumber;
+
+        if (!ModelState.IsValid) return View(model);
+
+        if (!membership.Dependants.Any(d => d.Id == model.Id))
+        {
+            TempData["Error"] = "Dependant not found for this member.";
+            return RedirectToAction(nameof(MemberDetails), new { id = model.MembershipId });
+        }
+
+        await _membershipService.UpdateDependantAsync(model.Id, model.FullName.Trim(), model.IDNumber.Trim(), model.DateOfBirth, model.Relationship);
+        TempData["Success"] = "Dependant updated.";
+        return RedirectToAction(nameof(MemberDetails), new { id = model.MembershipId });
+    }
+
+    // ---- Edit Committee Member ----
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditCommitteeMember(int id, string fullName, string roleTitle, string phone)
+    {
+        var member = await _dbContext.CommitteeMembers.FindAsync(id);
+        if (member == null)
+        {
+            TempData["Error"] = "Committee member not found.";
+            return RedirectToAction(nameof(PublicContent));
+        }
+
+        if (string.IsNullOrWhiteSpace(fullName) || string.IsNullOrWhiteSpace(roleTitle))
+        {
+            TempData["Error"] = "Name and role are required.";
+            return RedirectToAction(nameof(PublicContent));
+        }
+
+        member.FullName = fullName.Trim();
+        member.RoleTitle = roleTitle.Trim();
+        member.Phone = phone?.Trim() ?? string.Empty;
+        await _dbContext.SaveChangesAsync();
+
+        TempData["Success"] = "Committee member updated.";
+        return RedirectToAction(nameof(PublicContent));
+    }
+
+    // ---- Delete Payments (pending only) ----
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteJoiningFee(int id, string? returnTo = null)
+    {
+        var payment = await _paymentService.GetJoiningFeeByIdAsync(id);
+        int membershipId = payment?.MembershipId ?? 0;
+        await _paymentService.DeleteJoiningFeeAsync(id);
+        TempData["Success"] = "Payment record deleted.";
+        return returnTo == "MemberDetails" && membershipId > 0
+            ? RedirectToAction(nameof(MemberDetails), new { id = membershipId })
+            : RedirectToAction("PendingJoiningFees", "Payments");
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteMonthlyPayment(int id, string? returnTo = null)
+    {
+        var payment = await _paymentService.GetMonthlyPaymentByIdAsync(id);
+        int membershipId = payment?.MembershipId ?? 0;
+        await _paymentService.DeleteMonthlyPaymentAsync(id);
+        TempData["Success"] = "Payment record deleted.";
+        return returnTo == "MemberDetails"
+            ? RedirectToAction(nameof(MemberDetails), new { id = membershipId })
+            : RedirectToAction("PendingMonthly", "Payments");
+    }
+
+    // ---- Clerk Management (Admin only) ----
+
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> Clerks()
+    {
+        var clerkUsers = await _userManager.GetUsersInRoleAsync("Clerk");
+        return View(clerkUsers.OrderBy(u => u.FullName).ToList());
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeactivateClerk(string id)
+    {
+        var user = await _userManager.FindByIdAsync(id);
+        if (user == null) return NotFound();
+
+        await _userManager.SetLockoutEnabledAsync(user, true);
+        await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.MaxValue);
+        TempData["Success"] = $"{user.FullName} has been deactivated.";
+        return RedirectToAction(nameof(Clerks));
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ActivateClerk(string id)
+    {
+        var user = await _userManager.FindByIdAsync(id);
+        if (user == null) return NotFound();
+
+        await _userManager.SetLockoutEndDateAsync(user, null);
+        TempData["Success"] = $"{user.FullName} has been reactivated.";
+        return RedirectToAction(nameof(Clerks));
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteClerk(string id)
+    {
+        var user = await _userManager.FindByIdAsync(id);
+        if (user == null) return NotFound();
+
+        await _userManager.DeleteAsync(user);
+        TempData["Success"] = "Clerk account deleted.";
+        return RedirectToAction(nameof(Clerks));
+    }
+
     // ---- Create Clerk (Admin only) ----
 
     [Authorize(Roles = "Admin")]

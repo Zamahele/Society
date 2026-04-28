@@ -17,6 +17,9 @@ public interface IPaymentService
     Task<List<MonthlyPayment>> GetMonthlyHistoryAsync(int membershipId);
     Task<MonthlyPayment?> GetMonthlyPaymentByIdAsync(int id);
 
+    Task DeleteJoiningFeeAsync(int paymentId);
+    Task DeleteMonthlyPaymentAsync(int paymentId);
+
     // Overdue check — returns true if any payment is overdue beyond 30 days
     Task<bool> IsOverdueAsync(int membershipId);
 }

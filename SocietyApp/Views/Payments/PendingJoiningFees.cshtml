@@ -27,12 +27,19 @@ else
                         <td>R@(p.Amount)</td>
                         <td>@p.PaymentReference</td>
                         <td>@p.PaymentDate.ToString("dd MMM yyyy")</td>
-                        <td>
+                        <td class="d-flex gap-1">
                             <form asp-action="ConfirmJoiningFee" method="post">
                                 <input type="hidden" name="id" value="@p.Id" />
                                 <button type="submit" class="btn btn-sm btn-success"
                                     data-confirm="Confirm this joining fee payment and activate membership?">
                                     Confirm
+                                </button>
+                            </form>
+                            <form asp-action="DeleteJoiningFee" method="post">
+                                <input type="hidden" name="id" value="@p.Id" />
+                                <button type="submit" class="btn btn-sm btn-outline-danger"
+                                    data-confirm="Delete this payment record? This cannot be undone.">
+                                    Delete
                                 </button>
                             </form>
                         </td>
@@ -56,13 +63,22 @@ else
                             <div class="col-6"><strong>Date:</strong> @p.PaymentDate.ToString("dd MMM yyyy")</div>
                             <div class="col-12"><strong>Reference:</strong> @p.PaymentReference</div>
                         </div>
-                        <form asp-action="ConfirmJoiningFee" method="post">
-                            <input type="hidden" name="id" value="@p.Id" />
-                            <button type="submit" class="btn btn-success w-100"
-                                data-confirm="Confirm this joining fee payment and activate membership?">
-                                Confirm Payment
-                            </button>
-                        </form>
+                        <div class="d-flex gap-2">
+                            <form asp-action="ConfirmJoiningFee" method="post" class="flex-grow-1">
+                                <input type="hidden" name="id" value="@p.Id" />
+                                <button type="submit" class="btn btn-success w-100"
+                                    data-confirm="Confirm this joining fee payment and activate membership?">
+                                    Confirm
+                                </button>
+                            </form>
+                            <form asp-action="DeleteJoiningFee" method="post">
+                                <input type="hidden" name="id" value="@p.Id" />
+                                <button type="submit" class="btn btn-outline-danger"
+                                    data-confirm="Delete this payment record? This cannot be undone.">
+                                    Delete
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>

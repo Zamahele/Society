@@ -142,6 +142,18 @@ public class MembershipService : IMembershipService
         await _db.SaveChangesAsync();
     }
 
+    public async Task UpdateDependantAsync(int dependantId, string fullName, string idNumber, DateTime dateOfBirth, DependantRelationship relationship)
+    {
+        var dependant = await _db.MemberDependants.FindAsync(dependantId);
+        if (dependant == null) return;
+
+        dependant.FullName = fullName;
+        dependant.IDNumber = idNumber;
+        dependant.DateOfBirth = dateOfBirth;
+        dependant.Relationship = relationship;
+        await _db.SaveChangesAsync();
+    }
+
     public async Task<MemberNominee?> GetNomineeAsync(int membershipId)
     {
         return await _db.MemberNominees.FirstOrDefaultAsync(n => n.MembershipId == membershipId);
