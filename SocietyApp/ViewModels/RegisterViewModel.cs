@@ -25,4 +25,17 @@ public class RegisterViewModel
     [Required] [DataType(DataType.Password)] [Display(Name = "Confirm Password")]
     [Compare("Password", ErrorMessage = "Passwords do not match.")]
     public string ConfirmPassword { get; set; } = string.Empty;
+
+    // Optional nominee — can be added later from the Dashboard
+    [Display(Name = "Nominee Full Name")]
+    public string? NomineeFullName { get; set; }
+
+    [Display(Name = "Nominee ID Number")]
+    public string? NomineeIDNumber { get; set; }
+
+    [Display(Name = "Nominee Phone")]
+    public string? NomineePhone { get; set; }
+
+    [Display(Name = "Relationship")]
+    public string? NomineeRelationship { get; set; }
 }

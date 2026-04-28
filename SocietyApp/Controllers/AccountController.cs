@@ -52,7 +52,18 @@ public class AccountController : Controller
         }
 
         await _userManager.AddToRoleAsync(user, "Member");
-        await _membershipService.CreateAsync(user.Id);
+        var membership = await _membershipService.CreateAsync(user.Id);
+
+        if (!string.IsNullOrWhiteSpace(model.NomineeFullName) && !string.IsNullOrWhiteSpace(model.NomineeIDNumber))
+        {
+            await _membershipService.SaveNomineeAsync(
+                membership.Id,
+                model.NomineeFullName.Trim(),
+                model.NomineeIDNumber.Trim(),
+                model.NomineePhone?.Trim() ?? string.Empty,
+                model.NomineeRelationship?.Trim() ?? string.Empty);
+        }
+
         await _signInManager.SignInAsync(user, isPersistent: false);
 
         return RedirectToAction("Dashboard", "Members");

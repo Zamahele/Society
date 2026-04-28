@@ -12,6 +12,7 @@ public class Membership
     public DateTime DateIssued { get; set; } = DateTime.UtcNow;
     public DateTime? DateActivated { get; set; }
 
+    public MemberNominee? Nominee { get; set; }
     public ICollection<MemberDependant> Dependants { get; set; } = new List<MemberDependant>();
     public ICollection<JoiningFeePayment> JoiningFeePayments { get; set; } = new List<JoiningFeePayment>();
     public ICollection<MonthlyPayment> MonthlyPayments { get; set; } = new List<MonthlyPayment>();

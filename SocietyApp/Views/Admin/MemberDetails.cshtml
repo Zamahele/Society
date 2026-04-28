@@ -91,6 +91,23 @@
         </div>
 
         <div class="card mb-4">
+            <div class="card-header bg-dark text-white">Nominee</div>
+            <div class="card-body">
+                @if (Model.Nominee == null)
+                {
+                    <p class="text-muted small mb-0">No nominee on record.</p>
+                }
+                else
+                {
+                    <p class="mb-1"><strong>Name:</strong> @Model.Nominee.FullName</p>
+                    <p class="mb-1"><strong>ID Number:</strong> @Model.Nominee.IDNumber</p>
+                    <p class="mb-1"><strong>Phone:</strong> @Model.Nominee.Phone</p>
+                    <p class="mb-0"><strong>Relationship:</strong> @Model.Nominee.Relationship</p>
+                }
+            </div>
+        </div>
+
+        <div class="card mb-4">
             <div class="card-header bg-dark text-white">Dependants (@Model.Dependants.Count)</div>
             <ul class="list-group list-group-flush">
                 @foreach (var d in Model.Dependants)

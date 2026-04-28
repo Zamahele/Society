@@ -79,7 +79,7 @@ public class MembersController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> AddDependant(AddDependantViewModel model)
+    public async Task<IActionResult> AddDependant(AddDependantViewModel model, string? returnTo = null)
     {
         var user = await _userManager.GetUserAsync(User);
         var membership = user == null ? null : await _membershipService.GetByUserIdAsync(user.Id);
@@ -88,13 +88,15 @@ public class MembersController : Controller
         // Always bind dependant additions to the currently logged-in member.
         model.MembershipId = membership.Id;
 
+        string redirectTarget = returnTo == "Dashboard" ? nameof(Dashboard) : nameof(Dependants);
+
         if (!ModelState.IsValid) return View(model);
 
         var canAdd = await _membershipService.CanAddDependantAsync(membership.Id);
         if (!canAdd)
         {
             TempData["Error"] = "You have reached the maximum of 10 dependants.";
-            return RedirectToAction(nameof(Dependants));
+            return RedirectToAction(redirectTarget);
         }
 
         var dependant = new MemberDependant
@@ -108,27 +110,61 @@ public class MembersController : Controller
 
         await _membershipService.AddDependantAsync(dependant);
         TempData["Success"] = "Dependant added successfully.";
-        return RedirectToAction(nameof(Dependants));
+        return RedirectToAction(redirectTarget);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> RemoveDependant(int id)
+    public async Task<IActionResult> RemoveDependant(int id, string? returnTo = null)
     {
         var user = await _userManager.GetUserAsync(User);
         var membership = user == null ? null : await _membershipService.GetByUserIdAsync(user.Id);
         if (membership == null) return RedirectToAction("Dashboard", "Admin");
 
         var ownDependants = await _membershipService.GetDependantsAsync(membership.Id);
+        string redirectTarget = returnTo == "Dashboard" ? nameof(Dashboard) : nameof(Dependants);
+
         if (!ownDependants.Any(d => d.Id == id))
         {
             TempData["Error"] = "Dependant not found for your membership.";
-            return RedirectToAction(nameof(Dependants));
+            return RedirectToAction(redirectTarget);
         }
 
         await _membershipService.RemoveDependantAsync(id);
         TempData["Success"] = "Dependant removed.";
-        return RedirectToAction(nameof(Dependants));
+        return RedirectToAction(redirectTarget);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SaveNominee(string fullName, string idNumber, string phone, string relationship)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        var membership = user == null ? null : await _membershipService.GetByUserIdAsync(user.Id);
+        if (membership == null) return RedirectToAction("Dashboard", "Admin");
+
+        if (string.IsNullOrWhiteSpace(fullName) || string.IsNullOrWhiteSpace(idNumber))
+        {
+            TempData["Error"] = "Full name and ID number are required.";
+            return RedirectToAction(nameof(Dashboard));
+        }
+
+        await _membershipService.SaveNomineeAsync(membership.Id, fullName.Trim(), idNumber.Trim(), phone?.Trim() ?? string.Empty, relationship?.Trim() ?? string.Empty);
+        TempData["Success"] = "Nominee saved successfully.";
+        return RedirectToAction(nameof(Dashboard));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RemoveNominee()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        var membership = user == null ? null : await _membershipService.GetByUserIdAsync(user.Id);
+        if (membership == null) return RedirectToAction("Dashboard", "Admin");
+
+        await _membershipService.RemoveNomineeAsync(membership.Id);
+        TempData["Success"] = "Nominee removed.";
+        return RedirectToAction(nameof(Dashboard));
     }
 
     [HttpGet]

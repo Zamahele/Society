@@ -54,6 +54,7 @@ public class MembershipService : IMembershipService
     {
         return await _db.Memberships
             .Include(m => m.Dependants)
+            .Include(m => m.Nominee)
             .Include(m => m.JoiningFeePayments)
             .Include(m => m.MonthlyPayments)
             .FirstOrDefaultAsync(m => m.UserId == userId);
@@ -64,6 +65,7 @@ public class MembershipService : IMembershipService
         return await _db.Memberships
             .Include(m => m.User)
             .Include(m => m.Dependants)
+            .Include(m => m.Nominee)
             .Include(m => m.JoiningFeePayments)
             .Include(m => m.MonthlyPayments)
             .FirstOrDefaultAsync(m => m.Id == id);
@@ -137,6 +139,38 @@ public class MembershipService : IMembershipService
         if (dependant == null) return;
 
         _db.MemberDependants.Remove(dependant);
+        await _db.SaveChangesAsync();
+    }
+
+    public async Task<MemberNominee?> GetNomineeAsync(int membershipId)
+    {
+        return await _db.MemberNominees.FirstOrDefaultAsync(n => n.MembershipId == membershipId);
+    }
+
+    public async Task SaveNomineeAsync(int membershipId, string fullName, string idNumber, string phone, string relationship)
+    {
+        var nominee = await _db.MemberNominees.FirstOrDefaultAsync(n => n.MembershipId == membershipId);
+        if (nominee == null)
+        {
+            nominee = new MemberNominee { MembershipId = membershipId };
+            _db.MemberNominees.Add(nominee);
+        }
+
+        nominee.FullName = fullName;
+        nominee.IDNumber = idNumber;
+        nominee.Phone = phone;
+        nominee.Relationship = relationship;
+        nominee.DateAdded = DateTime.UtcNow;
+
+        await _db.SaveChangesAsync();
+    }
+
+    public async Task RemoveNomineeAsync(int membershipId)
+    {
+        var nominee = await _db.MemberNominees.FirstOrDefaultAsync(n => n.MembershipId == membershipId);
+        if (nominee == null) return;
+
+        _db.MemberNominees.Remove(nominee);
         await _db.SaveChangesAsync();
     }
 }

@@ -9,6 +9,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
     public DbSet<Membership> Memberships { get; set; }
+    public DbSet<MemberNominee> MemberNominees { get; set; }
     public DbSet<MemberDependant> MemberDependants { get; set; }
     public DbSet<JoiningFeePayment> JoiningFeePayments { get; set; }
     public DbSet<MonthlyPayment> MonthlyPayments { get; set; }
@@ -33,6 +34,15 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
                 .WithMany()
                 .HasForeignKey(m => m.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // MemberNominee — one per membership
+        builder.Entity<MemberNominee>(e =>
+        {
+            e.HasOne(n => n.Membership)
+                .WithOne(m => m.Nominee)
+                .HasForeignKey<MemberNominee>(n => n.MembershipId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         // MemberDependant — max 10 enforced in service layer

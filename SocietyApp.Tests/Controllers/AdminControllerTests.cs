@@ -36,6 +36,9 @@ public class AdminControllerTests
         public Task AddDependantAsync(MemberDependant dependant) => Task.CompletedTask;
         public Task<List<MemberDependant>> GetDependantsAsync(int membershipId) => Task.FromResult(new List<MemberDependant>());
         public Task RemoveDependantAsync(int dependantId) => Task.CompletedTask;
+        public Task<MemberNominee?> GetNomineeAsync(int membershipId) => Task.FromResult<MemberNominee?>(null);
+        public Task SaveNomineeAsync(int membershipId, string fullName, string idNumber, string phone, string relationship) => Task.CompletedTask;
+        public Task RemoveNomineeAsync(int membershipId) => Task.CompletedTask;
     }
 
     private sealed class StubClaimService : IClaimService
