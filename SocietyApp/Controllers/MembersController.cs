@@ -40,11 +40,21 @@ public class MembersController : Controller
         var claims = await _claimService.GetByMembershipAsync(membership.Id);
         var dependants = await _membershipService.GetDependantsAsync(membership.Id);
         var canAdd = await _membershipService.CanAddDependantAsync(membership.Id);
+        var eligibility = await _claimService.CheckEligibilityAsync(membership.Id);
 
         ViewBag.MonthlyPayments = payments;
         ViewBag.Claims = claims;
         ViewBag.Dependants = dependants;
         ViewBag.CanAdd = canAdd;
+        ViewBag.Eligibility = eligibility;
+
+        if (membership.DateActivated.HasValue)
+        {
+            var elapsed = (DateTime.UtcNow.Year - membership.DateActivated.Value.Year) * 12
+                          + DateTime.UtcNow.Month - membership.DateActivated.Value.Month;
+            ViewBag.WaitingMonthsElapsed = Math.Min(elapsed, 6);
+        }
+
         return View(membership);
     }
 

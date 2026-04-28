@@ -11,6 +11,7 @@ public interface IMembershipService
     Task<Membership> CreateAsync(string userId);
     Task ActivateAsync(int membershipId);
     Task SuspendAsync(int membershipId);
+    Task CancelAsync(int membershipId);
     Task CheckAndSuspendIfOverdueAsync(int membershipId);
     Task<bool> CanAddDependantAsync(int membershipId);
     Task AddDependantAsync(MemberDependant dependant);

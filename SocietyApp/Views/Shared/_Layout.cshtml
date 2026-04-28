@@ -1,6 +1,8 @@
 ﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
 @using SocietyApp.Models
 @inject UserManager<ApplicationUser> UserManager
+@inject SocietyApp.Data.AppDbContext LayoutDb
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -147,6 +149,33 @@
             </div>
         </div>
     </div>
+
+    @{
+        var footerSettings = await LayoutDb.PublicSiteSettings.AsNoTracking().FirstOrDefaultAsync();
+    }
+    <footer class="bg-dark text-light py-3 mt-4">
+        <div class="container">
+            <div class="row g-2 align-items-center">
+                <div class="col-md-6 text-center text-md-start">
+                    <small class="text-muted">&copy; @DateTime.Now.Year @(footerSettings?.OrganizationName ?? "Give Compassion NPC")</small>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    @if (!string.IsNullOrEmpty(footerSettings?.ContactPhone1))
+                    {
+                        <small class="text-muted me-3">@footerSettings.ContactPhone1</small>
+                    }
+                    @if (!string.IsNullOrEmpty(footerSettings?.ContactPhone2))
+                    {
+                        <small class="text-muted me-3">@footerSettings.ContactPhone2</small>
+                    }
+                    @if (!string.IsNullOrEmpty(footerSettings?.ContactEmailInfo))
+                    {
+                        <small class="text-muted">@footerSettings.ContactEmailInfo</small>
+                    }
+                </div>
+            </div>
+        </div>
+    </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

@@ -65,9 +65,19 @@ public class AdminController : Controller
 
         var monthlyHistory = await _paymentService.GetMonthlyHistoryAsync(id);
         var claims = await _claimService.GetByMembershipAsync(id);
+        var eligibility = await _claimService.CheckEligibilityAsync(id);
 
         ViewBag.MonthlyHistory = monthlyHistory;
         ViewBag.Claims = claims;
+        ViewBag.Eligibility = eligibility;
+
+        if (membership.DateActivated.HasValue)
+        {
+            var elapsed = (DateTime.UtcNow.Year - membership.DateActivated.Value.Year) * 12
+                          + DateTime.UtcNow.Month - membership.DateActivated.Value.Month;
+            ViewBag.WaitingMonthsElapsed = Math.Min(elapsed, 6);
+        }
+
         return View(membership);
     }
 
@@ -157,6 +167,16 @@ public class AdminController : Controller
         await _membershipService.RemoveDependantAsync(dependantId);
         TempData["Success"] = "Dependant removed.";
         return RedirectToAction(nameof(MemberDetails), new { id = membershipId });
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CancelMembership(int id)
+    {
+        await _membershipService.CancelAsync(id);
+        TempData["Success"] = "Membership cancelled.";
+        return RedirectToAction(nameof(MemberDetails), new { id });
     }
 
     [Authorize(Roles = "Admin")]

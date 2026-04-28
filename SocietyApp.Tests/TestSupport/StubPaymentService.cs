@@ -31,7 +31,7 @@ internal sealed class StubPaymentService : IPaymentService
         => throw new NotImplementedException();
 
     public Task<List<MonthlyPayment>> GetMonthlyHistoryAsync(int membershipId)
-        => throw new NotImplementedException();
+        => Task.FromResult(new List<MonthlyPayment>());
 
     public Task<MonthlyPayment?> GetMonthlyPaymentByIdAsync(int id)
         => throw new NotImplementedException();

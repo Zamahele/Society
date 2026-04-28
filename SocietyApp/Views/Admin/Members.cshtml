@@ -27,6 +27,7 @@ else
                             SocietyApp.Models.MembershipStatus.Pending => "bg-warning text-dark",
                             SocietyApp.Models.MembershipStatus.PendingPayment => "bg-info text-dark",
                             SocietyApp.Models.MembershipStatus.Suspended => "bg-danger",
+                            SocietyApp.Models.MembershipStatus.Cancelled => "bg-dark",
                             _ => "bg-secondary"
                         };
                         var statusLabel = m.Status == SocietyApp.Models.MembershipStatus.PendingPayment ? "Pending Payment" : m.Status.ToString();
@@ -64,6 +65,7 @@ else
                     SocietyApp.Models.MembershipStatus.Pending => "bg-warning text-dark",
                     SocietyApp.Models.MembershipStatus.PendingPayment => "bg-info text-dark",
                     SocietyApp.Models.MembershipStatus.Suspended => "bg-danger",
+                    SocietyApp.Models.MembershipStatus.Cancelled => "bg-dark",
                     _ => "bg-secondary"
                 };
                 var mLabel = m.Status == SocietyApp.Models.MembershipStatus.PendingPayment ? "Pending Payment" : m.Status.ToString();

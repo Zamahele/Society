@@ -40,6 +40,7 @@ public class AdminControllerTests
         public Task<MemberNominee?> GetNomineeAsync(int membershipId) => Task.FromResult<MemberNominee?>(null);
         public Task SaveNomineeAsync(int membershipId, string fullName, string idNumber, string phone, string relationship) => Task.CompletedTask;
         public Task RemoveNomineeAsync(int membershipId) => Task.CompletedTask;
+        public Task CancelAsync(int membershipId) => Task.CompletedTask;
     }
 
     private sealed class StubClaimService : IClaimService

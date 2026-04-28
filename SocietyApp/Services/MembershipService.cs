@@ -98,6 +98,15 @@ public class MembershipService : IMembershipService
         await _db.SaveChangesAsync();
     }
 
+    public async Task CancelAsync(int membershipId)
+    {
+        var membership = await _db.Memberships.FindAsync(membershipId);
+        if (membership == null) return;
+
+        membership.Status = MembershipStatus.Cancelled;
+        await _db.SaveChangesAsync();
+    }
+
     public async Task CheckAndSuspendIfOverdueAsync(int membershipId)
     {
         var membership = await _db.Memberships.FindAsync(membershipId);

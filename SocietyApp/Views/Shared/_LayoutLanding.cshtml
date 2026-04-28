@@ -7,6 +7,10 @@
     var enterpriseType = siteSettings?.EnterpriseType ?? "Non Profit Company";
     var enterpriseStatus = siteSettings?.EnterpriseStatus ?? "In Business";
     var registeredOfficeAddress = siteSettings?.RegisteredOfficeAddress ?? "Ulundi, Kwa-Zulu Natal";
+    var phone1 = siteSettings?.ContactPhone1 ?? string.Empty;
+    var phone2 = siteSettings?.ContactPhone2 ?? string.Empty;
+    var phone3 = siteSettings?.ContactPhone3 ?? string.Empty;
+    var contactEmail = siteSettings?.ContactEmailInfo ?? string.Empty;
 }
 
 <!DOCTYPE html>
@@ -55,10 +59,28 @@
                     <p class="mb-1">&copy; @DateTime.Now.Year @organizationName. All rights reserved.</p>
                     <small class="text-muted">Caring for families in their time of need.</small>
                 </div>
-                <div class="col-md-6 text-center text-md-end">
+                <div class="col-md-3 text-center text-md-start">
                     <small class="d-block text-muted">Reg No: @registrationNumber</small>
-                    <small class="d-block text-muted">Type: @enterpriseType (NPC) | Status: @enterpriseStatus</small>
-                    <small class="d-block text-muted">Registered Office: @registeredOfficeAddress</small>
+                    <small class="d-block text-muted">@enterpriseType (NPC) | @enterpriseStatus</small>
+                    <small class="d-block text-muted">@registeredOfficeAddress</small>
+                </div>
+                <div class="col-md-3 text-center text-md-end">
+                    @if (!string.IsNullOrEmpty(phone1))
+                    {
+                        <small class="d-block text-muted">@phone1</small>
+                    }
+                    @if (!string.IsNullOrEmpty(phone2))
+                    {
+                        <small class="d-block text-muted">@phone2</small>
+                    }
+                    @if (!string.IsNullOrEmpty(phone3))
+                    {
+                        <small class="d-block text-muted">@phone3</small>
+                    }
+                    @if (!string.IsNullOrEmpty(contactEmail))
+                    {
+                        <small class="d-block text-muted">@contactEmail</small>
+                    }
                 </div>
             </div>
         </div>
