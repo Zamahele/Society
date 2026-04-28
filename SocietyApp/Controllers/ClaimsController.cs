@@ -30,6 +30,14 @@ public class ClaimsController : Controller
     public async Task<IActionResult> Submit()
     {
         var user = await _userManager.GetUserAsync(User);
+        if (user == null) return Challenge();
+
+        if (!HasBankingDetails(user))
+        {
+            TempData["Error"] = "Please add your banking details before submitting a claim so payouts can be processed.";
+            return RedirectToAction("BankingDetails", "Members");
+        }
+
         var membership = await _membershipService.GetByUserIdAsync(user!.Id);
         if (membership == null) return NotFound();
 
@@ -53,6 +61,15 @@ public class ClaimsController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Submit(SubmitClaimViewModel model)
     {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null) return Challenge();
+
+        if (!HasBankingDetails(user))
+        {
+            TempData["Error"] = "Please add your banking details before submitting a claim so payouts can be processed.";
+            return RedirectToAction("BankingDetails", "Members");
+        }
+
         if (!ModelState.IsValid)
         {
             model.Dependants = await _membershipService.GetDependantsAsync(model.MembershipId);
@@ -175,5 +192,12 @@ public class ClaimsController : Controller
         return File(claim.DeathCertificateData,
             "application/octet-stream",
             claim.DeathCertificateFileName ?? "death_certificate");
+    }
+
+    private static bool HasBankingDetails(ApplicationUser user)
+    {
+        return !string.IsNullOrWhiteSpace(user.BankName)
+            && !string.IsNullOrWhiteSpace(user.BankAccountName)
+            && !string.IsNullOrWhiteSpace(user.BankAccountNumber);
     }
 }

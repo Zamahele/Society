@@ -38,9 +38,9 @@ public class AccountController : Controller
             Phone = model.Phone,
             Address = model.Address,
             DateOfBirth = model.DateOfBirth,
-            BankAccountName = model.BankAccountName,
-            BankAccountNumber = model.BankAccountNumber,
-            BankName = model.BankName
+            BankAccountName = string.Empty,
+            BankAccountNumber = string.Empty,
+            BankName = string.Empty
         };
 
         var result = await _userManager.CreateAsync(user, model.Password);
