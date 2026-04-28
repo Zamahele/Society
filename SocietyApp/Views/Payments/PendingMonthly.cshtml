@@ -1,7 +1,10 @@
 @model IEnumerable<SocietyApp.Models.MonthlyPayment>
 @{ ViewData["Title"] = "Pending Monthly Payments"; }
 
-<h2 class="mb-4">Pending Monthly Payments</h2>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold mb-0" style="color:var(--navy);">Pending Monthly Payments</h2>
+    @if (Model.Any()) { <span class="badge bg-secondary fs-6">@Model.Count() pending</span> }
+</div>
 
 @if (!Model.Any())
 {
@@ -9,31 +12,62 @@
 }
 else
 {
-    <table class="table table-bordered table-hover">
-        <thead class="table-dark">
-            <tr><th>Membership No</th><th>Member Name</th><th>For Month</th><th>Amount</th><th>Reference</th><th>Payment Date</th><th>Action</th></tr>
-        </thead>
-        <tbody>
-            @foreach (var p in Model)
-            {
-                <tr>
-                    <td>@p.Membership.MembershipNumber</td>
-                    <td>@p.Membership.User.FullName</td>
-                    <td>@p.ForMonth.ToString("MMM yyyy")</td>
-                    <td>R@(p.Amount)</td>
-                    <td>@p.PaymentReference</td>
-                    <td>@(p.PaymentDate?.ToString("dd MMM yyyy") ?? "-")</td>
-                    <td>
-                        <form asp-action="ConfirmMonthly" method="post" style="display:inline">
+    <!-- Desktop table (md+) -->
+    <div class="d-none d-md-block">
+        <table class="table table-hover align-middle">
+            <thead style="background:var(--navy); color:#fff;">
+                <tr><th>Membership No</th><th>Member Name</th><th>For Month</th><th>Amount</th><th>Reference</th><th>Payment Date</th><th>Action</th></tr>
+            </thead>
+            <tbody>
+                @foreach (var p in Model)
+                {
+                    <tr>
+                        <td><strong>@p.Membership.MembershipNumber</strong></td>
+                        <td>@p.Membership.User.FullName</td>
+                        <td>@p.ForMonth.ToString("MMM yyyy")</td>
+                        <td>R@(p.Amount)</td>
+                        <td>@p.PaymentReference</td>
+                        <td>@(p.PaymentDate?.ToString("dd MMM yyyy") ?? "-")</td>
+                        <td>
+                            <form asp-action="ConfirmMonthly" method="post">
+                                <input type="hidden" name="id" value="@p.Id" />
+                                <button type="submit" class="btn btn-sm btn-success"
+                                    data-confirm="Confirm this monthly payment?">
+                                    Confirm
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Mobile cards (< md) -->
+    <div class="d-md-none row g-3">
+        @foreach (var p in Model)
+        {
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h6 class="fw-bold mb-1">@p.Membership.User.FullName</h6>
+                        <small class="text-muted d-block mb-2">@p.Membership.MembershipNumber</small>
+                        <div class="row small mb-3">
+                            <div class="col-6"><strong>Month:</strong> @p.ForMonth.ToString("MMM yyyy")</div>
+                            <div class="col-6"><strong>Amount:</strong> R@(p.Amount)</div>
+                            <div class="col-6"><strong>Payment Date:</strong> @(p.PaymentDate?.ToString("dd MMM yyyy") ?? "-")</div>
+                            <div class="col-6"><strong>Reference:</strong> @p.PaymentReference</div>
+                        </div>
+                        <form asp-action="ConfirmMonthly" method="post">
                             <input type="hidden" name="id" value="@p.Id" />
-                            <button type="submit" class="btn btn-sm btn-success"
+                            <button type="submit" class="btn btn-success w-100"
                                 data-confirm="Confirm this monthly payment?">
-                                Confirm
+                                Confirm Payment
                             </button>
                         </form>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
 }

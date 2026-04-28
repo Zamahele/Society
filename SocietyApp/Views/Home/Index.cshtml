@@ -1,6 +1,15 @@
+@using Microsoft.EntityFrameworkCore
+@inject SocietyApp.Data.AppDbContext DbContext
 @{
     ViewData["Title"] = "Welcome";
     Layout = "_LayoutLanding";
+    var _settings = await DbContext.PublicSiteSettings.AsNoTracking().FirstOrDefaultAsync();
+    var _phone1 = _settings?.ContactPhone1 ?? "073 105 4674";
+    var _phone2 = _settings?.ContactPhone2 ?? "060 708 1052";
+    var _phone3 = _settings?.ContactPhone3 ?? "076 738 4252";
+    var _address = _settings?.ContactAddress ?? "D1707 Mashona, Mahlabathini, Ulundi, Kwa-Zulu Natal, 3838";
+    var _emailInfo = _settings?.ContactEmailInfo ?? "No official email provided";
+    var _emailClaims = _settings?.ContactEmailClaims ?? "Please contact committee by phone";
 }
 
 <!-- HERO -->
@@ -223,17 +232,17 @@
             <div class="col-md-4">
                 <div class="contact-icon mx-auto mb-2">&#128205;</div>
                 <h6 class="fw-bold">Office Address</h6>
-                <p class="text-muted small">D1707 Mashona, Mahlabathini<br>Ulundi, Kwa-Zulu Natal<br>3838</p>
+                <p class="text-muted small">@_address</p>
             </div>
             <div class="col-md-4">
                 <div class="contact-icon mx-auto mb-2">&#128222;</div>
                 <h6 class="fw-bold">Phone</h6>
-                <p class="text-muted small">073 105 4674<br>060 708 1052<br>076 738 4252</p>
+                <p class="text-muted small">@_phone1<br>@_phone2<br>@_phone3</p>
             </div>
             <div class="col-md-4">
                 <div class="contact-icon mx-auto mb-2">&#9993;</div>
                 <h6 class="fw-bold">Email</h6>
-                <p class="text-muted small">No official email provided<br>Please contact committee by phone<br>&nbsp;</p>
+                <p class="text-muted small">@_emailInfo<br>@_emailClaims<br>&nbsp;</p>
             </div>
         </div>
         <div class="text-center mt-4">
