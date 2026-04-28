@@ -1,9 +1,20 @@
+@using Microsoft.EntityFrameworkCore
+@inject SocietyApp.Data.AppDbContext DbContext
+@{
+    var siteSettings = await DbContext.PublicSiteSettings.AsNoTracking().FirstOrDefaultAsync();
+    var organizationName = siteSettings?.OrganizationName ?? "Give Compassion NPC";
+    var registrationNumber = siteSettings?.RegistrationNumber ?? "K2026009248 / 2026/009248/08";
+    var enterpriseType = siteSettings?.EnterpriseType ?? "Non Profit Company";
+    var enterpriseStatus = siteSettings?.EnterpriseStatus ?? "In Business";
+    var registeredOfficeAddress = siteSettings?.RegisteredOfficeAddress ?? "Ulundi, Kwa-Zulu Natal";
+}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Give Compassion NPC</title>
+    <title>@ViewData["Title"] - @organizationName</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/landing.css" asp-append-version="true" />
@@ -11,7 +22,7 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
         <div class="container">
-            <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index">Give Compassion NPC</a>
+            <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index">@organizationName</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -41,13 +52,13 @@
         <div class="container">
             <div class="row g-3 align-items-start">
                 <div class="col-md-6 text-center text-md-start">
-                    <p class="mb-1">&copy; @DateTime.Now.Year Give Compassion NPC. All rights reserved.</p>
+                    <p class="mb-1">&copy; @DateTime.Now.Year @organizationName. All rights reserved.</p>
                     <small class="text-muted">Caring for families in their time of need.</small>
                 </div>
                 <div class="col-md-6 text-center text-md-end">
-                    <small class="d-block text-muted">Reg No: K2026009248 / 2026/009248/08</small>
-                    <small class="d-block text-muted">Type: Non Profit Company (NPC) | Status: In Business</small>
-                    <small class="d-block text-muted">Registered Office: Ulundi, Kwa-Zulu Natal</small>
+                    <small class="d-block text-muted">Reg No: @registrationNumber</small>
+                    <small class="d-block text-muted">Type: @enterpriseType (NPC) | Status: @enterpriseStatus</small>
+                    <small class="d-block text-muted">Registered Office: @registeredOfficeAddress</small>
                 </div>
             </div>
         </div>
