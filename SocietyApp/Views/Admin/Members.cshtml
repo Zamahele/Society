@@ -29,7 +29,16 @@
                     <span class="badge @badge">@m.Status</span>
                 </td>
                 <td>@m.DateIssued.ToString("dd MMM yyyy")</td>
-                <td><a asp-action="MemberDetails" asp-route-id="@m.Id" class="btn btn-sm btn-outline-dark">View</a></td>
+                <td class="d-flex gap-2">
+                    <a asp-action="MemberDetails" asp-route-id="@m.Id" class="btn btn-sm btn-outline-dark">View</a>
+                    @if (m.Status == SocietyApp.Models.MembershipStatus.Pending)
+                    {
+                        <form asp-action="ApproveMember" method="post">
+                            <input type="hidden" name="id" value="@m.Id" />
+                            <button type="submit" class="btn btn-sm btn-success">Approve</button>
+                        </form>
+                    }
+                </td>
             </tr>
         }
     </tbody>

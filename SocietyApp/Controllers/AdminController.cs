@@ -73,6 +73,94 @@ public class AdminController : Controller
     [Authorize(Roles = "Admin")]
     [HttpPost]
     [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ApproveMember(int id)
+    {
+        var membership = await _membershipService.GetByIdAsync(id);
+        if (membership == null)
+            return NotFound();
+
+        if (membership.Status != MembershipStatus.Pending)
+        {
+            TempData["Error"] = "Only pending memberships can be approved.";
+            return RedirectToAction(nameof(MemberDetails), new { id });
+        }
+
+        await _membershipService.ActivateAsync(id);
+        TempData["Success"] = "Member approved and activated.";
+        return RedirectToAction(nameof(MemberDetails), new { id });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> AddDependantForMember(int membershipId)
+    {
+        var membership = await _membershipService.GetByIdAsync(membershipId);
+        if (membership == null) return NotFound();
+
+        var canAdd = await _membershipService.CanAddDependantAsync(membershipId);
+        if (!canAdd)
+        {
+            TempData["Error"] = "This member already has the maximum of 10 dependants.";
+            return RedirectToAction(nameof(MemberDetails), new { id = membershipId });
+        }
+
+        ViewBag.MemberName = membership.User.FullName;
+        ViewBag.MembershipNumber = membership.MembershipNumber;
+        return View(new AddDependantViewModel { MembershipId = membershipId });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AddDependantForMember(AddDependantViewModel model)
+    {
+        var membership = await _membershipService.GetByIdAsync(model.MembershipId);
+        if (membership == null) return NotFound();
+
+        ViewBag.MemberName = membership.User.FullName;
+        ViewBag.MembershipNumber = membership.MembershipNumber;
+
+        if (!ModelState.IsValid) return View(model);
+
+        var canAdd = await _membershipService.CanAddDependantAsync(model.MembershipId);
+        if (!canAdd)
+        {
+            TempData["Error"] = "This member already has the maximum of 10 dependants.";
+            return RedirectToAction(nameof(MemberDetails), new { id = model.MembershipId });
+        }
+
+        await _membershipService.AddDependantAsync(new MemberDependant
+        {
+            MembershipId = model.MembershipId,
+            FullName = model.FullName,
+            IDNumber = model.IDNumber,
+            DateOfBirth = model.DateOfBirth,
+            Relationship = model.Relationship
+        });
+
+        TempData["Success"] = "Dependant added successfully.";
+        return RedirectToAction(nameof(MemberDetails), new { id = model.MembershipId });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RemoveDependantForMember(int membershipId, int dependantId)
+    {
+        var membership = await _membershipService.GetByIdAsync(membershipId);
+        if (membership == null) return NotFound();
+
+        if (!membership.Dependants.Any(d => d.Id == dependantId))
+        {
+            TempData["Error"] = "Dependant not found for this member.";
+            return RedirectToAction(nameof(MemberDetails), new { id = membershipId });
+        }
+
+        await _membershipService.RemoveDependantAsync(dependantId);
+        TempData["Success"] = "Dependant removed.";
+        return RedirectToAction(nameof(MemberDetails), new { id = membershipId });
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeactivateMember(int id)
     {
         await _membershipService.SuspendAsync(id);

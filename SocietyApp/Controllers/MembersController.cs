@@ -77,11 +77,25 @@ public class MembersController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> AddDependant(AddDependantViewModel model)
     {
+        var user = await _userManager.GetUserAsync(User);
+        var membership = user == null ? null : await _membershipService.GetByUserIdAsync(user.Id);
+        if (membership == null) return NotFound();
+
+        // Always bind dependant additions to the currently logged-in member.
+        model.MembershipId = membership.Id;
+
         if (!ModelState.IsValid) return View(model);
+
+        var canAdd = await _membershipService.CanAddDependantAsync(membership.Id);
+        if (!canAdd)
+        {
+            TempData["Error"] = "You have reached the maximum of 10 dependants.";
+            return RedirectToAction(nameof(Dependants));
+        }
 
         var dependant = new MemberDependant
         {
-            MembershipId = model.MembershipId,
+            MembershipId = membership.Id,
             FullName = model.FullName,
             IDNumber = model.IDNumber,
             DateOfBirth = model.DateOfBirth,
@@ -97,6 +111,17 @@ public class MembersController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> RemoveDependant(int id)
     {
+        var user = await _userManager.GetUserAsync(User);
+        var membership = user == null ? null : await _membershipService.GetByUserIdAsync(user.Id);
+        if (membership == null) return NotFound();
+
+        var ownDependants = await _membershipService.GetDependantsAsync(membership.Id);
+        if (!ownDependants.Any(d => d.Id == id))
+        {
+            TempData["Error"] = "Dependant not found for your membership.";
+            return RedirectToAction(nameof(Dependants));
+        }
+
         await _membershipService.RemoveDependantAsync(id);
         TempData["Success"] = "Dependant removed.";
         return RedirectToAction(nameof(Dependants));
