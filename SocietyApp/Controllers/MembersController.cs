@@ -7,7 +7,7 @@ using SocietyApp.ViewModels;
 
 namespace SocietyApp.Controllers;
 
-[Authorize(Roles = "Member")]
+[Authorize(Roles = "Member,Admin,Clerk")]
 public class MembersController : Controller
 {
     private readonly UserManager<ApplicationUser> _userManager;
@@ -32,7 +32,7 @@ public class MembersController : Controller
         if (user == null) return Challenge();
 
         var membership = await _membershipService.GetByUserIdAsync(user.Id);
-        if (membership == null) return NotFound();
+        if (membership == null) return RedirectToAction("Dashboard", "Admin");
 
         await _membershipService.CheckAndSuspendIfOverdueAsync(membership.Id);
 
@@ -48,7 +48,7 @@ public class MembersController : Controller
     {
         var user = await _userManager.GetUserAsync(User);
         var membership = await _membershipService.GetByUserIdAsync(user!.Id);
-        if (membership == null) return NotFound();
+        if (membership == null) return RedirectToAction("Dashboard", "Admin");
 
         var dependants = await _membershipService.GetDependantsAsync(membership.Id);
         ViewBag.MembershipId = membership.Id;
@@ -61,7 +61,7 @@ public class MembersController : Controller
     {
         var user = await _userManager.GetUserAsync(User);
         var membership = await _membershipService.GetByUserIdAsync(user!.Id);
-        if (membership == null) return NotFound();
+        if (membership == null) return RedirectToAction("Dashboard", "Admin");
 
         var canAdd = await _membershipService.CanAddDependantAsync(membership.Id);
         if (!canAdd)
@@ -79,7 +79,7 @@ public class MembersController : Controller
     {
         var user = await _userManager.GetUserAsync(User);
         var membership = user == null ? null : await _membershipService.GetByUserIdAsync(user.Id);
-        if (membership == null) return NotFound();
+        if (membership == null) return RedirectToAction("Dashboard", "Admin");
 
         // Always bind dependant additions to the currently logged-in member.
         model.MembershipId = membership.Id;
@@ -113,7 +113,7 @@ public class MembersController : Controller
     {
         var user = await _userManager.GetUserAsync(User);
         var membership = user == null ? null : await _membershipService.GetByUserIdAsync(user.Id);
-        if (membership == null) return NotFound();
+        if (membership == null) return RedirectToAction("Dashboard", "Admin");
 
         var ownDependants = await _membershipService.GetDependantsAsync(membership.Id);
         if (!ownDependants.Any(d => d.Id == id))
