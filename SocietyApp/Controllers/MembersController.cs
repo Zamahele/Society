@@ -126,4 +126,44 @@ public class MembersController : Controller
         TempData["Success"] = "Dependant removed.";
         return RedirectToAction(nameof(Dependants));
     }
+
+    [HttpGet]
+    public async Task<IActionResult> BankingDetails()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null) return Challenge();
+
+        var model = new UpdateBankingDetailsViewModel
+        {
+            BankAccountName = user.BankAccountName,
+            BankAccountNumber = user.BankAccountNumber,
+            BankName = user.BankName
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> BankingDetails(UpdateBankingDetailsViewModel model)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null) return Challenge();
+
+        user.BankAccountName = model.BankAccountName?.Trim() ?? string.Empty;
+        user.BankAccountNumber = model.BankAccountNumber?.Trim() ?? string.Empty;
+        user.BankName = model.BankName?.Trim() ?? string.Empty;
+
+        var result = await _userManager.UpdateAsync(user);
+        if (result.Succeeded)
+        {
+            TempData["Success"] = "Banking details updated successfully.";
+            return RedirectToAction(nameof(Dashboard));
+        }
+
+        foreach (var error in result.Errors)
+            ModelState.AddModelError(string.Empty, error.Description);
+
+        return View(model);
+    }
 }

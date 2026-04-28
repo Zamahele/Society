@@ -31,6 +31,9 @@
                     <p class="mb-1"><strong>Activated:</strong> @Model.DateActivated.Value.ToString("dd MMM yyyy")</p>
                 }
                 <p class="mb-1"><strong>Dependants:</strong> @Model.Dependants.Count / 10</p>
+                <div class="mt-3">
+                    <a asp-action="BankingDetails" class="btn btn-sm btn-outline-dark">Update Banking Details</a>
+                </div>
             </div>
         </div>
 

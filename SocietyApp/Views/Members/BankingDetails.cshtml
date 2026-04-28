@@ -1,0 +1,36 @@
+@model SocietyApp.ViewModels.UpdateBankingDetailsViewModel
+@{ ViewData["Title"] = "Banking Details"; }
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <h2 class="mb-4">Banking Details</h2>
+        <p class="text-muted mb-3">Add or update your banking details for claim payouts.</p>
+
+        <form asp-action="BankingDetails" method="post">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+            <div class="mb-3">
+                <label asp-for="BankName" class="form-label"></label>
+                <input asp-for="BankName" class="form-control" placeholder="e.g. FNB, Absa, Standard Bank" />
+                <span asp-validation-for="BankName" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="BankAccountName" class="form-label"></label>
+                <input asp-for="BankAccountName" class="form-control" placeholder="Name on the bank account" />
+                <span asp-validation-for="BankAccountName" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="BankAccountNumber" class="form-label"></label>
+                <input asp-for="BankAccountNumber" class="form-control" placeholder="Your bank account number" />
+                <span asp-validation-for="BankAccountNumber" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-dark w-100">Save Banking Details</button>
+            <a asp-action="Dashboard" class="btn btn-outline-secondary w-100 mt-2">Cancel</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts { @{await Html.RenderPartialAsync("_ValidationScriptsPartial");} }

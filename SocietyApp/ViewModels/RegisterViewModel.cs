@@ -19,13 +19,13 @@ public class RegisterViewModel
     [Required] [DataType(DataType.Date)] [Display(Name = "Date of Birth")]
     public DateTime DateOfBirth { get; set; }
 
-    [Required] [Display(Name = "Bank Account Name")]
+    [Display(Name = "Bank Account Name")]
     public string BankAccountName { get; set; } = string.Empty;
 
-    [Required] [Display(Name = "Bank Account Number")]
+    [Display(Name = "Bank Account Number")]
     public string BankAccountNumber { get; set; } = string.Empty;
 
-    [Required] [Display(Name = "Bank Name")]
+    [Display(Name = "Bank Name")]
     public string BankName { get; set; } = string.Empty;
 
     [Required] [DataType(DataType.Password)]
