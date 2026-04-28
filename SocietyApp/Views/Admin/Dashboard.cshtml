@@ -1,102 +1,101 @@
 @{ ViewData["Title"] = "Dashboard"; }
 
-<h2 class="mb-4 fw-bold" style="color:var(--navy);">Admin Dashboard</h2>
-
-<div class="row g-3 mb-4">
-    <div class="col-md-3">
-        <a asp-controller="Admin" asp-action="Members" class="text-decoration-none">
-            <div class="card card-navy h-100 dashboard-card">
-                <div class="card-body text-center">
-                    <h1 class="display-4">@ViewBag.TotalMembers</h1>
-                    <p class="mb-0">Total Members</p>
-                </div>
-            </div>
-        </a>
-    </div>
-    <div class="col-md-3">
-        <a asp-controller="Admin" asp-action="Members" class="text-decoration-none">
-            <div class="card card-teal h-100 dashboard-card">
-                <div class="card-body text-center">
-                    <h1 class="display-4">@ViewBag.ActiveMembers</h1>
-                    <p class="mb-0">Active</p>
-                </div>
-            </div>
-        </a>
-    </div>
-    <div class="col-md-3">
-        <a asp-controller="Admin" asp-action="Members" class="text-decoration-none">
-            <div class="card card-gold h-100 dashboard-card">
-                <div class="card-body text-center">
-                    <h1 class="display-4">@ViewBag.PendingMembers</h1>
-                    <p class="mb-0">Pending Approval</p>
-                </div>
-            </div>
-        </a>
-    </div>
-    <div class="col-md-3">
-        <a asp-controller="Admin" asp-action="Members" class="text-decoration-none">
-            <div class="card card-slate h-100 dashboard-card">
-                <div class="card-body text-center">
-                    <h1 class="display-4">@ViewBag.PendingPaymentMembers</h1>
-                    <p class="mb-0">Pending Payment</p>
-                </div>
-            </div>
-        </a>
-    </div>
-    <div class="col-md-3">
-        <a asp-controller="Admin" asp-action="Members" class="text-decoration-none">
-            <div class="card card-rust h-100 dashboard-card">
-                <div class="card-body text-center">
-                    <h1 class="display-4">@ViewBag.SuspendedMembers</h1>
-                    <p class="mb-0">Suspended</p>
-                </div>
-            </div>
-        </a>
-    </div>
-</div>
+<h2 class="fw-bold mb-4" style="color:var(--navy);">Admin Dashboard</h2>
 
 <div class="row g-3">
-    <div class="col-md-4">
+
+    @* Overview *@
+    <div class="col-xl-4 col-md-6">
+        <a asp-controller="Admin" asp-action="Members" class="text-decoration-none">
+            <div class="card card-navy h-100 dashboard-card">
+                <div class="card-body px-4 py-3">
+                    <div class="text-white-50 small text-uppercase fw-semibold mb-1">Total Members</div>
+                    <div class="display-5 fw-bold">@ViewBag.TotalMembers</div>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-xl-4 col-md-6">
+        <a asp-controller="Admin" asp-action="Members" class="text-decoration-none">
+            <div class="card card-teal h-100 dashboard-card">
+                <div class="card-body px-4 py-3">
+                    <div class="text-white-50 small text-uppercase fw-semibold mb-1">Active Members</div>
+                    <div class="display-5 fw-bold">@ViewBag.ActiveMembers</div>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-xl-4 col-md-6">
+        <a asp-controller="Admin" asp-action="Members" class="text-decoration-none">
+            <div class="card card-rust h-100 dashboard-card">
+                <div class="card-body px-4 py-3">
+                    <div class="text-white-50 small text-uppercase fw-semibold mb-1">Suspended</div>
+                    <div class="display-5 fw-bold">@ViewBag.SuspendedMembers</div>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    @* Grouped action cards *@
+    <div class="col-xl-4 col-md-6">
+        <a asp-controller="Admin" asp-action="Members" class="text-decoration-none">
+            <div class="card card-gold h-100 dashboard-card">
+                <div class="card-body px-4 py-3">
+                    <div class="text-white-50 small text-uppercase fw-semibold mb-3">Pending Members</div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-white">Awaiting Approval</span>
+                        <span class="display-6 fw-bold">@ViewBag.PendingMembers</span>
+                    </div>
+                    <hr class="border-white-50 my-2" />
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-white">Awaiting Payment</span>
+                        <span class="display-6 fw-bold">@ViewBag.PendingPaymentMembers</span>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-xl-4 col-md-6">
         <a asp-controller="Claims" asp-action="Index" class="text-decoration-none">
             <div class="card card-plum h-100 dashboard-card">
-                <div class="card-body text-center">
-                    <h1 class="display-4">@ViewBag.PendingClaims</h1>
-                    <p class="mb-0">Pending Claims</p>
+                <div class="card-body px-4 py-3">
+                    <div class="text-white-50 small text-uppercase fw-semibold mb-3">Claims</div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-white">Pending Review</span>
+                        <span class="display-6 fw-bold">@ViewBag.PendingClaims</span>
+                    </div>
+                    <hr class="border-white-50 my-2" />
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-white">Total Claims</span>
+                        <span class="display-6 fw-bold">@ViewBag.TotalClaims</span>
+                    </div>
                 </div>
             </div>
         </a>
     </div>
-    <div class="col-md-4">
-        <a asp-controller="Payments" asp-action="PendingJoiningFees" class="text-decoration-none">
-            <div class="card card-slate h-100 dashboard-card">
-                <div class="card-body text-center">
-                    <h1 class="display-4">@ViewBag.PendingJoiningFees</h1>
-                    <p class="mb-0">Joining Fee Confirmations</p>
-                </div>
-            </div>
-        </a>
-    </div>
-    <div class="col-md-4">
-        <a asp-controller="Payments" asp-action="PendingMonthly" class="text-decoration-none">
-            <div class="card card-navy2 h-100 dashboard-card">
-                <div class="card-body text-center">
-                    <h1 class="display-4">@ViewBag.PendingMonthlyPayments</h1>
-                    <p class="mb-0">Monthly Confirmations</p>
-                </div>
-            </div>
-        </a>
-    </div>
-</div>
 
-<div class="row g-3 mt-1">
-    <div class="col-md-4">
-        <a asp-controller="Claims" asp-action="Index" class="text-decoration-none">
-            <div class="card card-olive h-100 dashboard-card">
-                <div class="card-body text-center">
-                    <h1 class="display-4">@ViewBag.TotalClaims</h1>
-                    <p class="mb-0">Total Claims</p>
-                </div>
+    <div class="col-xl-4 col-md-6">
+        <div class="card card-navy2 h-100 dashboard-card">
+            <div class="card-body px-4 py-3">
+                <div class="text-white-50 small text-uppercase fw-semibold mb-3">Payment Confirmations</div>
+                <a asp-controller="Payments" asp-action="PendingJoiningFees" class="text-decoration-none">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-white">Joining Fees</span>
+                        <span class="display-6 fw-bold text-white">@ViewBag.PendingJoiningFees</span>
+                    </div>
+                </a>
+                <hr class="border-white-50 my-2" />
+                <a asp-controller="Payments" asp-action="PendingMonthly" class="text-decoration-none">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-white">Monthly Payments</span>
+                        <span class="display-6 fw-bold text-white">@ViewBag.PendingMonthlyPayments</span>
+                    </div>
+                </a>
             </div>
-        </a>
+        </div>
     </div>
+
 </div>
