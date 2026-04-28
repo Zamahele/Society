@@ -70,6 +70,73 @@ public class AdminController : Controller
         return View(membership);
     }
 
+    [Authorize(Roles = "Admin")]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeactivateMember(int id)
+    {
+        await _membershipService.SuspendAsync(id);
+        TempData["Success"] = "Member deactivated.";
+        return RedirectToAction(nameof(MemberDetails), new { id });
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ReactivateMember(int id)
+    {
+        var membership = await _dbContext.Memberships.FirstOrDefaultAsync(m => m.Id == id);
+        if (membership == null)
+            return NotFound();
+
+        membership.Status = MembershipStatus.Active;
+        membership.DateActivated ??= DateTime.UtcNow;
+        await _dbContext.SaveChangesAsync();
+
+        TempData["Success"] = "Member reactivated.";
+        return RedirectToAction(nameof(MemberDetails), new { id });
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteMemberData(int id, string confirmIdNumber)
+    {
+        var membership = await _dbContext.Memberships
+            .Include(m => m.User)
+            .FirstOrDefaultAsync(m => m.Id == id);
+
+        if (membership == null)
+            return NotFound();
+
+        if (!string.Equals(confirmIdNumber?.Trim(), membership.User.IDNumber, StringComparison.OrdinalIgnoreCase))
+        {
+            TempData["Error"] = "Confirmation ID number did not match. Member data was not deleted.";
+            return RedirectToAction(nameof(MemberDetails), new { id });
+        }
+
+        using var tx = await _dbContext.Database.BeginTransactionAsync();
+
+        _dbContext.DeathClaims.RemoveRange(_dbContext.DeathClaims.Where(c => c.MembershipId == id));
+        _dbContext.MonthlyPayments.RemoveRange(_dbContext.MonthlyPayments.Where(p => p.MembershipId == id));
+        _dbContext.JoiningFeePayments.RemoveRange(_dbContext.JoiningFeePayments.Where(p => p.MembershipId == id));
+        _dbContext.MemberDependants.RemoveRange(_dbContext.MemberDependants.Where(d => d.MembershipId == id));
+        _dbContext.Memberships.Remove(membership);
+        await _dbContext.SaveChangesAsync();
+
+        var deleteUserResult = await _userManager.DeleteAsync(membership.User);
+        if (!deleteUserResult.Succeeded)
+        {
+            await tx.RollbackAsync();
+            TempData["Error"] = "Member records were not deleted. " + string.Join(" ", deleteUserResult.Errors.Select(e => e.Description));
+            return RedirectToAction(nameof(MemberDetails), new { id });
+        }
+
+        await tx.CommitAsync();
+        TempData["Success"] = "Member and all related records were permanently deleted.";
+        return RedirectToAction(nameof(Members));
+    }
+
     // ---- Create Clerk (Admin only) ----
 
     [Authorize(Roles = "Admin")]
