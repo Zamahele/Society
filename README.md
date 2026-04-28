@@ -2,6 +2,12 @@
 
 A web-based membership and funeral benefit management system built with ASP.NET Core MVC.
 
+## Documentation Index
+
+- `SYSTEM_FLOW.md` - end-to-end core application workflows and invariants
+- `ARCHITECTURE.md` - architecture decisions and layering rules
+- `TESTING.md` - automated test coverage baseline and execution guide
+
 ## Purpose
 
 This system helps a funeral society manage its members, monthly contributions, and death claims. When a covered member or their registered dependant passes away, the main member submits a claim. Upon approval the society pays out R15,000 cash and R15,000 in grocery vouchers (R30,000 total).
@@ -292,3 +298,15 @@ On first run the system seeds:
 - [ ] Clerk review workflow
 - [ ] Admin approval and payout recording
 - [ ] Admin dashboard (member stats, pending claims, monthly collection)
+
+---
+
+## Automated Tests
+
+The solution includes `SocietyApp.Tests` with baseline coverage for membership, payment, and claim business rules.
+
+Run all tests:
+
+```bash
+dotnet test Society.sln
+```
