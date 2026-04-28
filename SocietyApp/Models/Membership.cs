@@ -20,8 +20,9 @@ public class Membership
 
 public enum MembershipStatus
 {
-    Pending,
-    Active,
-    Suspended,
-    Cancelled
+    Pending = 0,
+    Active = 1,
+    Suspended = 2,
+    Cancelled = 3,
+    PendingPayment = 4
 }

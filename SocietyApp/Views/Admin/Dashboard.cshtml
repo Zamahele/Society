@@ -28,7 +28,17 @@
             <div class="card card-gold h-100 dashboard-card">
                 <div class="card-body text-center">
                     <h1 class="display-4">@ViewBag.PendingMembers</h1>
-                    <p class="mb-0">Pending</p>
+                    <p class="mb-0">Pending Approval</p>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-3">
+        <a asp-controller="Admin" asp-action="Members" class="text-decoration-none">
+            <div class="card card-slate h-100 dashboard-card">
+                <div class="card-body text-center">
+                    <h1 class="display-4">@ViewBag.PendingPaymentMembers</h1>
+                    <p class="mb-0">Pending Payment</p>
                 </div>
             </div>
         </a>
@@ -46,7 +56,7 @@
 </div>
 
 <div class="row g-3">
-    <div class="col-md-3">
+    <div class="col-md-4">
         <a asp-controller="Claims" asp-action="Index" class="text-decoration-none">
             <div class="card card-plum h-100 dashboard-card">
                 <div class="card-body text-center">
@@ -56,7 +66,7 @@
             </div>
         </a>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-4">
         <a asp-controller="Payments" asp-action="PendingJoiningFees" class="text-decoration-none">
             <div class="card card-slate h-100 dashboard-card">
                 <div class="card-body text-center">
@@ -66,7 +76,7 @@
             </div>
         </a>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-4">
         <a asp-controller="Payments" asp-action="PendingMonthly" class="text-decoration-none">
             <div class="card card-navy2 h-100 dashboard-card">
                 <div class="card-body text-center">
@@ -76,7 +86,10 @@
             </div>
         </a>
     </div>
-    <div class="col-md-3">
+</div>
+
+<div class="row g-3 mt-1">
+    <div class="col-md-4">
         <a asp-controller="Claims" asp-action="Index" class="text-decoration-none">
             <div class="card card-olive h-100 dashboard-card">
                 <div class="card-body text-center">

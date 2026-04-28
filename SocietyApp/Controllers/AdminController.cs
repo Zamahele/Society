@@ -42,6 +42,7 @@ public class AdminController : Controller
         ViewBag.TotalMembers = memberships.Count;
         ViewBag.ActiveMembers = memberships.Count(m => m.Status == MembershipStatus.Active);
         ViewBag.PendingMembers = memberships.Count(m => m.Status == MembershipStatus.Pending);
+        ViewBag.PendingPaymentMembers = memberships.Count(m => m.Status == MembershipStatus.PendingPayment);
         ViewBag.SuspendedMembers = memberships.Count(m => m.Status == MembershipStatus.Suspended);
         ViewBag.TotalClaims = claims.Count;
         ViewBag.PendingClaims = claims.Count(c => c.ClaimStatus == ClaimStatus.Submitted || c.ClaimStatus == ClaimStatus.UnderReview);
@@ -86,7 +87,7 @@ public class AdminController : Controller
         }
 
         await _membershipService.ActivateAsync(id);
-        TempData["Success"] = "Member approved and activated.";
+        TempData["Success"] = "Member approved. Joining fee payment is still required before activation.";
         return RedirectToAction(nameof(MemberDetails), new { id });
     }
 

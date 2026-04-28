@@ -59,6 +59,23 @@ public class MembershipServiceTests
     }
 
     [Fact]
+    public async Task ActivateAsync_MovesMembershipToPendingPayment()
+    {
+        using var db = TestDbFactory.CreateContext();
+        var payments = new StubPaymentService();
+        var service = new MembershipService(db, payments);
+
+        var membership = await service.CreateAsync("member-approval");
+
+        await service.ActivateAsync(membership.Id);
+
+        var updated = await db.Memberships.FindAsync(membership.Id);
+        Assert.NotNull(updated);
+        Assert.Equal(MembershipStatus.PendingPayment, updated!.Status);
+        Assert.Null(updated.DateActivated);
+    }
+
+    [Fact]
     public async Task CheckAndSuspendIfOverdueAsync_SuspendsActiveMembership()
     {
         using var db = TestDbFactory.CreateContext();

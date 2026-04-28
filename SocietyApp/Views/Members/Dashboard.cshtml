@@ -19,11 +19,15 @@
                         {
                             SocietyApp.Models.MembershipStatus.Active => "bg-success",
                             SocietyApp.Models.MembershipStatus.Pending => "bg-warning text-dark",
+                            SocietyApp.Models.MembershipStatus.PendingPayment => "bg-info text-dark",
                             SocietyApp.Models.MembershipStatus.Suspended => "bg-danger",
                             _ => "bg-secondary"
                         };
+                        var statusLabel = Model.Status == SocietyApp.Models.MembershipStatus.PendingPayment
+                            ? "Pending Payment"
+                            : Model.Status.ToString();
                     }
-                    <span class="badge @badgeClass">@Model.Status</span>
+                    <span class="badge @badgeClass">@statusLabel</span>
                 </p>
                 <p class="mb-1"><strong>Joined:</strong> @Model.DateIssued.ToString("dd MMM yyyy")</p>
                 @if (Model.DateActivated.HasValue)
@@ -40,7 +44,14 @@
         @if (Model.Status == SocietyApp.Models.MembershipStatus.Pending)
         {
             <div class="alert alert-warning">
-                Your membership is pending. Please pay the joining fee of <strong>R150</strong> using your membership number <strong>@Model.MembershipNumber</strong> as the EFT reference, then submit proof below.
+                Your membership is awaiting approval. Once approved, you will still need to pay the joining fee before your membership becomes active.
+            </div>
+        }
+
+        @if (Model.Status == SocietyApp.Models.MembershipStatus.PendingPayment)
+        {
+            <div class="alert alert-info">
+                Your membership has been approved and is now <strong>pending payment</strong>. Please pay the joining fee of <strong>R150</strong> using your membership number <strong>@Model.MembershipNumber</strong> as the EFT reference, then submit proof below.
                 <div class="mt-2">
                     <a asp-controller="Payments" asp-action="SubmitJoiningFee" class="btn btn-sm btn-dark">Submit Joining Fee</a>
                 </div>

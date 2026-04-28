@@ -22,11 +22,15 @@
                         {
                             SocietyApp.Models.MembershipStatus.Active => "bg-success",
                             SocietyApp.Models.MembershipStatus.Pending => "bg-warning text-dark",
+                            SocietyApp.Models.MembershipStatus.PendingPayment => "bg-info text-dark",
                             SocietyApp.Models.MembershipStatus.Suspended => "bg-danger",
                             _ => "bg-secondary"
                         };
+                        var statusLabel = m.Status == SocietyApp.Models.MembershipStatus.PendingPayment
+                            ? "Pending Payment"
+                            : m.Status.ToString();
                     }
-                    <span class="badge @badge">@m.Status</span>
+                    <span class="badge @badge">@statusLabel</span>
                 </td>
                 <td>@m.DateIssued.ToString("dd MMM yyyy")</td>
                 <td class="d-flex gap-2">

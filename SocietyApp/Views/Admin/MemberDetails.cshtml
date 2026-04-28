@@ -24,7 +24,7 @@
                 <button type="submit" class="btn btn-success">Reactivate Member</button>
             </form>
         }
-        else if (Model.Status != SocietyApp.Models.MembershipStatus.Pending)
+        else if (Model.Status == SocietyApp.Models.MembershipStatus.Active || Model.Status == SocietyApp.Models.MembershipStatus.PendingPayment)
         {
             <form asp-action="DeactivateMember" method="post">
                 <input type="hidden" name="id" value="@Model.Id" />
@@ -59,11 +59,33 @@
                 <p><strong>Address:</strong> @Model.User.Address</p>
                 <p><strong>Bank:</strong> @Model.User.BankName</p>
                 <p><strong>Account:</strong> @Model.User.BankAccountNumber (@Model.User.BankAccountName)</p>
-                <p><strong>Status:</strong> <span class="badge bg-secondary">@Model.Status</span></p>
+                <p>
+                    <strong>Status:</strong>
+                    @{
+                        var statusBadge = Model.Status switch
+                        {
+                            SocietyApp.Models.MembershipStatus.Active => "bg-success",
+                            SocietyApp.Models.MembershipStatus.Pending => "bg-warning text-dark",
+                            SocietyApp.Models.MembershipStatus.PendingPayment => "bg-info text-dark",
+                            SocietyApp.Models.MembershipStatus.Suspended => "bg-danger",
+                            _ => "bg-secondary"
+                        };
+                        var detailStatusLabel = Model.Status == SocietyApp.Models.MembershipStatus.PendingPayment
+                            ? "Pending Payment"
+                            : Model.Status.ToString();
+                    }
+                    <span class="badge @statusBadge">@detailStatusLabel</span>
+                </p>
                 <p><strong>Joined:</strong> @Model.DateIssued.ToString("dd MMM yyyy")</p>
                 @if (Model.DateActivated.HasValue)
                 {
                     <p><strong>Activated:</strong> @Model.DateActivated.Value.ToString("dd MMM yyyy")</p>
+                }
+                @if (Model.Status == SocietyApp.Models.MembershipStatus.PendingPayment)
+                {
+                    <div class="alert alert-info mt-3 mb-0">
+                        Member is approved, but the joining fee still needs to be paid and confirmed before activation.
+                    </div>
                 }
             </div>
         </div>

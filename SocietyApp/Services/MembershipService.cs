@@ -83,8 +83,7 @@ public class MembershipService : IMembershipService
         var membership = await _db.Memberships.FindAsync(membershipId);
         if (membership == null) return;
 
-        membership.Status = MembershipStatus.Active;
-        membership.DateActivated = DateTime.UtcNow;
+        membership.Status = MembershipStatus.PendingPayment;
         await _db.SaveChangesAsync();
     }
 

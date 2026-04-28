@@ -33,6 +33,15 @@ Member registers online using ID Number
 System generates MembershipNumber (e.g. SOC-0001)
             |
             v
+Status: PENDING (awaiting admin approval)
+            |
+            v
+Admin approves member
+            |
+            v
+Status: PENDING PAYMENT
+            |
+            v
 Member adds dependants (up to 10)
             |
             v
@@ -62,10 +71,14 @@ Main member logs in and submits claim
 Uploads death certificate (stored in database)
             |
             v
+System checks whether member banking details are saved
+                        |
+                        v
 System validates eligibility:
   - Member status is Active?
   - 6 months waiting period from activation date met?
   - No monthly payment overdue more than 30 days?
+    - Duplicate claim already submitted for same deceased person?
             |
         Pass / Fail
             |
@@ -91,14 +104,17 @@ System validates eligibility:
 |---|---|
 | Membership number | Format `SOC-0001`, auto-incremented, padded to 4 digits |
 | Max dependants | 10 per membership |
-| Joining fee | R150, once-off, paid before activation |
+| Approval before activation | Admin approval is required before a membership can move to payment stage |
+| Joining fee | R150, once-off, paid after approval and before activation |
 | Monthly fee | R150 per month, ongoing |
 | Grace period | 30 days before a missed payment suspends the membership |
 | Waiting period | Member must be active for 6 months before submitting a claim |
 | Claim payout | R15,000 cash + R15,000 grocery voucher = R30,000 total |
-| Payout recipient | Main member (their registered bank account) |
+| Banking details | Not required during registration, but required before claim submission/payout processing |
+| Payout recipient | Main member (their saved bank account) |
 | Duplicate claims | System prevents more than one claim per deceased person |
 | Eligibility check | Performed at claim submission time |
+| Walk-ins | Clerks and admins can create members for walk-in registrations |
 | Login | Members use ID Number as username and create their own password |
 
 ---
@@ -107,7 +123,8 @@ System validates eligibility:
 
 | Status | Meaning |
 |---|---|
-| `Pending` | Registered, joining fee not yet confirmed |
+| `Pending` | Registered, waiting for admin approval |
+| `PendingPayment` | Approved, but joining fee not yet paid/confirmed |
 | `Active` | Joining fee confirmed, payments up to date |
 | `Suspended` | Monthly payment overdue more than 30 days |
 | `Cancelled` | Membership terminated |
@@ -146,7 +163,7 @@ BankName
 Id
 MembershipNumber  - SOC-0001
 UserId            - FK to ApplicationUser
-Status
+Status            - Pending | PendingPayment | Active | Suspended | Cancelled
 DateIssued
 DateActivated
 ```
@@ -207,6 +224,16 @@ VoucherPaidDate
 RejectionReason
 ProcessedByAdminId
 ```
+
+---
+
+## Current Workflow Notes
+
+- Registration is intentionally simple and mobile-friendly: personal details plus password.
+- Banking details are collected later and become mandatory before a claim can be submitted.
+- Admin approval does not activate the member on its own.
+- Joining fee confirmation is the event that activates the membership.
+- Duplicate death claims for the same covered person are blocked in the claim workflow.
 
 ---
 
