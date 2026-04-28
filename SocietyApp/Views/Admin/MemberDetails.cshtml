@@ -43,7 +43,7 @@
                 <input id="confirmIdNumber" name="confirmIdNumber" class="form-control" placeholder="@Model.User.IDNumber" required />
             </div>
             <div class="col-12">
-                <button type="submit" class="btn btn-danger" onclick="return confirm('This will permanently delete this member and all related records. Continue?');">Delete Member Data</button>
+                <button type="submit" class="btn btn-danger" data-confirm="This will permanently delete this member and all related records. This cannot be undone.">Delete Member Data</button>
             </div>
         </form>
     </div>
@@ -97,7 +97,7 @@
                 {
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         <span>@d.FullName <span class="text-muted small">(@d.Relationship)</span></span>
-                        <form asp-action="RemoveDependantForMember" method="post" onsubmit="return confirm('Remove this dependant?')">
+                        <form asp-action="RemoveDependantForMember" method="post" data-confirm="Remove this dependant? This cannot be undone.">
                             <input type="hidden" name="membershipId" value="@Model.Id" />
                             <input type="hidden" name="dependantId" value="@d.Id" />
                             <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>

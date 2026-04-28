@@ -26,7 +26,7 @@ else
                         <form asp-action="ConfirmJoiningFee" method="post" style="display:inline">
                             <input type="hidden" name="id" value="@p.Id" />
                             <button type="submit" class="btn btn-sm btn-success"
-                                onclick="return confirm('Confirm this joining fee payment and activate membership?')">
+                                data-confirm="Confirm this joining fee payment and activate membership?">
                                 Confirm
                             </button>
                         </form>
