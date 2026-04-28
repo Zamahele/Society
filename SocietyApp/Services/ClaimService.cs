@@ -55,6 +55,21 @@ public class ClaimService : IClaimService
 
     public async Task<DeathClaim> SubmitClaimAsync(int membershipId, DeathClaim claim, byte[]? certificate, string? fileName, string? submittedByClerkId = null)
     {
+        var duplicateExists = claim.DeceasedType switch
+        {
+            DeceasedType.MainMember => await _db.DeathClaims.AnyAsync(c =>
+                c.MembershipId == membershipId && c.DeceasedType == DeceasedType.MainMember),
+            DeceasedType.Dependant when claim.DependantId.HasValue => await _db.DeathClaims.AnyAsync(c =>
+                c.MembershipId == membershipId
+                && c.DeceasedType == DeceasedType.Dependant
+                && c.DependantId == claim.DependantId),
+            DeceasedType.Dependant => throw new InvalidOperationException("A dependant claim must reference the dependant who passed away."),
+            _ => false
+        };
+
+        if (duplicateExists)
+            throw new InvalidOperationException("A claim for this deceased person has already been submitted.");
+
         claim.MembershipId = membershipId;
         claim.ClaimDate = DateTime.UtcNow;
         claim.ClaimStatus = ClaimStatus.Submitted;

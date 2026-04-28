@@ -95,6 +95,110 @@ public class ClaimServiceTests
     }
 
     [Fact]
+    public async Task SubmitClaimAsync_RejectsDuplicateMainMemberClaims()
+    {
+        using var db = TestDbFactory.CreateContext();
+        var payments = new StubPaymentService();
+        var service = new ClaimService(db, payments);
+
+        var membership = new Membership
+        {
+            MembershipNumber = "SOC-6100",
+            UserId = "member-dup-main",
+            Status = MembershipStatus.Active,
+            DateIssued = DateTime.UtcNow.AddMonths(-8),
+            DateActivated = DateTime.UtcNow.AddMonths(-7)
+        };
+
+        db.Memberships.Add(membership);
+        await db.SaveChangesAsync();
+
+        await service.SubmitClaimAsync(
+            membership.Id,
+            new DeathClaim
+            {
+                DeceasedType = DeceasedType.MainMember,
+                DeceasedFullName = "Primary Member",
+                DateOfDeath = DateTime.UtcNow.AddDays(-2)
+            },
+            null,
+            null);
+
+        var ex = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            service.SubmitClaimAsync(
+                membership.Id,
+                new DeathClaim
+                {
+                    DeceasedType = DeceasedType.MainMember,
+                    DeceasedFullName = "Primary Member",
+                    DateOfDeath = DateTime.UtcNow.AddDays(-1)
+                },
+                null,
+                null));
+
+        Assert.Contains("already been submitted", ex.Message, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task SubmitClaimAsync_RejectsDuplicateDependantClaims()
+    {
+        using var db = TestDbFactory.CreateContext();
+        var payments = new StubPaymentService();
+        var service = new ClaimService(db, payments);
+
+        var membership = new Membership
+        {
+            MembershipNumber = "SOC-6200",
+            UserId = "member-dup-dependant",
+            Status = MembershipStatus.Active,
+            DateIssued = DateTime.UtcNow.AddMonths(-8),
+            DateActivated = DateTime.UtcNow.AddMonths(-7)
+        };
+
+        db.Memberships.Add(membership);
+        await db.SaveChangesAsync();
+
+        var dependant = new MemberDependant
+        {
+            MembershipId = membership.Id,
+            FullName = "Dependent Person",
+            IDNumber = "8201011234088",
+            DateOfBirth = DateTime.UtcNow.AddYears(-18),
+            Relationship = DependantRelationship.Child
+        };
+
+        db.MemberDependants.Add(dependant);
+        await db.SaveChangesAsync();
+
+        await service.SubmitClaimAsync(
+            membership.Id,
+            new DeathClaim
+            {
+                DeceasedType = DeceasedType.Dependant,
+                DependantId = dependant.Id,
+                DeceasedFullName = dependant.FullName,
+                DateOfDeath = DateTime.UtcNow.AddDays(-2)
+            },
+            null,
+            null);
+
+        var ex = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            service.SubmitClaimAsync(
+                membership.Id,
+                new DeathClaim
+                {
+                    DeceasedType = DeceasedType.Dependant,
+                    DependantId = dependant.Id,
+                    DeceasedFullName = dependant.FullName,
+                    DateOfDeath = DateTime.UtcNow.AddDays(-1)
+                },
+                null,
+                null));
+
+        Assert.Contains("already been submitted", ex.Message, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
     public async Task RecordPayouts_TransitionsClaimToFullyPaid()
     {
         using var db = TestDbFactory.CreateContext();

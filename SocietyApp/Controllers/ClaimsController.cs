@@ -95,7 +95,17 @@ public class ClaimsController : Controller
             DateOfDeath = model.DateOfDeath
         };
 
-        await _claimService.SubmitClaimAsync(model.MembershipId, claim, certData, certFileName);
+        try
+        {
+            await _claimService.SubmitClaimAsync(model.MembershipId, claim, certData, certFileName);
+        }
+        catch (InvalidOperationException ex)
+        {
+            ModelState.AddModelError(string.Empty, ex.Message);
+            model.Dependants = await _membershipService.GetDependantsAsync(model.MembershipId);
+            return View(model);
+        }
+
         TempData["Success"] = "Claim submitted successfully. We will be in touch.";
         return RedirectToAction(nameof(MyClaims));
     }

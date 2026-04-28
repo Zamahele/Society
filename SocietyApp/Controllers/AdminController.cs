@@ -412,7 +412,17 @@ public class AdminController : Controller
         };
 
         var clerk = await _userManager.GetUserAsync(User);
-        await _claimService.SubmitClaimAsync(model.MembershipId, claim, certData, certFileName, clerk!.Id);
+        try
+        {
+            await _claimService.SubmitClaimAsync(model.MembershipId, claim, certData, certFileName, clerk!.Id);
+        }
+        catch (InvalidOperationException ex)
+        {
+            ModelState.AddModelError(string.Empty, ex.Message);
+            model.Dependants = await _membershipService.GetDependantsAsync(model.MembershipId);
+            return View(model);
+        }
+
         TempData["Success"] = "Claim submitted on behalf of member.";
         return RedirectToAction(nameof(MemberDetails), new { id = model.MembershipId });
     }
