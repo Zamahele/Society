@@ -222,6 +222,33 @@
             </div>
         </div>
 
+        <div class="card mb-4">
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                Reset Password
+                <button class="btn btn-sm btn-outline-light" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#resetPasswordForm">Reset</button>
+            </div>
+            <div class="collapse" id="resetPasswordForm">
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Set a new temporary password for this member. They should change it after logging in.</p>
+                    <form asp-action="ResetMemberPassword" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="userId" value="@Model.UserId" />
+                        <input type="hidden" name="membershipId" value="@Model.Id" />
+                        <div class="row g-2">
+                            <div class="col-sm-6">
+                                <input name="newPassword" type="password" class="form-control form-control-sm"
+                                       placeholder="New password (min 8 chars)" required minlength="8" />
+                            </div>
+                            <div class="col-sm-3">
+                                <button type="submit" class="btn btn-sm btn-dark w-100">Set Password</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
         <div class="card">
             <div class="card-header bg-dark text-white">Claims</div>
             <div class="card-body p-0">

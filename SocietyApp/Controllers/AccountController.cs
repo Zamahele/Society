@@ -111,4 +111,93 @@ public class AccountController : Controller
     }
 
     public IActionResult AccessDenied() => View();
+
+    // ---- Forgot Password (no email/SMS — verified by DOB + Phone) ----
+
+    [HttpGet]
+    public IActionResult ForgotPassword() => View();
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+    {
+        if (!ModelState.IsValid) return View(model);
+
+        var user = await _userManager.FindByNameAsync(model.IDNumber);
+        if (user == null)
+        {
+            ModelState.AddModelError(string.Empty, "No account found with that ID number.");
+            return View(model);
+        }
+
+        TempData["ResetUserId"] = user.Id;
+        return RedirectToAction(nameof(SecurityQuestions));
+    }
+
+    [HttpGet]
+    public IActionResult SecurityQuestions()
+    {
+        var userId = TempData["ResetUserId"] as string;
+        if (string.IsNullOrEmpty(userId))
+            return RedirectToAction(nameof(ForgotPassword));
+
+        TempData.Keep("ResetUserId");
+        return View(new SecurityQuestionsViewModel { UserId = userId });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SecurityQuestions(SecurityQuestionsViewModel model)
+    {
+        if (!ModelState.IsValid) return View(model);
+
+        var user = await _userManager.FindByIdAsync(model.UserId);
+        if (user == null) return RedirectToAction(nameof(ForgotPassword));
+
+        var dobMatch = user.DateOfBirth.Date == model.DateOfBirth.Date;
+        var phoneMatch = string.Equals(user.Phone?.Trim(), model.Phone.Trim(), StringComparison.OrdinalIgnoreCase);
+
+        if (!dobMatch || !phoneMatch)
+        {
+            ModelState.AddModelError(string.Empty, "The answers you provided do not match our records.");
+            return View(model);
+        }
+
+        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+        TempData["ResetToken"] = token;
+        TempData["ResetUserId"] = user.Id;
+        return RedirectToAction(nameof(ResetPasswordConfirm));
+    }
+
+    [HttpGet]
+    public IActionResult ResetPasswordConfirm()
+    {
+        var userId = TempData["ResetUserId"] as string;
+        var token = TempData["ResetToken"] as string;
+        if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(token))
+            return RedirectToAction(nameof(ForgotPassword));
+
+        return View(new ResetPasswordConfirmViewModel { UserId = userId, Token = token });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ResetPasswordConfirm(ResetPasswordConfirmViewModel model)
+    {
+        if (!ModelState.IsValid) return View(model);
+
+        var user = await _userManager.FindByIdAsync(model.UserId);
+        if (user == null) return RedirectToAction(nameof(ForgotPassword));
+
+        var result = await _userManager.ResetPasswordAsync(user, model.Token, model.NewPassword);
+        if (!result.Succeeded)
+        {
+            foreach (var e in result.Errors)
+                ModelState.AddModelError(string.Empty, e.Description);
+            return View(model);
+        }
+
+        TempData["Success"] = "Password reset successfully. You can now log in.";
+        return RedirectToAction(nameof(Login));
+    }
 }

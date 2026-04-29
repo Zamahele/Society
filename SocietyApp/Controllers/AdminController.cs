@@ -727,4 +727,28 @@ public class AdminController : Controller
 
         return RedirectToAction(nameof(PublicContent));
     }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ResetMemberPassword(string userId, string newPassword, int membershipId)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+        {
+            TempData["Error"] = "Member not found.";
+            return RedirectToAction(nameof(MemberDetails), new { id = membershipId });
+        }
+
+        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+        var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
+
+        if (!result.Succeeded)
+        {
+            TempData["Error"] = string.Join(" ", result.Errors.Select(e => e.Description));
+            return RedirectToAction(nameof(MemberDetails), new { id = membershipId });
+        }
+
+        TempData["Success"] = $"Password for {user.FullName} has been reset.";
+        return RedirectToAction(nameof(MemberDetails), new { id = membershipId });
+    }
 }
