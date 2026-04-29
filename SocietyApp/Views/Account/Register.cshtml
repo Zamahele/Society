@@ -59,8 +59,8 @@
                                     <div class="col-12 col-sm-6">
                                         <div class="mb-3">
                                             <label asp-for="DateOfBirth" class="form-label fw-semibold">Date of Birth</label>
-                                            <input asp-for="DateOfBirth" class="form-control" type="date" />
-                                            <span asp-validation-for="DateOfBirth" class="text-danger small"></span>
+                                            <input asp-for="DateOfBirth" class="form-control" type="date" readonly />
+                                            <small class="text-muted">Auto-filled from ID number</small>
                                         </div>
                                     </div>
                                 </div>
@@ -221,5 +221,20 @@
             document.getElementById('NomineeRelationship').value = '';
             goToStep(3);
         }
+
+        function parseDobFromSaId(id) {
+            id = id.replace(/\D/g, '');
+            if (id.length < 6) return '';
+            var yy = parseInt(id.substring(0, 2), 10);
+            var mm = id.substring(2, 4);
+            var dd = id.substring(4, 6);
+            var currentYY = new Date().getFullYear() % 100;
+            var yyyy = yy <= currentYY ? 2000 + yy : 1900 + yy;
+            return yyyy + '-' + mm + '-' + dd;
+        }
+
+        document.getElementById('IDNumber').addEventListener('input', function () {
+            document.getElementById('DateOfBirth').value = parseDobFromSaId(this.value);
+        });
     </script>
 }

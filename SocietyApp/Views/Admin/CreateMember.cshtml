@@ -28,8 +28,8 @@
                 </div>
                 <div class="col-md-6 mb-3">
                     <label asp-for="DateOfBirth" class="form-label"></label>
-                    <input asp-for="DateOfBirth" class="form-control" type="date" />
-                    <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                    <input asp-for="DateOfBirth" class="form-control" type="date" readonly />
+                    <small class="text-muted">Auto-filled from ID number</small>
                 </div>
             </div>
             <div class="mb-3">
@@ -71,4 +71,22 @@
     </div>
 </div>
 
-@section Scripts { @{await Html.RenderPartialAsync("_ValidationScriptsPartial");} }
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        function parseDobFromSaId(id) {
+            id = id.replace(/\D/g, '');
+            if (id.length < 6) return '';
+            var yy = parseInt(id.substring(0, 2), 10);
+            var mm = id.substring(2, 4);
+            var dd = id.substring(4, 6);
+            var currentYY = new Date().getFullYear() % 100;
+            var yyyy = yy <= currentYY ? 2000 + yy : 1900 + yy;
+            return yyyy + '-' + mm + '-' + dd;
+        }
+
+        document.getElementById('IDNumber').addEventListener('input', function () {
+            document.getElementById('DateOfBirth').value = parseDobFromSaId(this.value);
+        });
+    </script>
+}
