@@ -15,6 +15,8 @@ public class JoiningFeePayment
     public ApplicationUser? ConfirmedByClerk { get; set; }
     public DateTime? ConfirmedDate { get; set; }
     public string? Notes { get; set; }
+    public byte[]? ProofData { get; set; }
+    public string? ProofFileName { get; set; }
 }
 
 public enum PaymentStatus

@@ -4,7 +4,15 @@
       "Read(//c/Repos/InvoiceApp//**)",
       "Read(//c/Repos/InvoiceApp/InvoiceApp.Web/**)",
       "Read(//c/Repos/InvoiceApp/**)",
-      "Bash(dotnet ef:*)"
+      "Bash(dotnet ef:*)",
+      "mcp__chrome-devtools__navigate_page",
+      "mcp__chrome-devtools__take_screenshot",
+      "mcp__chrome-devtools__take_snapshot",
+      "mcp__chrome-devtools__evaluate_script",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(git commit *)"
     ]
   }
 }

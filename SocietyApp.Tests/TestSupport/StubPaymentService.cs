@@ -9,7 +9,7 @@ internal sealed class StubPaymentService : IPaymentService
 
     public Task<bool> IsOverdueAsync(int membershipId) => Task.FromResult(IsOverdueResult);
 
-    public Task<JoiningFeePayment> SubmitJoiningFeeAsync(int membershipId, string reference, DateTime paymentDate, string? submittedByClerkId = null)
+    public Task<JoiningFeePayment> SubmitJoiningFeeAsync(int membershipId, string reference, DateTime paymentDate, string? submittedByClerkId = null, byte[]? proofData = null, string? proofFileName = null)
         => throw new NotImplementedException();
 
     public Task ConfirmJoiningFeeAsync(int paymentId, string clerkId)
@@ -24,7 +24,7 @@ internal sealed class StubPaymentService : IPaymentService
     public Task<bool> HasPendingJoiningFeeAsync(int membershipId) => Task.FromResult(false);
     public Task<List<JoiningFeePayment>> GetJoiningFeesByMembershipAsync(int membershipId) => Task.FromResult(new List<JoiningFeePayment>());
 
-    public Task<MonthlyPayment> SubmitMonthlyPaymentAsync(int membershipId, DateTime forMonth, string reference, DateTime paymentDate, string? submittedByClerkId = null)
+    public Task<MonthlyPayment> SubmitMonthlyPaymentAsync(int membershipId, DateTime forMonth, string reference, DateTime paymentDate, string? submittedByClerkId = null, byte[]? proofData = null, string? proofFileName = null)
         => throw new NotImplementedException();
 
     public Task ConfirmMonthlyPaymentAsync(int paymentId, string clerkId)

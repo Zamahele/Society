@@ -380,12 +380,12 @@
                         <strong>Account No:</strong> 1054981680 &nbsp;|&nbsp;
                         <strong>Branch:</strong> 450105
                     </div>
-                    <form asp-controller="Payments" asp-action="SubmitPayment" method="post">
+                    <form asp-controller="Payments" asp-action="SubmitPayment" method="post" enctype="multipart/form-data">
                         @Html.AntiForgeryToken()
                         <input type="hidden" name="MembershipId" value="@Model.Id" />
                         <input type="hidden" name="MembershipNumber" value="@Model.MembershipNumber" />
                         <div class="row g-2">
-                            <div class="col-md-4">
+                            <div class="col-sm-6">
                                 <label class="form-label form-label-sm">Payment Type</label>
                                 <select name="PaymentType" id="paymentType" class="form-select form-select-sm" required>
                                     @if (canSubmitJoiningFee)
@@ -398,19 +398,22 @@
                                     }
                                 </select>
                             </div>
-                            <div class="col-md-4" id="forMonthRow" style="@(canSubmitMonthly && !canSubmitJoiningFee ? "" : "display:none;")">
+                            <div class="col-sm-6" id="forMonthRow" style="@(canSubmitMonthly && !canSubmitJoiningFee ? "" : "display:none;")">
                                 <label class="form-label form-label-sm">For Month</label>
                                 <input name="ForMonth" id="forMonth" type="date" class="form-control form-control-sm"
                                        value="@(new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1).ToString("yyyy-MM-dd"))" />
                             </div>
-                            <div class="col-md-4">
-                                <label class="form-label form-label-sm">Date Paid</label>
-                                <input name="PaymentDate" type="date" class="form-control form-control-sm"
-                                       value="@DateTime.Today.ToString("yyyy-MM-dd")" required />
-                            </div>
-                            <div class="col-md-4">
+                            <div class="col-sm-6">
                                 <label class="form-label form-label-sm">EFT Reference</label>
-                                <input name="PaymentReference" class="form-control form-control-sm" placeholder="Reference" required />
+                                <input name="PaymentReference" class="form-control form-control-sm" placeholder="Your EFT reference number" required />
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="form-label form-label-sm">
+                                    <i class="bi bi-camera"></i> Proof of Payment <span class="text-muted">(optional)</span>
+                                </label>
+                                <input name="Proof" type="file" class="form-control form-control-sm"
+                                       accept="image/*,.pdf" capture="environment" />
+                                <small class="text-muted">Take a photo or upload your bank screenshot.</small>
                             </div>
                             <div class="col-12">
                                 <button type="submit" class="btn btn-sm btn-dark">Submit</button>

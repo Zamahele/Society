@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 
 namespace SocietyApp.ViewModels;
 
@@ -13,8 +14,7 @@ public class SubmitPaymentViewModel
     public DateTime? ForMonth { get; set; }
 
     [Required]
-    public DateTime PaymentDate { get; set; }
-
-    [Required]
     public string PaymentReference { get; set; } = string.Empty;
+
+    public IFormFile? Proof { get; set; }
 }

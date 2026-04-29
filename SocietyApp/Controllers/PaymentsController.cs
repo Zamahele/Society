@@ -108,6 +108,18 @@ public class PaymentsController : Controller
             return RedirectToAction("Dashboard", "Members");
         }
 
+        byte[]? proofData = null;
+        string? proofFileName = null;
+        if (model.Proof != null && model.Proof.Length > 0)
+        {
+            using var ms = new MemoryStream();
+            await model.Proof.CopyToAsync(ms);
+            proofData = ms.ToArray();
+            proofFileName = model.Proof.FileName;
+        }
+
+        var paymentDate = DateTime.Now;
+
         if (model.PaymentType == "JoiningFee")
         {
             if (await _paymentService.HasPendingJoiningFeeAsync(model.MembershipId))
@@ -115,12 +127,12 @@ public class PaymentsController : Controller
                 TempData["Error"] = "A joining fee submission is already pending confirmation.";
                 return RedirectToAction("Dashboard", "Members");
             }
-            await _paymentService.SubmitJoiningFeeAsync(model.MembershipId, model.PaymentReference, model.PaymentDate);
+            await _paymentService.SubmitJoiningFeeAsync(model.MembershipId, model.PaymentReference, paymentDate, proofData: proofData, proofFileName: proofFileName);
             TempData["Success"] = "Joining fee submitted. A clerk will confirm it shortly.";
         }
         else if (model.PaymentType == "Monthly" && model.ForMonth.HasValue)
         {
-            await _paymentService.SubmitMonthlyPaymentAsync(model.MembershipId, model.ForMonth.Value, model.PaymentReference, model.PaymentDate);
+            await _paymentService.SubmitMonthlyPaymentAsync(model.MembershipId, model.ForMonth.Value, model.PaymentReference, paymentDate, proofData: proofData, proofFileName: proofFileName);
             TempData["Success"] = "Monthly payment submitted. A clerk will confirm it shortly.";
         }
         else
@@ -129,6 +141,28 @@ public class PaymentsController : Controller
         }
 
         return RedirectToAction("Dashboard", "Members");
+    }
+
+    [Authorize(Roles = "Admin,Clerk")]
+    [HttpGet]
+    public async Task<IActionResult> JoiningFeeProof(int id)
+    {
+        var payment = await _paymentService.GetJoiningFeeByIdAsync(id);
+        if (payment?.ProofData == null) return NotFound();
+        var ct = payment.ProofFileName?.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase) == true
+            ? "application/pdf" : "image/jpeg";
+        return File(payment.ProofData, ct, payment.ProofFileName ?? "proof");
+    }
+
+    [Authorize(Roles = "Admin,Clerk")]
+    [HttpGet]
+    public async Task<IActionResult> MonthlyProof(int id)
+    {
+        var payment = await _paymentService.GetMonthlyPaymentByIdAsync(id);
+        if (payment?.ProofData == null) return NotFound();
+        var ct = payment.ProofFileName?.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase) == true
+            ? "application/pdf" : "image/jpeg";
+        return File(payment.ProofData, ct, payment.ProofFileName ?? "proof");
     }
 
     // ---- Clerk/Admin: Pending Joining Fees ----

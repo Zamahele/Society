@@ -20,6 +20,8 @@ public class MonthlyPayment
     public string? ConfirmedByClerkId { get; set; }
     public ApplicationUser? ConfirmedByClerk { get; set; }
     public DateTime? ConfirmedDate { get; set; }
+    public byte[]? ProofData { get; set; }
+    public string? ProofFileName { get; set; }
 }
 
 public enum MonthlyPaymentStatus

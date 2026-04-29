@@ -17,7 +17,7 @@ public class PaymentService : IPaymentService
 
     // --------------- Joining Fee ---------------
 
-    public async Task<JoiningFeePayment> SubmitJoiningFeeAsync(int membershipId, string reference, DateTime paymentDate, string? submittedByClerkId = null)
+    public async Task<JoiningFeePayment> SubmitJoiningFeeAsync(int membershipId, string reference, DateTime paymentDate, string? submittedByClerkId = null, byte[]? proofData = null, string? proofFileName = null)
     {
         var payment = new JoiningFeePayment
         {
@@ -26,7 +26,9 @@ public class PaymentService : IPaymentService
             PaymentReference = reference,
             PaymentDate = paymentDate,
             Status = PaymentStatus.Pending,
-            SubmittedByClerkId = submittedByClerkId
+            SubmittedByClerkId = submittedByClerkId,
+            ProofData = proofData,
+            ProofFileName = proofFileName
         };
 
         _db.JoiningFeePayments.Add(payment);
@@ -90,7 +92,7 @@ public class PaymentService : IPaymentService
 
     // --------------- Monthly Payments ---------------
 
-    public async Task<MonthlyPayment> SubmitMonthlyPaymentAsync(int membershipId, DateTime forMonth, string reference, DateTime paymentDate, string? submittedByClerkId = null)
+    public async Task<MonthlyPayment> SubmitMonthlyPaymentAsync(int membershipId, DateTime forMonth, string reference, DateTime paymentDate, string? submittedByClerkId = null, byte[]? proofData = null, string? proofFileName = null)
     {
         var normalizedMonth = new DateTime(forMonth.Year, forMonth.Month, 1);
 
@@ -102,7 +104,9 @@ public class PaymentService : IPaymentService
             PaymentReference = reference,
             PaymentDate = paymentDate,
             Status = MonthlyPaymentStatus.Pending,
-            SubmittedByClerkId = submittedByClerkId
+            SubmittedByClerkId = submittedByClerkId,
+            ProofData = proofData,
+            ProofFileName = proofFileName
         };
 
         _db.MonthlyPayments.Add(payment);
