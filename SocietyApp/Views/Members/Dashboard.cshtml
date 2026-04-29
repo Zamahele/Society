@@ -228,10 +228,11 @@
                                 <input name="FullName" class="form-control form-control-sm" placeholder="Full Name" required />
                             </div>
                             <div class="col-md-6">
-                                <input name="IDNumber" class="form-control form-control-sm" placeholder="ID Number" required />
+                                <input name="IDNumber" id="addIDNumber" class="form-control form-control-sm" placeholder="ID Number" required maxlength="13" />
                             </div>
                             <div class="col-md-6">
-                                <input name="DateOfBirth" type="date" class="form-control form-control-sm" required />
+                                <input name="DateOfBirth" id="addDateOfBirth" type="date" class="form-control form-control-sm" readonly />
+                                <small class="text-muted">Auto-filled from ID</small>
                             </div>
                             <div class="col-md-6">
                                 <select name="Relationship" class="form-select form-select-sm" required>
@@ -246,6 +247,42 @@
                                 <button type="submit" class="btn btn-sm btn-dark">Save Dependant</button>
                                 <button type="button" class="btn btn-sm btn-outline-secondary"
                                         data-bs-toggle="collapse" data-bs-target="#addDependantForm">Cancel</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="collapse" id="editDependantForm">
+                <div class="card-body border-bottom">
+                    <form asp-action="EditDependant" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="Id" id="editId" />
+                        <input type="hidden" name="MembershipId" value="@Model.Id" />
+                        <input type="hidden" name="returnTo" value="Dashboard" />
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <input name="FullName" id="editFullName" class="form-control form-control-sm" placeholder="Full Name" required />
+                            </div>
+                            <div class="col-md-6">
+                                <input name="IDNumber" id="editIDNumber" class="form-control form-control-sm" placeholder="ID Number" required maxlength="13" />
+                            </div>
+                            <div class="col-md-6">
+                                <input name="DateOfBirth" id="editDateOfBirth" type="date" class="form-control form-control-sm" readonly />
+                                <small class="text-muted">Auto-filled from ID</small>
+                            </div>
+                            <div class="col-md-6">
+                                <select name="Relationship" id="editRelationship" class="form-select form-select-sm" required>
+                                    @foreach (var rel in Enum.GetValues<SocietyApp.Models.DependantRelationship>())
+                                    {
+                                        <option value="@rel">@rel</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-sm btn-dark">Save Changes</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary"
+                                        data-bs-toggle="collapse" data-bs-target="#editDependantForm">Cancel</button>
                             </div>
                         </div>
                     </form>
@@ -278,10 +315,17 @@
                                     <td class="d-none d-md-table-cell">@d.DateOfBirth.ToString("dd MMM yyyy")</td>
                                     <td>@d.Relationship</td>
                                     <td class="text-end text-nowrap">
-                                        <a asp-action="EditDependant" asp-route-id="@d.Id"
-                                           class="btn btn-sm btn-outline-secondary me-1" title="Edit @d.FullName">
+                                        <button type="button"
+                                                class="btn btn-sm btn-outline-secondary me-1"
+                                                title="Edit @d.FullName"
+                                                data-dep-id="@d.Id"
+                                                data-dep-name="@d.FullName"
+                                                data-dep-idnumber="@d.IDNumber"
+                                                data-dep-dob="@d.DateOfBirth.ToString("yyyy-MM-dd")"
+                                                data-dep-relationship="@d.Relationship"
+                                                onclick="openEditDependant(this)">
                                             <i class="bi bi-pencil"></i>
-                                        </a>
+                                        </button>
                                         <form asp-action="RemoveDependant" method="post" class="d-inline">
                                             @Html.AntiForgeryToken()
                                             <input type="hidden" name="id" value="@d.Id" />
@@ -355,3 +399,39 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        function parseDobFromSaId(id) {
+            id = id.replace(/\D/g, '');
+            if (id.length < 6) return '';
+            var yy = parseInt(id.substring(0, 2), 10);
+            var mm = id.substring(2, 4);
+            var dd = id.substring(4, 6);
+            var currentYY = new Date().getFullYear() % 100;
+            var yyyy = yy <= currentYY ? 2000 + yy : 1900 + yy;
+            return yyyy + '-' + mm + '-' + dd;
+        }
+
+        var addId = document.getElementById('addIDNumber');
+        if (addId) addId.addEventListener('input', function () {
+            document.getElementById('addDateOfBirth').value = parseDobFromSaId(this.value);
+        });
+
+        document.getElementById('editIDNumber').addEventListener('input', function () {
+            document.getElementById('editDateOfBirth').value = parseDobFromSaId(this.value);
+        });
+
+        function openEditDependant(btn) {
+            document.getElementById('editId').value = btn.dataset.depId;
+            document.getElementById('editFullName').value = btn.dataset.depName;
+            document.getElementById('editIDNumber').value = btn.dataset.depIdnumber;
+            document.getElementById('editDateOfBirth').value = btn.dataset.depDob;
+            document.getElementById('editRelationship').value = btn.dataset.depRelationship;
+
+            bootstrap.Collapse.getOrCreateInstance(document.getElementById('addDependantForm')).hide();
+            bootstrap.Collapse.getOrCreateInstance(document.getElementById('editDependantForm')).show();
+            document.getElementById('editDependantForm').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    </script>
+}

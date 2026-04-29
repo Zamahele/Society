@@ -241,7 +241,7 @@ public class MembersController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> EditDependant(EditDependantViewModel model)
+    public async Task<IActionResult> EditDependant(EditDependantViewModel model, string? returnTo = null)
     {
         var user = await _userManager.GetUserAsync(User);
         var membership = user == null ? null : await _membershipService.GetByUserIdAsync(user.Id);
@@ -254,7 +254,11 @@ public class MembersController : Controller
             return RedirectToAction(nameof(Dashboard));
         }
 
-        if (!ModelState.IsValid) return View(model);
+        if (!ModelState.IsValid)
+        {
+            if (returnTo == "Dashboard") return RedirectToAction(nameof(Dashboard));
+            return View(model);
+        }
 
         await _membershipService.UpdateDependantAsync(model.Id, model.FullName.Trim(), model.IDNumber.Trim(), model.DateOfBirth, model.Relationship);
         TempData["Success"] = "Dependant updated successfully.";
