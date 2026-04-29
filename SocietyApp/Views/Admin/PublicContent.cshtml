@@ -70,7 +70,13 @@
                     </div>
                     <div class="col-md-6">
                         <label asp-for="Settings.BankAccountType" class="form-label">Account Type</label>
-                        <input asp-for="Settings.BankAccountType" class="form-control" />
+                        <select asp-for="Settings.BankAccountType" class="form-select">
+                            <option value="">-- Select --</option>
+                            <option>Current</option>
+                            <option>Savings</option>
+                            <option>Cheque</option>
+                            <option>Transmission</option>
+                        </select>
                     </div>
 
                     <div class="col-md-6">
