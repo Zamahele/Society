@@ -48,6 +48,7 @@ public class MembersController : Controller
         ViewBag.CanAdd = canAdd;
         ViewBag.Eligibility = eligibility;
         ViewBag.HasPendingJoiningFee = await _paymentService.HasPendingJoiningFeeAsync(membership.Id);
+        ViewBag.JoiningFeePayments = await _paymentService.GetJoiningFeesByMembershipAsync(membership.Id);
 
         if (membership.DateActivated.HasValue)
         {

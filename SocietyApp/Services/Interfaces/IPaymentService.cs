@@ -10,6 +10,7 @@ public interface IPaymentService
     Task<List<JoiningFeePayment>> GetPendingJoiningFeesAsync();
     Task<JoiningFeePayment?> GetJoiningFeeByIdAsync(int id);
     Task<bool> HasPendingJoiningFeeAsync(int membershipId);
+    Task<List<JoiningFeePayment>> GetJoiningFeesByMembershipAsync(int membershipId);
 
     // Monthly payments
     Task<MonthlyPayment> SubmitMonthlyPaymentAsync(int membershipId, DateTime forMonth, string reference, DateTime paymentDate, string? submittedByClerkId = null);

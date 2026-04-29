@@ -80,6 +80,14 @@ public class PaymentService : IPaymentService
             .AnyAsync(p => p.MembershipId == membershipId && p.Status == PaymentStatus.Pending);
     }
 
+    public async Task<List<JoiningFeePayment>> GetJoiningFeesByMembershipAsync(int membershipId)
+    {
+        return await _db.JoiningFeePayments
+            .Where(p => p.MembershipId == membershipId)
+            .OrderByDescending(p => p.PaymentDate)
+            .ToListAsync();
+    }
+
     // --------------- Monthly Payments ---------------
 
     public async Task<MonthlyPayment> SubmitMonthlyPaymentAsync(int membershipId, DateTime forMonth, string reference, DateTime paymentDate, string? submittedByClerkId = null)

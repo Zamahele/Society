@@ -388,7 +388,7 @@
 
         <div class="card mb-4">
             <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-                Monthly Payment History
+                Payment History
                 <button class="btn btn-sm btn-outline-light" type="button"
                         data-bs-toggle="collapse" data-bs-target="#submitPaymentForm">+ Submit Payment</button>
             </div>
@@ -430,21 +430,38 @@
                 </div>
             </div>
             <div class="card-body p-0">
+                @{
+                    var joiningFees = (IEnumerable<SocietyApp.Models.JoiningFeePayment>)ViewBag.JoiningFeePayments;
+                    var monthlyPayments = (IEnumerable<SocietyApp.Models.MonthlyPayment>)ViewBag.MonthlyPayments;
+                }
                 <table class="table table-sm mb-0">
-                    <thead><tr><th>Month</th><th>Amount</th><th>Reference</th><th>Status</th></tr></thead>
+                    <thead><tr><th>Type</th><th>Date</th><th>Reference</th><th>Amount</th><th>Status</th></tr></thead>
                     <tbody>
-                        @foreach (var p in (IEnumerable<SocietyApp.Models.MonthlyPayment>)ViewBag.MonthlyPayments)
+                        @foreach (var p in joiningFees)
                         {
+                            var jfBadge = p.Status == SocietyApp.Models.PaymentStatus.Confirmed ? "bg-success" : "bg-warning text-dark";
                             <tr>
-                                <td>@p.ForMonth.ToString("MMM yyyy")</td>
-                                <td>R@(p.Amount)</td>
+                                <td><span class="badge bg-secondary">Joining Fee</span></td>
+                                <td>@p.PaymentDate.ToString("dd MMM yyyy")</td>
                                 <td>@p.PaymentReference</td>
-                                <td>
-                                    <span class="badge @(p.Status == SocietyApp.Models.MonthlyPaymentStatus.Confirmed ? "bg-success" : p.Status == SocietyApp.Models.MonthlyPaymentStatus.Missed ? "bg-danger" : "bg-warning text-dark")">
-                                        @p.Status
-                                    </span>
-                                </td>
+                                <td>R@(p.Amount)</td>
+                                <td><span class="badge @jfBadge">@p.Status</span></td>
                             </tr>
+                        }
+                        @foreach (var p in monthlyPayments)
+                        {
+                            var mpBadge = p.Status == SocietyApp.Models.MonthlyPaymentStatus.Confirmed ? "bg-success" : p.Status == SocietyApp.Models.MonthlyPaymentStatus.Missed ? "bg-danger" : "bg-warning text-dark";
+                            <tr>
+                                <td><span class="badge bg-info text-dark">@p.ForMonth.ToString("MMM yyyy")</span></td>
+                                <td>@p.PaymentDate.ToString("dd MMM yyyy")</td>
+                                <td>@p.PaymentReference</td>
+                                <td>R@(p.Amount)</td>
+                                <td><span class="badge @mpBadge">@p.Status</span></td>
+                            </tr>
+                        }
+                        @if (!joiningFees.Any() && !monthlyPayments.Any())
+                        {
+                            <tr><td colspan="5" class="text-muted small py-3 text-center">No payment records yet.</td></tr>
                         }
                     </tbody>
                 </table>
