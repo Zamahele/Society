@@ -35,7 +35,9 @@ else
                     <td>
                         <form asp-action="RemoveDependant" method="post" data-confirm="Remove this dependant? This cannot be undone.">
                             <input type="hidden" name="id" value="@d.Id" />
-                            <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Remove @d.FullName">
+                                <i class="bi bi-trash"></i>
+                            </button>
                         </form>
                     </td>
                 </tr>

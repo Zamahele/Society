@@ -273,14 +273,17 @@
                                     <td>@d.Relationship</td>
                                     <td class="text-end">
                                         <a asp-action="EditDependant" asp-route-id="@d.Id"
-                                           class="btn btn-sm btn-outline-secondary me-1">Edit</a>
+                                           class="btn btn-sm btn-outline-secondary me-1" title="Edit @d.FullName">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
                                         <form asp-action="RemoveDependant" method="post" class="d-inline">
                                             @Html.AntiForgeryToken()
                                             <input type="hidden" name="id" value="@d.Id" />
                                             <input type="hidden" name="returnTo" value="Dashboard" />
                                             <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                    title="Remove @d.FullName"
                                                     data-confirm="Remove @d.FullName as a dependant? This cannot be undone.">
-                                                Remove
+                                                <i class="bi bi-trash"></i>
                                             </button>
                                         </form>
                                     </td>
