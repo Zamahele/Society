@@ -120,7 +120,16 @@
 
                                 <div class="mb-3">
                                     <label asp-for="NomineeRelationship" class="form-label fw-semibold">Relationship</label>
-                                    <input asp-for="NomineeRelationship" class="form-control" placeholder="e.g. Spouse, Child, Sibling" />
+                                    <select asp-for="NomineeRelationship" class="form-select">
+                                        <option value="">-- Select Relationship --</option>
+                                        <option>Spouse</option>
+                                        <option>Partner</option>
+                                        <option>Child</option>
+                                        <option>Parent</option>
+                                        <option>Sibling</option>
+                                        <option>Friend</option>
+                                        <option>Other</option>
+                                    </select>
                                 </div>
 
                                 <div class="d-flex justify-content-between mt-3">
