@@ -411,9 +411,12 @@
                                 <label class="form-label form-label-sm">
                                     <i class="bi bi-camera"></i> Proof of Payment <span class="text-muted">(optional)</span>
                                 </label>
-                                <input name="Proof" type="file" class="form-control form-control-sm"
+                                <input name="Proof" id="proofInput" type="file" class="form-control form-control-sm"
                                        accept="image/*,.pdf" capture="environment" />
                                 <small class="text-muted">Take a photo or upload your bank screenshot.</small>
+                                <div id="proofPreview" class="mt-2" style="display:none;">
+                                    <img id="proofPreviewImg" src="" class="img-fluid rounded" style="max-height:120px;" alt="Preview" />
+                                </div>
                             </div>
                             <div class="col-12">
                                 <button type="submit" class="btn btn-sm btn-dark">Submit</button>
@@ -562,6 +565,25 @@
         document.getElementById('editIDNumber').addEventListener('input', function () {
             document.getElementById('editDateOfBirth').value = parseDobFromSaId(this.value);
         });
+
+        var proofInput = document.getElementById('proofInput');
+        if (proofInput) {
+            proofInput.addEventListener('change', function () {
+                var file = this.files[0];
+                var preview = document.getElementById('proofPreview');
+                var img = document.getElementById('proofPreviewImg');
+                if (file && file.type.startsWith('image/')) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) { img.src = e.target.result; preview.style.display = ''; };
+                    reader.readAsDataURL(file);
+                } else if (file) {
+                    img.src = '';
+                    preview.style.display = 'none';
+                } else {
+                    preview.style.display = 'none';
+                }
+            });
+        }
 
         var paymentTypeEl = document.getElementById('paymentType');
         if (paymentTypeEl) {

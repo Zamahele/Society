@@ -21,6 +21,7 @@ else
             <tbody>
                 @foreach (var p in Model)
                 {
+                    var isPdf = p.ProofFileName?.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase) == true;
                     <tr>
                         <td><strong>@p.Membership.MembershipNumber</strong></td>
                         <td>@p.Membership.User.FullName</td>
@@ -30,9 +31,21 @@ else
                         <td>
                             @if (p.ProofData != null)
                             {
-                                <a asp-action="JoiningFeeProof" asp-route-id="@p.Id" target="_blank" class="btn btn-sm btn-outline-secondary">
-                                    <i class="bi bi-image"></i> View
-                                </a>
+                                if (isPdf)
+                                {
+                                    <a asp-action="JoiningFeeProof" asp-route-id="@p.Id" target="_blank" class="btn btn-sm btn-outline-secondary">
+                                        <i class="bi bi-file-earmark-pdf"></i> PDF
+                                    </a>
+                                }
+                                else
+                                {
+                                    <img src="@Url.Action("JoiningFeeProof", new { id = p.Id })"
+                                         class="proof-thumb rounded"
+                                         style="height:56px;width:72px;object-fit:cover;cursor:pointer;"
+                                         data-full="@Url.Action("JoiningFeeProof", new { id = p.Id })"
+                                         data-label="@p.Membership.User.FullName — @p.PaymentDate.ToString("dd MMM yyyy")"
+                                         alt="Proof" />
+                                }
                             }
                             else
                             {
@@ -65,6 +78,7 @@ else
     <div class="d-md-none row g-3">
         @foreach (var p in Model)
         {
+            var isPdfM = p.ProofFileName?.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase) == true;
             <div class="col-12">
                 <div class="card shadow-sm">
                     <div class="card-body">
@@ -77,9 +91,21 @@ else
                         </div>
                         @if (p.ProofData != null)
                         {
-                            <a asp-action="JoiningFeeProof" asp-route-id="@p.Id" target="_blank" class="btn btn-sm btn-outline-secondary w-100 mb-2">
-                                <i class="bi bi-image"></i> View Proof of Payment
-                            </a>
+                            if (isPdfM)
+                            {
+                                <a asp-action="JoiningFeeProof" asp-route-id="@p.Id" target="_blank" class="btn btn-sm btn-outline-secondary w-100 mb-2">
+                                    <i class="bi bi-file-earmark-pdf"></i> View PDF Proof
+                                </a>
+                            }
+                            else
+                            {
+                                <img src="@Url.Action("JoiningFeeProof", new { id = p.Id })"
+                                     class="proof-thumb img-fluid rounded mb-2"
+                                     style="max-height:160px;width:100%;object-fit:cover;cursor:pointer;"
+                                     data-full="@Url.Action("JoiningFeeProof", new { id = p.Id })"
+                                     data-label="@p.Membership.User.FullName — @p.PaymentDate.ToString("dd MMM yyyy")"
+                                     alt="Proof" />
+                            }
                         }
                         <div class="d-flex gap-2">
                             <form asp-action="ConfirmJoiningFee" method="post" class="flex-grow-1">
@@ -102,4 +128,31 @@ else
             </div>
         }
     </div>
+}
+
+<!-- Proof lightbox modal -->
+<div class="modal fade" id="proofModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header py-2">
+                <h6 class="modal-title" id="proofModalLabel">Proof of Payment</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-1 text-center">
+                <img id="proofModalImg" src="" class="img-fluid rounded" alt="Proof" style="max-height:80vh;" />
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.proof-thumb').forEach(function (img) {
+            img.addEventListener('click', function () {
+                document.getElementById('proofModalImg').src = this.dataset.full;
+                document.getElementById('proofModalLabel').textContent = this.dataset.label;
+                new bootstrap.Modal(document.getElementById('proofModal')).show();
+            });
+        });
+    </script>
 }

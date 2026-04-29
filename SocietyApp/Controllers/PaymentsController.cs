@@ -149,9 +149,7 @@ public class PaymentsController : Controller
     {
         var payment = await _paymentService.GetJoiningFeeByIdAsync(id);
         if (payment?.ProofData == null) return NotFound();
-        var ct = payment.ProofFileName?.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase) == true
-            ? "application/pdf" : "image/jpeg";
-        return File(payment.ProofData, ct, payment.ProofFileName ?? "proof");
+        return File(payment.ProofData, GetContentType(payment.ProofFileName));
     }
 
     [Authorize(Roles = "Admin,Clerk")]
@@ -160,9 +158,20 @@ public class PaymentsController : Controller
     {
         var payment = await _paymentService.GetMonthlyPaymentByIdAsync(id);
         if (payment?.ProofData == null) return NotFound();
-        var ct = payment.ProofFileName?.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase) == true
-            ? "application/pdf" : "image/jpeg";
-        return File(payment.ProofData, ct, payment.ProofFileName ?? "proof");
+        return File(payment.ProofData, GetContentType(payment.ProofFileName));
+    }
+
+    private static string GetContentType(string? fileName)
+    {
+        var ext = Path.GetExtension(fileName)?.ToLowerInvariant();
+        return ext switch
+        {
+            ".pdf"  => "application/pdf",
+            ".png"  => "image/png",
+            ".gif"  => "image/gif",
+            ".webp" => "image/webp",
+            _       => "image/jpeg"
+        };
     }
 
     // ---- Clerk/Admin: Pending Joining Fees ----
