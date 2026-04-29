@@ -38,15 +38,6 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Members" asp-action="Dashboard">My Membership</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Members" asp-action="BankingDetails">Banking Details</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Payments" asp-action="SubmitJoiningFee">Joining Fee</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Claims" asp-action="MyClaims">My Claims</a>
-                        </li>
                     }
                     @if (User.IsInRole("Admin") || User.IsInRole("Clerk"))
                     {
@@ -54,19 +45,7 @@
                             <a class="nav-link" asp-controller="Admin" asp-action="Dashboard">Dashboard</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="Admin" asp-action="CreateMember">Create Member</a>
-                        </li>
-                        <li class="nav-item">
                             <a class="nav-link" asp-controller="Admin" asp-action="Members">Members</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Payments" asp-action="PendingJoiningFees">Joining Fees</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Payments" asp-action="PendingMonthly">Monthly Payments</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Claims" asp-action="Index">Claims</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Admin" asp-action="PublicContent">Public Content</a>
@@ -74,7 +53,7 @@
                         @if (User.IsInRole("Admin"))
                         {
                             <li class="nav-item">
-                                    <a class="nav-link" asp-controller="Admin" asp-action="Clerks">Clerks</a>
+                                <a class="nav-link" asp-controller="Admin" asp-action="Clerks">Clerks</a>
                             </li>
                         }
                     }
