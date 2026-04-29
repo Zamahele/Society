@@ -95,6 +95,42 @@ public class PaymentsController : Controller
         return RedirectToAction("Dashboard", "Members");
     }
 
+    // ---- Member: Unified Submit Payment ----
+
+    [Authorize(Roles = "Member")]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SubmitPayment(SubmitPaymentViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            TempData["Error"] = "Please fill in all required fields.";
+            return RedirectToAction("Dashboard", "Members");
+        }
+
+        if (model.PaymentType == "JoiningFee")
+        {
+            if (await _paymentService.HasPendingJoiningFeeAsync(model.MembershipId))
+            {
+                TempData["Error"] = "A joining fee submission is already pending confirmation.";
+                return RedirectToAction("Dashboard", "Members");
+            }
+            await _paymentService.SubmitJoiningFeeAsync(model.MembershipId, model.PaymentReference, model.PaymentDate);
+            TempData["Success"] = "Joining fee submitted. A clerk will confirm it shortly.";
+        }
+        else if (model.PaymentType == "Monthly" && model.ForMonth.HasValue)
+        {
+            await _paymentService.SubmitMonthlyPaymentAsync(model.MembershipId, model.ForMonth.Value, model.PaymentReference, model.PaymentDate);
+            TempData["Success"] = "Monthly payment submitted. A clerk will confirm it shortly.";
+        }
+        else
+        {
+            TempData["Error"] = "Invalid payment type.";
+        }
+
+        return RedirectToAction("Dashboard", "Members");
+    }
+
     // ---- Clerk/Admin: Pending Joining Fees ----
 
     [Authorize(Roles = "Admin,Clerk")]

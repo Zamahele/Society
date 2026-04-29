@@ -84,39 +84,10 @@
         {
             var hasPending = ViewBag.HasPendingJoiningFee as bool? ?? false;
             <div class="alert alert-info">
-                Your membership has been approved. Please pay the joining fee of <strong>R150</strong> using <strong>@Model.MembershipNumber</strong> as your EFT reference, then submit proof below.
+                Your membership is approved. Pay the joining fee of <strong>R150</strong> using <strong>@Model.MembershipNumber</strong> as your EFT reference, then submit proof using the <strong>Submit Payment</strong> button in the Payment History section below.
                 @if (hasPending)
                 {
-                    <div class="mt-2 small"><strong>Payment submitted</strong> — awaiting clerk confirmation.</div>
-                }
-                else
-                {
-                    <div class="mt-2">
-                        <button class="btn btn-sm btn-dark" type="button"
-                                data-bs-toggle="collapse" data-bs-target="#joiningFeeForm">Submit Joining Fee</button>
-                    </div>
-                    <div class="collapse mt-3" id="joiningFeeForm">
-                        <form asp-controller="Payments" asp-action="SubmitJoiningFee" method="post">
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" name="MembershipId" value="@Model.Id" />
-                            <input type="hidden" name="MembershipNumber" value="@Model.MembershipNumber" />
-                            <input type="hidden" name="returnTo" value="Dashboard" />
-                            <div class="row g-2">
-                                <div class="col-sm-6">
-                                    <input name="PaymentReference" class="form-control form-control-sm" placeholder="EFT Reference" required />
-                                </div>
-                                <div class="col-sm-6">
-                                    <input name="PaymentDate" type="date" class="form-control form-control-sm"
-                                           value="@DateTime.Today.ToString("yyyy-MM-dd")" required />
-                                </div>
-                                <div class="col-12">
-                                    <button type="submit" class="btn btn-sm btn-dark">Submit</button>
-                                    <button type="button" class="btn btn-sm btn-outline-secondary"
-                                            data-bs-toggle="collapse" data-bs-target="#joiningFeeForm">Cancel</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
+                    <div class="mt-2 small fw-semibold">Joining fee submitted — awaiting clerk confirmation.</div>
                 }
             </div>
         }
@@ -386,33 +357,54 @@
             </div>
         </div>
 
+        @{
+            var hasPendingFee = ViewBag.HasPendingJoiningFee as bool? ?? false;
+            var canSubmitJoiningFee = Model.Status == SocietyApp.Models.MembershipStatus.PendingPayment && !hasPendingFee;
+            var canSubmitMonthly = Model.Status == SocietyApp.Models.MembershipStatus.Active || Model.Status == SocietyApp.Models.MembershipStatus.Suspended;
+            var showSubmitBtn = canSubmitJoiningFee || canSubmitMonthly;
+        }
         <div class="card mb-4">
             <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
                 Payment History
-                <button class="btn btn-sm btn-outline-light" type="button"
-                        data-bs-toggle="collapse" data-bs-target="#submitPaymentForm">+ Submit Payment</button>
+                @if (showSubmitBtn)
+                {
+                    <button class="btn btn-sm btn-outline-light" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#submitPaymentForm">+ Submit Payment</button>
+                }
             </div>
             <div class="collapse" id="submitPaymentForm">
                 <div class="card-body border-bottom">
-                    <div class="alert alert-info py-2 px-3 mb-2 small mb-2">
+                    <div class="alert alert-info py-2 px-3 mb-3 small">
                         <strong>Bank:</strong> Capitec &nbsp;|&nbsp;
                         <strong>Account Name:</strong> Give Compassion NPC &nbsp;|&nbsp;
                         <strong>Account No:</strong> 1054981680 &nbsp;|&nbsp;
                         <strong>Branch:</strong> 450105
                     </div>
-                    <form asp-controller="Payments" asp-action="SubmitMonthly" method="post">
+                    <form asp-controller="Payments" asp-action="SubmitPayment" method="post">
                         @Html.AntiForgeryToken()
                         <input type="hidden" name="MembershipId" value="@Model.Id" />
                         <input type="hidden" name="MembershipNumber" value="@Model.MembershipNumber" />
-                        <input type="hidden" name="returnTo" value="Dashboard" />
                         <div class="row g-2">
                             <div class="col-md-4">
-                                <label class="form-label form-label-sm">Payment For Month</label>
-                                <input name="ForMonth" type="date" class="form-control form-control-sm"
-                                       value="@(new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1).ToString("yyyy-MM-dd"))" required />
+                                <label class="form-label form-label-sm">Payment Type</label>
+                                <select name="PaymentType" id="paymentType" class="form-select form-select-sm" required>
+                                    @if (canSubmitJoiningFee)
+                                    {
+                                        <option value="JoiningFee">Joining Fee</option>
+                                    }
+                                    @if (canSubmitMonthly)
+                                    {
+                                        <option value="Monthly">Monthly Payment</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-4" id="forMonthRow" style="@(canSubmitMonthly && !canSubmitJoiningFee ? "" : "display:none;")">
+                                <label class="form-label form-label-sm">For Month</label>
+                                <input name="ForMonth" id="forMonth" type="date" class="form-control form-control-sm"
+                                       value="@(new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1).ToString("yyyy-MM-dd"))" />
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label form-label-sm">Date of Payment</label>
+                                <label class="form-label form-label-sm">Date Paid</label>
                                 <input name="PaymentDate" type="date" class="form-control form-control-sm"
                                        value="@DateTime.Today.ToString("yyyy-MM-dd")" required />
                             </div>
@@ -421,7 +413,7 @@
                                 <input name="PaymentReference" class="form-control form-control-sm" placeholder="Reference" required />
                             </div>
                             <div class="col-12">
-                                <button type="submit" class="btn btn-sm btn-dark">Submit Payment</button>
+                                <button type="submit" class="btn btn-sm btn-dark">Submit</button>
                                 <button type="button" class="btn btn-sm btn-outline-secondary"
                                         data-bs-toggle="collapse" data-bs-target="#submitPaymentForm">Cancel</button>
                             </div>
@@ -567,6 +559,17 @@
         document.getElementById('editIDNumber').addEventListener('input', function () {
             document.getElementById('editDateOfBirth').value = parseDobFromSaId(this.value);
         });
+
+        var paymentTypeEl = document.getElementById('paymentType');
+        if (paymentTypeEl) {
+            paymentTypeEl.addEventListener('change', function () {
+                var forMonthRow = document.getElementById('forMonthRow');
+                var forMonth = document.getElementById('forMonth');
+                var isMonthly = this.value === 'Monthly';
+                forMonthRow.style.display = isMonthly ? '' : 'none';
+                forMonth.required = isMonthly;
+            });
+        }
 
         document.getElementById('claimDeceasedType')?.addEventListener('change', function () {
             document.getElementById('claimDependantRow').style.display = this.value === 'Dependant' ? '' : 'none';
