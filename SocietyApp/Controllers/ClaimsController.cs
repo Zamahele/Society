@@ -59,7 +59,7 @@ public class ClaimsController : Controller
     [Authorize(Roles = "Member")]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Submit(SubmitClaimViewModel model)
+    public async Task<IActionResult> Submit(SubmitClaimViewModel model, string? returnTo = null)
     {
         var user = await _userManager.GetUserAsync(User);
         if (user == null) return Challenge();
@@ -72,6 +72,7 @@ public class ClaimsController : Controller
 
         if (!ModelState.IsValid)
         {
+            if (returnTo == "Dashboard") return RedirectToAction("Dashboard", "Members");
             model.Dependants = await _membershipService.GetDependantsAsync(model.MembershipId);
             return View(model);
         }
@@ -102,11 +103,13 @@ public class ClaimsController : Controller
         catch (InvalidOperationException ex)
         {
             ModelState.AddModelError(string.Empty, ex.Message);
+            if (returnTo == "Dashboard") return RedirectToAction("Dashboard", "Members");
             model.Dependants = await _membershipService.GetDependantsAsync(model.MembershipId);
             return View(model);
         }
 
         TempData["Success"] = "Claim submitted successfully. We will be in touch.";
+        if (returnTo == "Dashboard") return RedirectToAction("Dashboard", "Members");
         return RedirectToAction(nameof(MyClaims));
     }
 

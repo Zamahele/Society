@@ -72,9 +72,13 @@ public class PaymentsController : Controller
     [Authorize(Roles = "Member")]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> SubmitMonthly(SubmitMonthlyPaymentViewModel model)
+    public async Task<IActionResult> SubmitMonthly(SubmitMonthlyPaymentViewModel model, string? returnTo = null)
     {
-        if (!ModelState.IsValid) return View(model);
+        if (!ModelState.IsValid)
+        {
+            if (returnTo == "Dashboard") return RedirectToAction("Dashboard", "Members");
+            return View(model);
+        }
 
         await _paymentService.SubmitMonthlyPaymentAsync(model.MembershipId, model.ForMonth, model.PaymentReference, model.PaymentDate);
         TempData["Success"] = "Monthly payment submitted. A clerk will confirm it shortly.";

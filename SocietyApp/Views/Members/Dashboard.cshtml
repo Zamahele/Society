@@ -352,7 +352,45 @@
         <div class="card mb-4">
             <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
                 Monthly Payment History
-                <a asp-controller="Payments" asp-action="SubmitMonthly" class="btn btn-sm btn-outline-light">+ Submit Payment</a>
+                <button class="btn btn-sm btn-outline-light" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#submitPaymentForm">+ Submit Payment</button>
+            </div>
+            <div class="collapse" id="submitPaymentForm">
+                <div class="card-body border-bottom">
+                    <div class="alert alert-info py-2 px-3 mb-2 small mb-2">
+                        <strong>Bank:</strong> Capitec &nbsp;|&nbsp;
+                        <strong>Account Name:</strong> Give Compassion NPC &nbsp;|&nbsp;
+                        <strong>Account No:</strong> 1054981680 &nbsp;|&nbsp;
+                        <strong>Branch:</strong> 450105
+                    </div>
+                    <form asp-controller="Payments" asp-action="SubmitMonthly" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="MembershipId" value="@Model.Id" />
+                        <input type="hidden" name="MembershipNumber" value="@Model.MembershipNumber" />
+                        <input type="hidden" name="returnTo" value="Dashboard" />
+                        <div class="row g-2">
+                            <div class="col-md-4">
+                                <label class="form-label form-label-sm">Payment For Month</label>
+                                <input name="ForMonth" type="date" class="form-control form-control-sm"
+                                       value="@(new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1).ToString("yyyy-MM-dd"))" required />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label form-label-sm">Date of Payment</label>
+                                <input name="PaymentDate" type="date" class="form-control form-control-sm"
+                                       value="@DateTime.Today.ToString("yyyy-MM-dd")" required />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label form-label-sm">EFT Reference</label>
+                                <input name="PaymentReference" class="form-control form-control-sm" placeholder="Reference" required />
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-sm btn-dark">Submit Payment</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary"
+                                        data-bs-toggle="collapse" data-bs-target="#submitPaymentForm">Cancel</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
             <div class="card-body p-0">
                 <table class="table table-sm mb-0">
@@ -379,7 +417,61 @@
         <div class="card">
             <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
                 Claims
-                <a asp-controller="Claims" asp-action="Submit" class="btn btn-sm btn-outline-light">+ New Claim</a>
+                @{
+                    var claimElig = ViewBag.Eligibility as SocietyApp.Services.Interfaces.ClaimEligibilityResult;
+                }
+                @if (claimElig?.IsEligible == true)
+                {
+                    <button class="btn btn-sm btn-outline-light" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#submitClaimForm">+ New Claim</button>
+                }
+            </div>
+            <div class="collapse" id="submitClaimForm">
+                <div class="card-body border-bottom">
+                    <form asp-controller="Claims" asp-action="Submit" method="post" enctype="multipart/form-data">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="MembershipId" value="@Model.Id" />
+                        <input type="hidden" name="returnTo" value="Dashboard" />
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <label class="form-label form-label-sm">Who Passed Away</label>
+                                <select name="DeceasedType" id="claimDeceasedType" class="form-select form-select-sm" required>
+                                    @foreach (var dt in Enum.GetValues<SocietyApp.Models.DeceasedType>())
+                                    {
+                                        <option value="@dt">@dt</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-6" id="claimDependantRow" style="display:none;">
+                                <label class="form-label form-label-sm">Dependant</label>
+                                <select name="DependantId" class="form-select form-select-sm">
+                                    <option value="">-- Select Dependant --</option>
+                                    @foreach (var dep in (IEnumerable<SocietyApp.Models.MemberDependant>)ViewBag.Dependants)
+                                    {
+                                        <option value="@dep.Id">@dep.FullName</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label form-label-sm">Full Name of Deceased</label>
+                                <input name="DeceasedFullName" class="form-control form-control-sm" placeholder="Full name" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label form-label-sm">Date of Death</label>
+                                <input name="DateOfDeath" type="date" class="form-control form-control-sm" required />
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label form-label-sm">Death Certificate (PDF/JPG/PNG)</label>
+                                <input name="DeathCertificate" type="file" class="form-control form-control-sm" accept=".pdf,.jpg,.jpeg,.png" />
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-sm btn-dark">Submit Claim</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary"
+                                        data-bs-toggle="collapse" data-bs-target="#submitClaimForm">Cancel</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
             <div class="card-body p-0">
                 <table class="table table-sm mb-0">
@@ -420,6 +512,10 @@
 
         document.getElementById('editIDNumber').addEventListener('input', function () {
             document.getElementById('editDateOfBirth').value = parseDobFromSaId(this.value);
+        });
+
+        document.getElementById('claimDeceasedType')?.addEventListener('change', function () {
+            document.getElementById('claimDependantRow').style.display = this.value === 'Dependant' ? '' : 'none';
         });
 
         function openEditDependant(btn) {
