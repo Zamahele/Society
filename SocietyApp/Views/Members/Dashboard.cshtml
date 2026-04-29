@@ -261,17 +261,23 @@
                 {
                     <table class="table table-sm mb-0">
                         <thead>
-                            <tr><th>Name</th><th>ID Number</th><th>DOB</th><th>Relationship</th><th></th></tr>
+                            <tr>
+                                <th>Name</th>
+                                <th class="d-none d-md-table-cell">ID Number</th>
+                                <th class="d-none d-md-table-cell">DOB</th>
+                                <th>Relationship</th>
+                                <th></th>
+                            </tr>
                         </thead>
                         <tbody>
                             @foreach (var d in dependants)
                             {
                                 <tr>
                                     <td>@d.FullName</td>
-                                    <td>@d.IDNumber</td>
-                                    <td>@d.DateOfBirth.ToString("dd MMM yyyy")</td>
+                                    <td class="d-none d-md-table-cell">@d.IDNumber</td>
+                                    <td class="d-none d-md-table-cell">@d.DateOfBirth.ToString("dd MMM yyyy")</td>
                                     <td>@d.Relationship</td>
-                                    <td class="text-end">
+                                    <td class="text-end text-nowrap">
                                         <a asp-action="EditDependant" asp-route-id="@d.Id"
                                            class="btn btn-sm btn-outline-secondary me-1" title="Edit @d.FullName">
                                             <i class="bi bi-pencil"></i>
