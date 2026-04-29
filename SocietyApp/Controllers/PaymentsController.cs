@@ -43,9 +43,13 @@ public class PaymentsController : Controller
     [Authorize(Roles = "Member")]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> SubmitJoiningFee(SubmitJoiningFeeViewModel model)
+    public async Task<IActionResult> SubmitJoiningFee(SubmitJoiningFeeViewModel model, string? returnTo = null)
     {
-        if (!ModelState.IsValid) return View(model);
+        if (!ModelState.IsValid)
+        {
+            if (returnTo == "Dashboard") return RedirectToAction("Dashboard", "Members");
+            return View(model);
+        }
 
         await _paymentService.SubmitJoiningFeeAsync(model.MembershipId, model.PaymentReference, model.PaymentDate);
         TempData["Success"] = "Joining fee payment submitted. A clerk will confirm it shortly.";
