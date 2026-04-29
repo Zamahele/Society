@@ -21,6 +21,9 @@ internal sealed class StubPaymentService : IPaymentService
     public Task<JoiningFeePayment?> GetJoiningFeeByIdAsync(int id)
         => throw new NotImplementedException();
 
+    public Task<bool> HasPendingJoiningFeeAsync(int membershipId) => Task.FromResult(false);
+    public Task<List<JoiningFeePayment>> GetJoiningFeesByMembershipAsync(int membershipId) => Task.FromResult(new List<JoiningFeePayment>());
+
     public Task<MonthlyPayment> SubmitMonthlyPaymentAsync(int membershipId, DateTime forMonth, string reference, DateTime paymentDate, string? submittedByClerkId = null)
         => throw new NotImplementedException();
 

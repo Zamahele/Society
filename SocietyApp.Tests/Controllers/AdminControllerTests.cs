@@ -70,6 +70,8 @@ public class AdminControllerTests
         public Task<JoiningFeePayment> SubmitJoiningFeeAsync(int membershipId, string reference, DateTime paymentDate, string? submittedByClerkId = null) => throw new NotImplementedException();
         public Task ConfirmJoiningFeeAsync(int paymentId, string clerkId) => Task.CompletedTask;
         public Task<JoiningFeePayment?> GetJoiningFeeByIdAsync(int id) => Task.FromResult<JoiningFeePayment?>(null);
+        public Task<bool> HasPendingJoiningFeeAsync(int membershipId) => Task.FromResult(false);
+        public Task<List<JoiningFeePayment>> GetJoiningFeesByMembershipAsync(int membershipId) => Task.FromResult(new List<JoiningFeePayment>());
         public Task<MonthlyPayment> SubmitMonthlyPaymentAsync(int membershipId, DateTime forMonth, string reference, DateTime paymentDate, string? submittedByClerkId = null) => throw new NotImplementedException();
         public Task ConfirmMonthlyPaymentAsync(int paymentId, string clerkId) => Task.CompletedTask;
         public Task<List<MonthlyPayment>> GetMonthlyHistoryAsync(int membershipId) => Task.FromResult(new List<MonthlyPayment>());
