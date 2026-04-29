@@ -51,6 +51,12 @@ public class PaymentsController : Controller
             return View(model);
         }
 
+        if (await _paymentService.HasPendingJoiningFeeAsync(model.MembershipId))
+        {
+            TempData["Error"] = "A joining fee submission is already pending confirmation. Please wait for a clerk to review it.";
+            return RedirectToAction("Dashboard", "Members");
+        }
+
         await _paymentService.SubmitJoiningFeeAsync(model.MembershipId, model.PaymentReference, model.PaymentDate);
         TempData["Success"] = "Joining fee payment submitted. A clerk will confirm it shortly.";
         return RedirectToAction("Dashboard", "Members");

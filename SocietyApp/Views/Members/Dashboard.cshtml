@@ -82,34 +82,42 @@
 
         @if (Model.Status == SocietyApp.Models.MembershipStatus.PendingPayment)
         {
+            var hasPending = ViewBag.HasPendingJoiningFee as bool? ?? false;
             <div class="alert alert-info">
                 Your membership has been approved. Please pay the joining fee of <strong>R150</strong> using <strong>@Model.MembershipNumber</strong> as your EFT reference, then submit proof below.
-                <div class="mt-2">
-                    <button class="btn btn-sm btn-dark" type="button"
-                            data-bs-toggle="collapse" data-bs-target="#joiningFeeForm">Submit Joining Fee</button>
-                </div>
-                <div class="collapse mt-3" id="joiningFeeForm">
-                    <form asp-controller="Payments" asp-action="SubmitJoiningFee" method="post">
-                        @Html.AntiForgeryToken()
-                        <input type="hidden" name="MembershipId" value="@Model.Id" />
-                        <input type="hidden" name="MembershipNumber" value="@Model.MembershipNumber" />
-                        <input type="hidden" name="returnTo" value="Dashboard" />
-                        <div class="row g-2">
-                            <div class="col-sm-6">
-                                <input name="PaymentReference" class="form-control form-control-sm" placeholder="EFT Reference" required />
+                @if (hasPending)
+                {
+                    <div class="mt-2 small"><strong>Payment submitted</strong> — awaiting clerk confirmation.</div>
+                }
+                else
+                {
+                    <div class="mt-2">
+                        <button class="btn btn-sm btn-dark" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#joiningFeeForm">Submit Joining Fee</button>
+                    </div>
+                    <div class="collapse mt-3" id="joiningFeeForm">
+                        <form asp-controller="Payments" asp-action="SubmitJoiningFee" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="MembershipId" value="@Model.Id" />
+                            <input type="hidden" name="MembershipNumber" value="@Model.MembershipNumber" />
+                            <input type="hidden" name="returnTo" value="Dashboard" />
+                            <div class="row g-2">
+                                <div class="col-sm-6">
+                                    <input name="PaymentReference" class="form-control form-control-sm" placeholder="EFT Reference" required />
+                                </div>
+                                <div class="col-sm-6">
+                                    <input name="PaymentDate" type="date" class="form-control form-control-sm"
+                                           value="@DateTime.Today.ToString("yyyy-MM-dd")" required />
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-sm btn-dark">Submit</button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary"
+                                            data-bs-toggle="collapse" data-bs-target="#joiningFeeForm">Cancel</button>
+                                </div>
                             </div>
-                            <div class="col-sm-6">
-                                <input name="PaymentDate" type="date" class="form-control form-control-sm"
-                                       value="@DateTime.Today.ToString("yyyy-MM-dd")" required />
-                            </div>
-                            <div class="col-12">
-                                <button type="submit" class="btn btn-sm btn-dark">Submit</button>
-                                <button type="button" class="btn btn-sm btn-outline-secondary"
-                                        data-bs-toggle="collapse" data-bs-target="#joiningFeeForm">Cancel</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
+                        </form>
+                    </div>
+                }
             </div>
         }
 

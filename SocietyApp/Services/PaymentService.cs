@@ -74,6 +74,12 @@ public class PaymentService : IPaymentService
             .FirstOrDefaultAsync(p => p.Id == id);
     }
 
+    public async Task<bool> HasPendingJoiningFeeAsync(int membershipId)
+    {
+        return await _db.JoiningFeePayments
+            .AnyAsync(p => p.MembershipId == membershipId && p.Status == PaymentStatus.Pending);
+    }
+
     // --------------- Monthly Payments ---------------
 
     public async Task<MonthlyPayment> SubmitMonthlyPaymentAsync(int membershipId, DateTime forMonth, string reference, DateTime paymentDate, string? submittedByClerkId = null)
