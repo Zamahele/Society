@@ -22,13 +22,13 @@
                     </div>
                     <div class="mb-3">
                         <label asp-for="IDNumber" class="form-label fw-semibold"></label>
-                        <input asp-for="IDNumber" class="form-control" />
+                        <input asp-for="IDNumber" class="form-control" id="IDNumber" maxlength="13" />
                         <span asp-validation-for="IDNumber" class="text-danger small"></span>
                     </div>
                     <div class="mb-3">
                         <label asp-for="DateOfBirth" class="form-label fw-semibold"></label>
-                        <input asp-for="DateOfBirth" class="form-control" type="date" />
-                        <span asp-validation-for="DateOfBirth" class="text-danger small"></span>
+                        <input asp-for="DateOfBirth" class="form-control" type="date" id="DateOfBirth" readonly />
+                        <span class="text-muted small">Auto-filled from ID number</span>
                     </div>
                     <div class="mb-3">
                         <label asp-for="Relationship" class="form-label fw-semibold"></label>
@@ -45,4 +45,21 @@
     </div>
 </div>
 
-@section Scripts { @{await Html.RenderPartialAsync("_ValidationScriptsPartial");} }
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        document.getElementById('IDNumber').addEventListener('input', function () {
+            var id = this.value.replace(/\D/g, '');
+            if (id.length >= 6) {
+                var yy = parseInt(id.substring(0, 2), 10);
+                var mm = id.substring(2, 4);
+                var dd = id.substring(4, 6);
+                var currentYY = new Date().getFullYear() % 100;
+                var yyyy = yy <= currentYY ? 2000 + yy : 1900 + yy;
+                document.getElementById('DateOfBirth').value = yyyy + '-' + mm + '-' + dd;
+            } else {
+                document.getElementById('DateOfBirth').value = '';
+            }
+        });
+    </script>
+}
