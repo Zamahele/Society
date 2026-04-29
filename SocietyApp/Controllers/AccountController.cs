@@ -160,19 +160,16 @@ public class AccountController : Controller
             return View(model);
         }
 
-        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-        var encoded = Uri.EscapeDataString(token);
-        return RedirectToAction(nameof(ResetPasswordConfirm), new { userId = user.Id, token = encoded });
+        return RedirectToAction(nameof(ResetPasswordConfirm), new { userId = user.Id });
     }
 
     [HttpGet]
-    public IActionResult ResetPasswordConfirm(string? userId, string? token)
+    public IActionResult ResetPasswordConfirm(string? userId)
     {
-        if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(token))
+        if (string.IsNullOrEmpty(userId))
             return RedirectToAction(nameof(ForgotPassword));
 
-        var decoded = Uri.UnescapeDataString(token);
-        return View(new ResetPasswordConfirmViewModel { UserId = userId, Token = decoded });
+        return View(new ResetPasswordConfirmViewModel { UserId = userId });
     }
 
     [HttpPost]
@@ -184,7 +181,9 @@ public class AccountController : Controller
         var user = await _userManager.FindByIdAsync(model.UserId);
         if (user == null) return RedirectToAction(nameof(ForgotPassword));
 
-        var result = await _userManager.ResetPasswordAsync(user, model.Token, model.NewPassword);
+        // Generate and use the token in the same request to avoid serialization issues
+        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+        var result = await _userManager.ResetPasswordAsync(user, token, model.NewPassword);
         if (!result.Succeeded)
         {
             foreach (var e in result.Errors)

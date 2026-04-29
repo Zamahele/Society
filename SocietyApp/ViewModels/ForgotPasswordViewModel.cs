@@ -23,7 +23,6 @@ public class SecurityQuestionsViewModel
 public class ResetPasswordConfirmViewModel
 {
     public string UserId { get; set; } = string.Empty;
-    public string Token { get; set; } = string.Empty;
 
     [Required, MinLength(8, ErrorMessage = "Password must be at least 8 characters.")]
     public string NewPassword { get; set; } = string.Empty;
