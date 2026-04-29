@@ -130,18 +130,15 @@ public class AccountController : Controller
             return View(model);
         }
 
-        TempData["ResetUserId"] = user.Id;
-        return RedirectToAction(nameof(SecurityQuestions));
+        return RedirectToAction(nameof(SecurityQuestions), new { userId = user.Id });
     }
 
     [HttpGet]
-    public IActionResult SecurityQuestions()
+    public IActionResult SecurityQuestions(string? userId)
     {
-        var userId = TempData["ResetUserId"] as string;
         if (string.IsNullOrEmpty(userId))
             return RedirectToAction(nameof(ForgotPassword));
 
-        TempData.Keep("ResetUserId");
         return View(new SecurityQuestionsViewModel { UserId = userId });
     }
 
@@ -164,20 +161,18 @@ public class AccountController : Controller
         }
 
         var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-        TempData["ResetToken"] = token;
-        TempData["ResetUserId"] = user.Id;
-        return RedirectToAction(nameof(ResetPasswordConfirm));
+        var encoded = Uri.EscapeDataString(token);
+        return RedirectToAction(nameof(ResetPasswordConfirm), new { userId = user.Id, token = encoded });
     }
 
     [HttpGet]
-    public IActionResult ResetPasswordConfirm()
+    public IActionResult ResetPasswordConfirm(string? userId, string? token)
     {
-        var userId = TempData["ResetUserId"] as string;
-        var token = TempData["ResetToken"] as string;
         if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(token))
             return RedirectToAction(nameof(ForgotPassword));
 
-        return View(new ResetPasswordConfirmViewModel { UserId = userId, Token = token });
+        var decoded = Uri.UnescapeDataString(token);
+        return View(new ResetPasswordConfirmViewModel { UserId = userId, Token = decoded });
     }
 
     [HttpPost]
