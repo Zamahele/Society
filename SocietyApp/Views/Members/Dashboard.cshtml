@@ -445,7 +445,7 @@
                             var mpBadge = p.Status == SocietyApp.Models.MonthlyPaymentStatus.Confirmed ? "bg-success" : p.Status == SocietyApp.Models.MonthlyPaymentStatus.Missed ? "bg-danger" : "bg-warning text-dark";
                             <tr>
                                 <td><span class="badge bg-info text-dark">@p.ForMonth.ToString("MMM yyyy")</span></td>
-                                <td>@p.PaymentDate.ToString("dd MMM yyyy")</td>
+                                <td>@(p.PaymentDate?.ToString("dd MMM yyyy") ?? "-")</td>
                                 <td>@p.PaymentReference</td>
                                 <td>R@(p.Amount)</td>
                                 <td><span class="badge @mpBadge">@p.Status</span></td>
