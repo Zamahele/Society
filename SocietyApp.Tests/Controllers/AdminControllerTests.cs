@@ -108,7 +108,7 @@ public class AdminControllerTests
             {
                 new() { Id = 1, Status = MembershipStatus.Active },
                 new() { Id = 2, Status = MembershipStatus.Pending },
-                new() { Id = 3, Status = MembershipStatus.Pending },
+                new() { Id = 3, Status = MembershipStatus.PendingPayment },
                 new() { Id = 4, Status = MembershipStatus.Suspended },
             }
         };
@@ -128,7 +128,8 @@ public class AdminControllerTests
         Assert.Equal(4, result!.ViewData["TotalMembers"] is null ? controller.ViewBag.TotalMembers : controller.ViewBag.TotalMembers);
         Assert.Equal(4, controller.ViewBag.TotalMembers);
         Assert.Equal(1, controller.ViewBag.ActiveMembers);
-        Assert.Equal(2, controller.ViewBag.PendingMembers);
+        Assert.Equal(1, controller.ViewBag.PendingMembers);
+        Assert.Equal(1, controller.ViewBag.PendingPaymentMembers);
         Assert.Equal(1, controller.ViewBag.SuspendedMembers);
         Assert.Equal(2, controller.ViewBag.TotalClaims);
         Assert.Equal(1, controller.ViewBag.PendingClaims);
