@@ -42,6 +42,7 @@ public class AdminController : Controller
         ViewBag.TotalMembers = memberships.Count;
         ViewBag.ActiveMembers = memberships.Count(m => m.Status == MembershipStatus.Active);
         ViewBag.PendingMembers = memberships.Count(m => m.Status == MembershipStatus.Pending);
+        ViewBag.PendingPaymentMembers = memberships.Count(m => m.Status == MembershipStatus.PendingPayment);
         ViewBag.SuspendedMembers = memberships.Count(m => m.Status == MembershipStatus.Suspended);
         ViewBag.TotalClaims = claims.Count;
         ViewBag.PendingClaims = claims.Count(c => c.ClaimStatus == ClaimStatus.Submitted || c.ClaimStatus == ClaimStatus.UnderReview);

@@ -40,13 +40,18 @@
 
     @* Grouped action cards *@
     <div class="col-xl-4 col-md-6">
-        <a asp-controller="Payments" asp-action="PendingJoiningFees" class="text-decoration-none">
+        <a asp-controller="Admin" asp-action="Members" class="text-decoration-none">
             <div class="card card-gold h-100 dashboard-card">
                 <div class="card-body px-4 py-3">
                     <div class="text-white-50 small text-uppercase fw-semibold mb-3">Pending Members</div>
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="text-white">Awaiting Joining Fee Confirmation</span>
-                        <span class="display-6 fw-bold">@ViewBag.PendingJoiningFees</span>
+                        <span class="text-white">Awaiting Approval</span>
+                        <span class="display-6 fw-bold">@ViewBag.PendingMembers</span>
+                    </div>
+                    <hr class="border-white-50 my-2" />
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-white">Awaiting Payment</span>
+                        <span class="display-6 fw-bold">@ViewBag.PendingPaymentMembers</span>
                     </div>
                 </div>
             </div>
