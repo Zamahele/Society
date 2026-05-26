@@ -1,20 +1,11 @@
 @model SocietyApp.ViewModels.SubmitJoiningFeeViewModel
-@{
-    ViewData["Title"] = "Submit Joining Fee";
-    var isStaffSubmit = ViewBag.IsStaffSubmit as bool? ?? false;
-}
+@{ ViewData["Title"] = "Submit Joining Fee"; }
 
 <div class="row justify-content-center">
     <div class="col-md-6">
         <h2 class="mb-3">Submit Joining Fee Payment</h2>
-        @if (isStaffSubmit)
-        {
-            <div class="alert alert-warning">
-                You are submitting this joining fee <strong>on behalf of</strong> member <strong>@Model.MembershipNumber</strong>.
-            </div>
-        }
         <div class="alert alert-info">
-            Please pay <strong>R150</strong> via EFT to the society's bank account using <strong>@Model.MembershipNumber</strong> as the payment reference, then fill in the details below.
+            Please pay <strong>R150</strong> via EFT to the society's bank account using <strong>@Model.MembershipNumber</strong> as your payment reference, then fill in the details below.
         </div>
         <form asp-action="SubmitJoiningFee" method="post">
             <input type="hidden" asp-for="MembershipId" />
@@ -32,14 +23,7 @@
                 <span asp-validation-for="PaymentDate" class="text-danger"></span>
             </div>
             <button type="submit" class="btn btn-dark">Submit</button>
-            @if (isStaffSubmit)
-            {
-                <a asp-controller="Admin" asp-action="MemberDetails" asp-route-id="@Model.MembershipId" class="btn btn-outline-secondary ms-2">Cancel</a>
-            }
-            else
-            {
-                <a asp-controller="Members" asp-action="Dashboard" class="btn btn-outline-secondary ms-2">Cancel</a>
-            }
+            <a asp-controller="Members" asp-action="Dashboard" class="btn btn-outline-secondary ms-2">Cancel</a>
         </form>
     </div>
 </div>
