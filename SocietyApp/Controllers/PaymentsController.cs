@@ -106,7 +106,7 @@ public class PaymentsController : Controller
         var isStaff = User.IsInRole("Admin") || User.IsInRole("Clerk");
 
         IActionResult Back() => isStaff
-            ? RedirectToAction("MemberDetails", "Admin", new { id = model.MembershipId })
+            ? RedirectToAction("Dashboard", "Members", new { id = model.MembershipId })
             : RedirectToAction("Dashboard", "Members");
 
         if (!ModelState.IsValid)

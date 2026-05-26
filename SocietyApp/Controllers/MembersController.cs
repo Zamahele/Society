@@ -26,13 +26,28 @@ public class MembersController : Controller
         _claimService = claimService;
     }
 
-    public async Task<IActionResult> Dashboard()
+    public async Task<IActionResult> Dashboard(int? id = null)
     {
         var user = await _userManager.GetUserAsync(User);
         if (user == null) return Challenge();
 
-        var membership = await _membershipService.GetByUserIdAsync(user.Id);
-        if (membership == null) return RedirectToAction("Dashboard", "Admin");
+        var isStaff = User.IsInRole("Admin") || User.IsInRole("Clerk");
+        var adminViewing = false;
+
+        Membership? membership;
+        if (isStaff && id.HasValue)
+        {
+            membership = await _membershipService.GetByIdAsync(id.Value);
+            if (membership == null) return NotFound();
+            adminViewing = true;
+        }
+        else
+        {
+            membership = await _membershipService.GetByUserIdAsync(user.Id);
+            if (membership == null) return RedirectToAction("Dashboard", "Admin");
+        }
+
+        ViewBag.AdminViewing = adminViewing;
 
         await _membershipService.CheckAndSuspendIfOverdueAsync(membership.Id);
 

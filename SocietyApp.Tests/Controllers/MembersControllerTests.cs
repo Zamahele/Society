@@ -67,7 +67,9 @@ public class MembersControllerTests
             payments ?? new StubPaymentService(),
             claims ?? new StubClaimService());
 
-        controller.TempData = new TempDataDictionary(new DefaultHttpContext(), new TestTempDataProvider());
+        var httpContext = new DefaultHttpContext();
+        controller.ControllerContext = new Microsoft.AspNetCore.Mvc.ControllerContext { HttpContext = httpContext };
+        controller.TempData = new TempDataDictionary(httpContext, new TestTempDataProvider());
         return controller;
     }
 

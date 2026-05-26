@@ -57,31 +57,8 @@ public class AdminController : Controller
         return View(memberships);
     }
 
-    public async Task<IActionResult> MemberDetails(int id)
-    {
-        var membership = await _membershipService.GetByIdAsync(id);
-        if (membership == null) return NotFound();
-
-        var monthlyHistory = await _paymentService.GetMonthlyHistoryAsync(id);
-        var claims = await _claimService.GetByMembershipAsync(id);
-        var eligibility = await _claimService.CheckEligibilityAsync(id);
-        var joiningFees = await _paymentService.GetJoiningFeesByMembershipAsync(id);
-
-        ViewBag.MonthlyHistory = monthlyHistory;
-        ViewBag.Claims = claims;
-        ViewBag.Eligibility = eligibility;
-        ViewBag.JoiningFeePayments = joiningFees;
-        ViewBag.HasPendingJoiningFee = joiningFees.Any(p => p.Status == PaymentStatus.Pending);
-
-        if (membership.DateActivated.HasValue)
-        {
-            var elapsed = (DateTime.UtcNow.Year - membership.DateActivated.Value.Year) * 12
-                          + DateTime.UtcNow.Month - membership.DateActivated.Value.Month;
-            ViewBag.WaitingMonthsElapsed = Math.Min(elapsed, 6);
-        }
-
-        return View(membership);
-    }
+    public IActionResult MemberDetails(int id) =>
+        RedirectToAction("Dashboard", "Members", new { id });
 
     [Authorize(Roles = "Admin")]
     [HttpPost]

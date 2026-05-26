@@ -1,7 +1,182 @@
 @model SocietyApp.Models.Membership
-@{ ViewData["Title"] = "My Membership"; }
+@{
+    var adminViewing = ViewBag.AdminViewing as bool? ?? false;
+    ViewData["Title"] = adminViewing ? $"{Model.User.FullName} — {Model.MembershipNumber}" : "My Membership";
 
-<h2 class="mb-4">My Membership</h2>
+    var hasPendingFeeForAdmin = ViewBag.HasPendingJoiningFee as bool? ?? false;
+    var joiningFeesForAdmin = (IEnumerable<SocietyApp.Models.JoiningFeePayment>)(ViewBag.JoiningFeePayments
+        ?? new List<SocietyApp.Models.JoiningFeePayment>());
+    var hasAnyJoiningFee = joiningFeesForAdmin.Any();
+    var canApprove = adminViewing
+                     && Model.Status == SocietyApp.Models.MembershipStatus.Pending
+                     && hasAnyJoiningFee;
+}
+
+@if (adminViewing)
+{
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="fw-bold mb-0" style="color:var(--navy);">@Model.User.FullName — @Model.MembershipNumber</h2>
+        <a asp-controller="Admin" asp-action="Members" class="btn btn-outline-secondary">Back to Members</a>
+    </div>
+
+    <div class="card border-warning mb-4">
+        <div class="card-header bg-warning-subtle d-flex justify-content-between align-items-center">
+            <strong>Admin Actions</strong>
+            <span class="text-muted small">Viewing this member's dashboard on their behalf.</span>
+        </div>
+        <div class="card-body d-flex flex-wrap gap-2">
+            @if (User.IsInRole("Admin") && canApprove)
+            {
+                <form asp-controller="Admin" asp-action="ApproveMember" method="post" class="m-0">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <button type="submit" class="btn btn-success"
+                            data-confirm="Approve @Model.User.FullName and confirm their R150 joining fee payment?">
+                        Approve Member
+                    </button>
+                </form>
+            }
+            else if (Model.Status == SocietyApp.Models.MembershipStatus.Pending && !hasAnyJoiningFee)
+            {
+                <a asp-controller="Admin" asp-action="SubmitJoiningFeeForMember" asp-route-membershipId="@Model.Id"
+                   class="btn btn-outline-primary">Submit Joining Fee on behalf</a>
+            }
+
+            @if (User.IsInRole("Admin") && Model.Status == SocietyApp.Models.MembershipStatus.Suspended)
+            {
+                <form asp-controller="Admin" asp-action="ReactivateMember" method="post" class="m-0">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <button type="submit" class="btn btn-success">Reactivate Member</button>
+                </form>
+            }
+            else if (User.IsInRole("Admin") && Model.Status == SocietyApp.Models.MembershipStatus.Active)
+            {
+                <form asp-controller="Admin" asp-action="DeactivateMember" method="post" class="m-0">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <button type="submit" class="btn btn-outline-danger">Deactivate Member</button>
+                </form>
+            }
+
+            @if (Model.Status == SocietyApp.Models.MembershipStatus.Active
+                 || Model.Status == SocietyApp.Models.MembershipStatus.Suspended)
+            {
+                <a asp-controller="Admin" asp-action="SubmitMonthlyForMember" asp-route-membershipId="@Model.Id"
+                   class="btn btn-outline-primary">Submit Monthly on behalf</a>
+            }
+
+            <a asp-controller="Admin" asp-action="SubmitClaimForMember" asp-route-membershipId="@Model.Id"
+               class="btn btn-outline-primary">Submit Claim on behalf</a>
+
+            <a asp-controller="Admin" asp-action="AddDependantForMember" asp-route-membershipId="@Model.Id"
+               class="btn btn-outline-dark">Add Dependant</a>
+
+            <button class="btn btn-outline-dark" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#adminEditProfile">Edit Profile</button>
+
+            @if (User.IsInRole("Admin"))
+            {
+                <button class="btn btn-outline-dark" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#adminResetPassword">Reset Password</button>
+            }
+
+            @if (User.IsInRole("Admin") && Model.Status != SocietyApp.Models.MembershipStatus.Cancelled)
+            {
+                <form asp-controller="Admin" asp-action="CancelMembership" method="post" class="m-0">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <button type="submit" class="btn btn-dark"
+                            data-confirm="Cancel this membership permanently? This cannot be undone.">
+                        Cancel Membership
+                    </button>
+                </form>
+            }
+
+            @if (User.IsInRole("Admin"))
+            {
+                <button class="btn btn-outline-danger" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#adminDeleteMember">Delete Member Data</button>
+            }
+        </div>
+
+        <div class="collapse" id="adminEditProfile">
+            <div class="card-body border-top">
+                <form asp-controller="Admin" asp-action="EditMemberProfile" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="membershipId" value="@Model.Id" />
+                    <div class="row g-2">
+                        <div class="col-md-4">
+                            <label class="form-label small fw-semibold">Full Name</label>
+                            <input name="fullName" class="form-control form-control-sm" value="@Model.User.FullName" required />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-semibold">Phone</label>
+                            <input name="phone" class="form-control form-control-sm" value="@Model.User.Phone" />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-semibold">Address</label>
+                            <input name="address" class="form-control form-control-sm" value="@Model.User.Address" />
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-sm btn-dark">Save</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary"
+                                    data-bs-toggle="collapse" data-bs-target="#adminEditProfile">Cancel</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        @if (User.IsInRole("Admin"))
+        {
+            <div class="collapse" id="adminResetPassword">
+                <div class="card-body border-top">
+                    <p class="text-muted small mb-2">Set a new temporary password for this member. They should change it after logging in.</p>
+                    <form asp-controller="Admin" asp-action="ResetMemberPassword" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="userId" value="@Model.UserId" />
+                        <input type="hidden" name="membershipId" value="@Model.Id" />
+                        <div class="row g-2">
+                            <div class="col-sm-6">
+                                <input name="newPassword" type="password" class="form-control form-control-sm"
+                                       placeholder="New password (min 8 chars)" required minlength="8" />
+                            </div>
+                            <div class="col-sm-3">
+                                <button type="submit" class="btn btn-sm btn-dark w-100">Set Password</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="collapse" id="adminDeleteMember">
+                <div class="card-body border-top">
+                    <form asp-controller="Admin" asp-action="DeleteMemberData" method="post" class="row row-cols-lg-auto g-2 align-items-center">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <div class="col-12">
+                            <label class="form-label mb-0 small">Type this member's ID number to confirm permanent deletion:</label>
+                        </div>
+                        <div class="col-12">
+                            <input name="confirmIdNumber" class="form-control form-control-sm" placeholder="@Model.User.IDNumber" required />
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-sm btn-danger"
+                                    data-confirm="This will permanently delete this member and ALL their records. Cannot be undone.">
+                                Delete Member Data
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <h2 class="mb-4">My Membership</h2>
+}
 
 <div class="row">
     <div class="col-md-5">
@@ -32,41 +207,47 @@
                     <p class="mb-1"><strong>Activated:</strong> @Model.DateActivated.Value.ToString("dd MMM yyyy")</p>
                 }
                 <p class="mb-1"><strong>Dependants:</strong> @Model.Dependants.Count / 10</p>
-                <div class="mt-3 d-flex gap-2 flex-wrap">
-                    <button class="btn btn-sm btn-outline-dark" type="button"
-                            data-bs-toggle="collapse" data-bs-target="#editProfileForm">
-                        Edit Profile
-                    </button>
-                    <a asp-action="BankingDetails" class="btn btn-sm btn-outline-dark">Update Banking Details</a>
-                </div>
+                @if (!adminViewing)
+                {
+                    <div class="mt-3 d-flex gap-2 flex-wrap">
+                        <button class="btn btn-sm btn-outline-dark" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#editProfileForm">
+                            Edit Profile
+                        </button>
+                        <a asp-action="BankingDetails" class="btn btn-sm btn-outline-dark">Update Banking Details</a>
+                    </div>
+                }
             </div>
 
-            <div class="collapse" id="editProfileForm">
-                <div class="card-body border-top">
-                    <form asp-action="EditProfile" method="post">
-                        @Html.AntiForgeryToken()
-                        <div class="row g-2">
-                            <div class="col-12">
-                                <input name="FullName" class="form-control form-control-sm" placeholder="Full Name"
-                                       value="@Model.User.FullName" required />
+            @if (!adminViewing)
+            {
+                <div class="collapse" id="editProfileForm">
+                    <div class="card-body border-top">
+                        <form asp-action="EditProfile" method="post">
+                            @Html.AntiForgeryToken()
+                            <div class="row g-2">
+                                <div class="col-12">
+                                    <input name="FullName" class="form-control form-control-sm" placeholder="Full Name"
+                                           value="@Model.User.FullName" required />
+                                </div>
+                                <div class="col-md-6">
+                                    <input name="Phone" class="form-control form-control-sm" placeholder="Phone"
+                                           value="@Model.User.Phone" required />
+                                </div>
+                                <div class="col-md-6">
+                                    <input name="Address" class="form-control form-control-sm" placeholder="Address"
+                                           value="@Model.User.Address" required />
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-sm btn-dark">Save</button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary"
+                                            data-bs-toggle="collapse" data-bs-target="#editProfileForm">Cancel</button>
+                                </div>
                             </div>
-                            <div class="col-md-6">
-                                <input name="Phone" class="form-control form-control-sm" placeholder="Phone"
-                                       value="@Model.User.Phone" required />
-                            </div>
-                            <div class="col-md-6">
-                                <input name="Address" class="form-control form-control-sm" placeholder="Address"
-                                       value="@Model.User.Address" required />
-                            </div>
-                            <div class="col-12">
-                                <button type="submit" class="btn btn-sm btn-dark">Save</button>
-                                <button type="button" class="btn btn-sm btn-outline-secondary"
-                                        data-bs-toggle="collapse" data-bs-target="#editProfileForm">Cancel</button>
-                            </div>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
-            </div>
+            }
         </div>
 
         @if (Model.Status == SocietyApp.Models.MembershipStatus.Pending)
@@ -138,52 +319,58 @@
         <div class="card mb-4">
             <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
                 <span>Nominee</span>
-                <button class="btn btn-sm btn-outline-light" type="button"
-                        data-bs-toggle="collapse" data-bs-target="#nomineeForm">
-                    @(Model.Nominee != null ? "Edit" : "+ Add Nominee")
-                </button>
+                @if (!adminViewing)
+                {
+                    <button class="btn btn-sm btn-outline-light" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#nomineeForm">
+                        @(Model.Nominee != null ? "Edit" : "+ Add Nominee")
+                    </button>
+                }
             </div>
 
-            <div class="collapse" id="nomineeForm">
-                <div class="card-body border-bottom">
-                    <form asp-action="SaveNominee" method="post">
-                        @Html.AntiForgeryToken()
-                        <div class="row g-2">
-                            <div class="col-12">
-                                <input name="fullName" class="form-control form-control-sm" placeholder="Full Name" required
-                                       value="@(Model.Nominee?.FullName ?? string.Empty)" />
+            @if (!adminViewing)
+            {
+                <div class="collapse" id="nomineeForm">
+                    <div class="card-body border-bottom">
+                        <form asp-action="SaveNominee" method="post">
+                            @Html.AntiForgeryToken()
+                            <div class="row g-2">
+                                <div class="col-12">
+                                    <input name="fullName" class="form-control form-control-sm" placeholder="Full Name" required
+                                           value="@(Model.Nominee?.FullName ?? string.Empty)" />
+                                </div>
+                                <div class="col-md-6">
+                                    <input name="idNumber" class="form-control form-control-sm" placeholder="ID Number" required
+                                           value="@(Model.Nominee?.IDNumber ?? string.Empty)" />
+                                </div>
+                                <div class="col-md-6">
+                                    <input name="phone" class="form-control form-control-sm" placeholder="Phone"
+                                           value="@(Model.Nominee?.Phone ?? string.Empty)" />
+                                </div>
+                                <div class="col-12">
+                                    <select name="relationship" class="form-select form-select-sm" required>
+                                        <option value="">-- Relationship --</option>
+                                        @foreach (var r in new[]{"Spouse","Partner","Child","Parent","Sibling","Friend","Other"})
+                                        {
+                                            <option value="@r" selected="@(Model.Nominee?.Relationship == r ? "selected" : null)">@r</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-sm btn-dark">Save Nominee</button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary"
+                                            data-bs-toggle="collapse" data-bs-target="#nomineeForm">Cancel</button>
+                                </div>
                             </div>
-                            <div class="col-md-6">
-                                <input name="idNumber" class="form-control form-control-sm" placeholder="ID Number" required
-                                       value="@(Model.Nominee?.IDNumber ?? string.Empty)" />
-                            </div>
-                            <div class="col-md-6">
-                                <input name="phone" class="form-control form-control-sm" placeholder="Phone"
-                                       value="@(Model.Nominee?.Phone ?? string.Empty)" />
-                            </div>
-                            <div class="col-12">
-                                <select name="relationship" class="form-select form-select-sm" required>
-                                    <option value="">-- Relationship --</option>
-                                    @foreach (var r in new[]{"Spouse","Partner","Child","Parent","Sibling","Friend","Other"})
-                                    {
-                                        <option value="@r" selected="@(Model.Nominee?.Relationship == r ? "selected" : null)">@r</option>
-                                    }
-                                </select>
-                            </div>
-                            <div class="col-12">
-                                <button type="submit" class="btn btn-sm btn-dark">Save Nominee</button>
-                                <button type="button" class="btn btn-sm btn-outline-secondary"
-                                        data-bs-toggle="collapse" data-bs-target="#nomineeForm">Cancel</button>
-                            </div>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
-            </div>
+            }
 
             <div class="card-body">
                 @if (Model.Nominee == null)
                 {
-                    <p class="text-muted small mb-0">No nominee added yet. Your nominee receives the benefit if you pass away.</p>
+                    <p class="text-muted small mb-0">@(adminViewing ? "No nominee on record." : "No nominee added yet. Your nominee receives the benefit if you pass away.")</p>
                 }
                 else
                 {
@@ -191,15 +378,18 @@
                     <p class="mb-1"><strong>ID Number:</strong> @Model.Nominee.IDNumber</p>
                     <p class="mb-1"><strong>Phone:</strong> @Model.Nominee.Phone</p>
                     <p class="mb-1"><strong>Relationship:</strong> @Model.Nominee.Relationship</p>
-                    <div class="mt-2">
-                        <form asp-action="RemoveNominee" method="post" class="d-inline">
-                            @Html.AntiForgeryToken()
-                            <button type="submit" class="btn btn-sm btn-outline-danger"
-                                    data-confirm="Remove @Model.Nominee.FullName as your nominee? This cannot be undone.">
-                                Remove Nominee
-                            </button>
-                        </form>
-                    </div>
+                    @if (!adminViewing)
+                    {
+                        <div class="mt-2">
+                            <form asp-action="RemoveNominee" method="post" class="d-inline">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-sm btn-outline-danger"
+                                        data-confirm="Remove @Model.Nominee.FullName as your nominee? This cannot be undone.">
+                                    Remove Nominee
+                                </button>
+                            </form>
+                        </div>
+                    }
                 }
             </div>
         </div>
@@ -213,15 +403,22 @@
         <div class="card mb-4">
             <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
                 <span>Dependants (@dependants.Count() / 10)</span>
-                @if (canAdd)
+                @if (canAdd && !adminViewing)
                 {
                     <button class="btn btn-sm btn-outline-light" type="button"
                             data-bs-toggle="collapse" data-bs-target="#addDependantForm">
                         + Add Dependant
                     </button>
                 }
+                else if (canAdd && adminViewing)
+                {
+                    <a asp-controller="Admin" asp-action="AddDependantForMember" asp-route-membershipId="@Model.Id"
+                       class="btn btn-sm btn-outline-light">+ Add Dependant</a>
+                }
             </div>
 
+            @if (!adminViewing)
+            {
             <div class="collapse" id="addDependantForm">
                 <div class="card-body border-bottom">
                     <form asp-action="AddDependant" method="post">
@@ -293,6 +490,7 @@
                     </form>
                 </div>
             </div>
+            }
 
             <div class="card-body p-0">
                 @if (!dependants.Any())
@@ -320,6 +518,26 @@
                                     <td class="d-none d-md-table-cell">@d.DateOfBirth.ToString("dd MMM yyyy")</td>
                                     <td>@d.Relationship</td>
                                     <td class="text-end text-nowrap">
+                                        @if (adminViewing)
+                                        {
+                                            <a asp-controller="Admin" asp-action="EditDependantForMember"
+                                               asp-route-dependantId="@d.Id" asp-route-membershipId="@Model.Id"
+                                               class="btn btn-sm btn-outline-secondary me-1" title="Edit @d.FullName">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <form asp-controller="Admin" asp-action="RemoveDependantForMember" method="post" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="membershipId" value="@Model.Id" />
+                                                <input type="hidden" name="dependantId" value="@d.Id" />
+                                                <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                        title="Remove @d.FullName"
+                                                        data-confirm="Remove @d.FullName as a dependant? This cannot be undone.">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        }
+                                        else
+                                        {
                                         <button type="button"
                                                 class="btn btn-sm btn-outline-secondary me-1"
                                                 title="Edit @d.FullName"
@@ -341,6 +559,7 @@
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </form>
+                                        }
                                     </td>
                                 </tr>
                             }
@@ -368,12 +587,14 @@
         <div class="card mb-4">
             <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
                 Payment History
-                @if (showSubmitBtn)
+                @if (showSubmitBtn && !adminViewing)
                 {
                     <button class="btn btn-sm btn-outline-light" type="button"
                             data-bs-toggle="collapse" data-bs-target="#submitPaymentForm">@submitLabel</button>
                 }
             </div>
+            @if (!adminViewing)
+            {
             <div class="collapse" id="submitPaymentForm">
                 <div class="card-body border-bottom">
                     <div class="alert alert-info py-2 px-3 mb-3 small">
@@ -426,13 +647,28 @@
                     </form>
                 </div>
             </div>
+            }
             <div class="card-body p-0">
                 @{
                     var joiningFees = (IEnumerable<SocietyApp.Models.JoiningFeePayment>)ViewBag.JoiningFeePayments;
                     var monthlyPayments = (IEnumerable<SocietyApp.Models.MonthlyPayment>)ViewBag.MonthlyPayments;
+                    var paymentColSpan = adminViewing ? 7 : 5;
                 }
                 <table class="table table-sm mb-0">
-                    <thead><tr><th>Type</th><th>Date</th><th>Reference</th><th>Amount</th><th>Status</th></tr></thead>
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Date</th>
+                            <th>Reference</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            @if (adminViewing)
+                            {
+                                <th>Proof</th>
+                                <th></th>
+                            }
+                        </tr>
+                    </thead>
                     <tbody>
                         @foreach (var p in joiningFees)
                         {
@@ -443,6 +679,50 @@
                                 <td>@p.PaymentReference</td>
                                 <td>R@(p.Amount)</td>
                                 <td><span class="badge @jfBadge">@p.Status</span></td>
+                                @if (adminViewing)
+                                {
+                                    <td>
+                                        @if (p.ProofData != null)
+                                        {
+                                            var isPdf = p.ProofFileName?.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase) == true;
+                                            if (isPdf)
+                                            {
+                                                <a asp-controller="Payments" asp-action="JoiningFeeProof" asp-route-id="@p.Id"
+                                                   target="_blank" class="btn btn-sm btn-outline-secondary">
+                                                    <i class="bi bi-file-earmark-pdf"></i> PDF
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <a asp-controller="Payments" asp-action="JoiningFeeProof" asp-route-id="@p.Id"
+                                                   target="_blank">
+                                                    <img src="@Url.Action("JoiningFeeProof", "Payments", new { id = p.Id })"
+                                                         class="rounded"
+                                                         style="height:40px;width:56px;object-fit:cover;"
+                                                         alt="Proof" />
+                                                </a>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted small">None</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (p.Status == SocietyApp.Models.PaymentStatus.Pending)
+                                        {
+                                            <form asp-controller="Admin" asp-action="DeleteJoiningFee" method="post" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="id" value="@p.Id" />
+                                                <input type="hidden" name="returnTo" value="MemberDetails" />
+                                                <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                        data-confirm="Delete this pending joining fee? This cannot be undone.">
+                                                    Delete
+                                                </button>
+                                            </form>
+                                        }
+                                    </td>
+                                }
                             </tr>
                         }
                         @foreach (var p in monthlyPayments)
@@ -454,11 +734,55 @@
                                 <td>@p.PaymentReference</td>
                                 <td>R@(p.Amount)</td>
                                 <td><span class="badge @mpBadge">@p.Status</span></td>
+                                @if (adminViewing)
+                                {
+                                    <td>
+                                        @if (p.ProofData != null)
+                                        {
+                                            var isPdf = p.ProofFileName?.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase) == true;
+                                            if (isPdf)
+                                            {
+                                                <a asp-controller="Payments" asp-action="MonthlyProof" asp-route-id="@p.Id"
+                                                   target="_blank" class="btn btn-sm btn-outline-secondary">
+                                                    <i class="bi bi-file-earmark-pdf"></i> PDF
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <a asp-controller="Payments" asp-action="MonthlyProof" asp-route-id="@p.Id"
+                                                   target="_blank">
+                                                    <img src="@Url.Action("MonthlyProof", "Payments", new { id = p.Id })"
+                                                         class="rounded"
+                                                         style="height:40px;width:56px;object-fit:cover;"
+                                                         alt="Proof" />
+                                                </a>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted small">None</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (p.Status == SocietyApp.Models.MonthlyPaymentStatus.Pending)
+                                        {
+                                            <form asp-controller="Admin" asp-action="DeleteMonthlyPayment" method="post" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="id" value="@p.Id" />
+                                                <input type="hidden" name="returnTo" value="MemberDetails" />
+                                                <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                        data-confirm="Delete this pending payment? This cannot be undone.">
+                                                    Delete
+                                                </button>
+                                            </form>
+                                        }
+                                    </td>
+                                }
                             </tr>
                         }
                         @if (!joiningFees.Any() && !monthlyPayments.Any())
                         {
-                            <tr><td colspan="5" class="text-muted small py-3 text-center">No payment records yet.</td></tr>
+                            <tr><td colspan="@paymentColSpan" class="text-muted small py-3 text-center">No payment records yet.</td></tr>
                         }
                     </tbody>
                 </table>
@@ -471,12 +795,14 @@
                 @{
                     var claimElig = ViewBag.Eligibility as SocietyApp.Services.Interfaces.ClaimEligibilityResult;
                 }
-                @if (claimElig?.IsEligible == true)
+                @if (claimElig?.IsEligible == true && !adminViewing)
                 {
                     <button class="btn btn-sm btn-outline-light" type="button"
                             data-bs-toggle="collapse" data-bs-target="#submitClaimForm">+ New Claim</button>
                 }
             </div>
+            @if (!adminViewing)
+            {
             <div class="collapse" id="submitClaimForm">
                 <div class="card-body border-bottom">
                     <form asp-controller="Claims" asp-action="Submit" method="post" enctype="multipart/form-data">
@@ -524,6 +850,7 @@
                     </form>
                 </div>
             </div>
+            }
             <div class="card-body p-0">
                 <table class="table table-sm mb-0">
                     <thead><tr><th>Deceased</th><th>Date</th><th>Status</th></tr></thead>
@@ -561,7 +888,7 @@
             document.getElementById('addDateOfBirth').value = parseDobFromSaId(this.value);
         });
 
-        document.getElementById('editIDNumber').addEventListener('input', function () {
+        document.getElementById('editIDNumber')?.addEventListener('input', function () {
             document.getElementById('editDateOfBirth').value = parseDobFromSaId(this.value);
         });
 
