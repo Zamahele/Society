@@ -73,23 +73,25 @@
             </div>
         </div>
 
-        @if (Model.Status == SocietyApp.Models.MembershipStatus.Pending)
-        {
-            <div class="alert alert-warning">
-                Your membership is awaiting approval. Once approved, you will still need to pay the joining fee before your membership becomes active.
-            </div>
-        }
-
-        @if (Model.Status == SocietyApp.Models.MembershipStatus.PendingPayment)
+        @if (Model.Status == SocietyApp.Models.MembershipStatus.Pending
+          || Model.Status == SocietyApp.Models.MembershipStatus.PendingPayment)
         {
             var hasPending = ViewBag.HasPendingJoiningFee as bool? ?? false;
-            <div class="alert alert-info">
-                Your membership is approved. Pay the joining fee of <strong>R150</strong> using <strong>@Model.MembershipNumber</strong> as your EFT reference, then submit proof using the <strong>Submit Payment</strong> button in the Payment History section below.
-                @if (hasPending)
-                {
-                    <div class="mt-2 small fw-semibold">Joining fee submitted — awaiting clerk confirmation.</div>
-                }
-            </div>
+            if (hasPending)
+            {
+                <div class="alert alert-info">
+                    <strong>Joining fee submitted — awaiting admin approval.</strong>
+                    Your membership will be activated as soon as an admin reviews and approves the payment.
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-warning">
+                    Pay the joining fee of <strong>R150</strong> via EFT using <strong>@Model.MembershipNumber</strong>
+                    as your reference, then submit proof using the <strong>Submit Payment</strong> button in the
+                    Payment History section below. An admin will approve your membership once the payment is received.
+                </div>
+            }
         }
 
         @if (Model.Status == SocietyApp.Models.MembershipStatus.Suspended)
@@ -359,9 +361,15 @@
 
         @{
             var hasPendingFee = ViewBag.HasPendingJoiningFee as bool? ?? false;
-            var canSubmitJoiningFee = Model.Status == SocietyApp.Models.MembershipStatus.PendingPayment && !hasPendingFee;
-            var canSubmitMonthly = Model.Status == SocietyApp.Models.MembershipStatus.Active || Model.Status == SocietyApp.Models.MembershipStatus.Suspended;
+            var canSubmitJoiningFee = (Model.Status == SocietyApp.Models.MembershipStatus.Pending
+                                       || Model.Status == SocietyApp.Models.MembershipStatus.PendingPayment)
+                                       && !hasPendingFee;
+            var canSubmitMonthly = Model.Status == SocietyApp.Models.MembershipStatus.Active
+                                  || Model.Status == SocietyApp.Models.MembershipStatus.Suspended;
             var showSubmitBtn = canSubmitJoiningFee || canSubmitMonthly;
+            var submitLabel = canSubmitJoiningFee ? "+ Submit Joining Fee" : "+ Submit Monthly Payment";
+            var paymentTypeValue = canSubmitJoiningFee ? "JoiningFee" : "Monthly";
+            var paymentTypeLabel = canSubmitJoiningFee ? "Joining Fee" : "Monthly Payment";
         }
         <div class="card mb-4">
             <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
@@ -369,7 +377,7 @@
                 @if (showSubmitBtn)
                 {
                     <button class="btn btn-sm btn-outline-light" type="button"
-                            data-bs-toggle="collapse" data-bs-target="#submitPaymentForm">+ Submit Payment</button>
+                            data-bs-toggle="collapse" data-bs-target="#submitPaymentForm">@submitLabel</button>
                 }
             </div>
             <div class="collapse" id="submitPaymentForm">
@@ -384,24 +392,21 @@
                         @Html.AntiForgeryToken()
                         <input type="hidden" name="MembershipId" value="@Model.Id" />
                         <input type="hidden" name="MembershipNumber" value="@Model.MembershipNumber" />
+                        <input type="hidden" name="PaymentType" id="paymentType" value="@paymentTypeValue" />
                         <div class="row g-2">
-                            <div class="col-sm-6">
+                            <div class="col-sm-4">
                                 <label class="form-label form-label-sm">Payment Type</label>
-                                <select name="PaymentType" id="paymentType" class="form-select form-select-sm" required>
-                                    @if (canSubmitJoiningFee)
-                                    {
-                                        <option value="JoiningFee">Joining Fee</option>
-                                    }
-                                    @if (canSubmitMonthly)
-                                    {
-                                        <option value="Monthly">Monthly Payment</option>
-                                    }
-                                </select>
+                                <input type="text" class="form-control form-control-sm" value="@paymentTypeLabel" readonly />
                             </div>
-                            <div class="col-sm-6" id="forMonthRow" style="@(canSubmitMonthly && !canSubmitJoiningFee ? "" : "display:none;")">
+                            <div class="col-sm-4">
+                                <label class="form-label form-label-sm">Amount</label>
+                                <input type="text" class="form-control form-control-sm" value="R150" readonly />
+                            </div>
+                            <div class="col-sm-4" id="forMonthRow" style="@(canSubmitMonthly ? "" : "display:none;")">
                                 <label class="form-label form-label-sm">For Month</label>
                                 <input name="ForMonth" id="forMonth" type="date" class="form-control form-control-sm"
-                                       value="@(new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1).ToString("yyyy-MM-dd"))" />
+                                       value="@(new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1).ToString("yyyy-MM-dd"))"
+                                       @(canSubmitMonthly ? "required" : "") />
                             </div>
                             <div class="col-sm-6">
                                 <label class="form-label form-label-sm">EFT Reference</label>

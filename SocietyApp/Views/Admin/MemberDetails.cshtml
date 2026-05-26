@@ -1,5 +1,13 @@
 @model SocietyApp.Models.Membership
-@{ ViewData["Title"] = "Member Details"; }
+@{
+    ViewData["Title"] = "Member Details";
+    var joiningFees = (IEnumerable<SocietyApp.Models.JoiningFeePayment>)(ViewBag.JoiningFeePayments
+        ?? new List<SocietyApp.Models.JoiningFeePayment>());
+    var hasPendingJoiningFee = ViewBag.HasPendingJoiningFee as bool? ?? false;
+    var canApprove = (Model.Status == SocietyApp.Models.MembershipStatus.Pending
+                   || Model.Status == SocietyApp.Models.MembershipStatus.PendingPayment)
+                   && hasPendingJoiningFee;
+}
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2>@Model.User.FullName — @Model.MembershipNumber</h2>
@@ -9,12 +17,20 @@
 <div class="card border-warning mb-4">
     <div class="card-header bg-warning-subtle">Admin Actions</div>
     <div class="card-body d-flex flex-wrap gap-2">
-        @if (Model.Status == SocietyApp.Models.MembershipStatus.Pending)
+        @if (canApprove)
         {
             <form asp-action="ApproveMember" method="post">
                 <input type="hidden" name="id" value="@Model.Id" />
-                <button type="submit" class="btn btn-success">Approve Member</button>
+                <button type="submit" class="btn btn-success"
+                        data-confirm="Approve @Model.User.FullName and confirm their R150 joining fee payment?">
+                    Approve Member
+                </button>
             </form>
+        }
+        else if (Model.Status == SocietyApp.Models.MembershipStatus.Pending
+              || Model.Status == SocietyApp.Models.MembershipStatus.PendingPayment)
+        {
+            <span class="text-muted align-self-center small fst-italic">Awaiting joining fee from member before approval.</span>
         }
 
         @if (Model.Status == SocietyApp.Models.MembershipStatus.Suspended)
@@ -188,6 +204,95 @@
     </div>
 
     <div class="col-md-8">
+        @if (joiningFees.Any())
+        {
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                    <span>Joining Fee Review</span>
+                    @if (canApprove)
+                    {
+                        <form asp-action="ApproveMember" method="post" class="m-0">
+                            <input type="hidden" name="id" value="@Model.Id" />
+                            <button type="submit" class="btn btn-sm btn-success"
+                                    data-confirm="Approve @Model.User.FullName and confirm their R150 joining fee payment?">
+                                Approve &amp; Confirm
+                            </button>
+                        </form>
+                    }
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-sm mb-0 align-middle">
+                        <thead>
+                            <tr>
+                                <th>Amount</th>
+                                <th>Reference</th>
+                                <th>Paid On</th>
+                                <th>Status</th>
+                                <th>Proof</th>
+                                <th>Confirmed</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var jf in joiningFees)
+                            {
+                                var isPdf = jf.ProofFileName?.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase) == true;
+                                var jfBadge = jf.Status == SocietyApp.Models.PaymentStatus.Confirmed ? "bg-success" : "bg-warning text-dark";
+                                <tr>
+                                    <td>R@(jf.Amount)</td>
+                                    <td>@jf.PaymentReference</td>
+                                    <td>@jf.PaymentDate.ToString("dd MMM yyyy")</td>
+                                    <td><span class="badge @jfBadge">@jf.Status</span></td>
+                                    <td>
+                                        @if (jf.ProofData != null)
+                                        {
+                                            if (isPdf)
+                                            {
+                                                <a asp-controller="Payments" asp-action="JoiningFeeProof" asp-route-id="@jf.Id"
+                                                   target="_blank" class="btn btn-sm btn-outline-secondary">
+                                                    <i class="bi bi-file-earmark-pdf"></i> PDF
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <img src="@Url.Action("JoiningFeeProof", "Payments", new { id = jf.Id })"
+                                                     class="proof-thumb rounded"
+                                                     style="height:56px;width:72px;object-fit:cover;cursor:pointer;"
+                                                     data-full="@Url.Action("JoiningFeeProof", "Payments", new { id = jf.Id })"
+                                                     data-label="@Model.User.FullName — @jf.PaymentDate.ToString("dd MMM yyyy")"
+                                                     alt="Proof" />
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted small">None</span>
+                                        }
+                                    </td>
+                                    <td class="small text-muted">
+                                        @(jf.ConfirmedDate.HasValue ? jf.ConfirmedDate.Value.ToString("dd MMM yyyy") : "-")
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Proof lightbox modal (joining fee) -->
+            <div class="modal fade" id="jfProofModal" tabindex="-1">
+                <div class="modal-dialog modal-lg modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header py-2">
+                            <h6 class="modal-title" id="jfProofModalLabel">Proof of Payment</h6>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body p-1 text-center">
+                            <img id="jfProofModalImg" src="" class="img-fluid rounded" alt="Proof" style="max-height:80vh;" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
         <div class="card mb-4">
             <div class="card-header bg-dark text-white">Monthly Payment History</div>
             <div class="card-body p-0">
@@ -270,3 +375,15 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.proof-thumb').forEach(function (img) {
+            img.addEventListener('click', function () {
+                document.getElementById('jfProofModalImg').src = this.dataset.full;
+                document.getElementById('jfProofModalLabel').textContent = this.dataset.label;
+                new bootstrap.Modal(document.getElementById('jfProofModal')).show();
+            });
+        });
+    </script>
+}

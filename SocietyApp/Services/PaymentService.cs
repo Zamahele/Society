@@ -38,22 +38,12 @@ public class PaymentService : IPaymentService
 
     public async Task ConfirmJoiningFeeAsync(int paymentId, string clerkId)
     {
-        var payment = await _db.JoiningFeePayments
-            .Include(p => p.Membership)
-            .FirstOrDefaultAsync(p => p.Id == paymentId);
-
-        if (payment == null) return;
+        var payment = await _db.JoiningFeePayments.FindAsync(paymentId);
+        if (payment == null || payment.Status == PaymentStatus.Confirmed) return;
 
         payment.Status = PaymentStatus.Confirmed;
         payment.ConfirmedByClerkId = clerkId;
         payment.ConfirmedDate = DateTime.UtcNow;
-
-        // Activate membership after approval once the joining fee is confirmed.
-        if (payment.Membership.Status == MembershipStatus.Pending || payment.Membership.Status == MembershipStatus.PendingPayment)
-        {
-            payment.Membership.Status = MembershipStatus.Active;
-            payment.Membership.DateActivated = DateTime.UtcNow;
-        }
 
         await _db.SaveChangesAsync();
     }

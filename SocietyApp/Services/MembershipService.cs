@@ -89,6 +89,34 @@ public class MembershipService : IMembershipService
         await _db.SaveChangesAsync();
     }
 
+    public async Task<bool> ApproveMembershipAsync(int membershipId, string? adminUserId)
+    {
+        var membership = await _db.Memberships.FindAsync(membershipId);
+        if (membership == null) return false;
+
+        if (membership.Status != MembershipStatus.Pending
+         && membership.Status != MembershipStatus.PendingPayment)
+            return false;
+
+        var pendingFee = await _db.JoiningFeePayments
+            .Where(p => p.MembershipId == membershipId && p.Status == PaymentStatus.Pending)
+            .OrderByDescending(p => p.PaymentDate)
+            .FirstOrDefaultAsync();
+
+        if (pendingFee == null) return false;
+
+        pendingFee.Status = PaymentStatus.Confirmed;
+        if (!string.IsNullOrEmpty(adminUserId))
+            pendingFee.ConfirmedByClerkId = adminUserId;
+        pendingFee.ConfirmedDate = DateTime.UtcNow;
+
+        membership.Status = MembershipStatus.Active;
+        membership.DateActivated = DateTime.UtcNow;
+
+        await _db.SaveChangesAsync();
+        return true;
+    }
+
     public async Task SuspendAsync(int membershipId)
     {
         var membership = await _db.Memberships.FindAsync(membershipId);

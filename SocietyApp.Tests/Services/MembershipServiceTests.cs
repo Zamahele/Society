@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using SocietyApp.Models;
 using SocietyApp.Services;
 using SocietyApp.Tests.TestSupport;
@@ -59,20 +60,73 @@ public class MembershipServiceTests
     }
 
     [Fact]
-    public async Task ActivateAsync_MovesMembershipToPendingPayment()
+    public async Task ApproveMembershipAsync_ActivatesPendingMemberAndConfirmsJoiningFee()
     {
         using var db = TestDbFactory.CreateContext();
         var payments = new StubPaymentService();
         var service = new MembershipService(db, payments);
 
-        var membership = await service.CreateAsync("member-approval");
+        var membership = await service.CreateAsync("member-approve");
+        db.JoiningFeePayments.Add(new JoiningFeePayment
+        {
+            MembershipId = membership.Id,
+            PaymentReference = membership.MembershipNumber,
+            PaymentDate = DateTime.UtcNow.AddDays(-1),
+            Status = PaymentStatus.Pending
+        });
+        await db.SaveChangesAsync();
 
-        await service.ActivateAsync(membership.Id);
+        var ok = await service.ApproveMembershipAsync(membership.Id, "admin-1");
 
+        Assert.True(ok);
         var updated = await db.Memberships.FindAsync(membership.Id);
-        Assert.NotNull(updated);
-        Assert.Equal(MembershipStatus.PendingPayment, updated!.Status);
+        var fee = await db.JoiningFeePayments.FirstAsync(p => p.MembershipId == membership.Id);
+        Assert.Equal(MembershipStatus.Active, updated!.Status);
+        Assert.NotNull(updated.DateActivated);
+        Assert.Equal(PaymentStatus.Confirmed, fee.Status);
+        Assert.Equal("admin-1", fee.ConfirmedByClerkId);
+        Assert.NotNull(fee.ConfirmedDate);
+    }
+
+    [Fact]
+    public async Task ApproveMembershipAsync_ReturnsFalseWhenNoJoiningFeeRecord()
+    {
+        using var db = TestDbFactory.CreateContext();
+        var payments = new StubPaymentService();
+        var service = new MembershipService(db, payments);
+
+        var membership = await service.CreateAsync("member-no-fee");
+
+        var ok = await service.ApproveMembershipAsync(membership.Id, "admin-1");
+
+        Assert.False(ok);
+        var updated = await db.Memberships.FindAsync(membership.Id);
+        Assert.Equal(MembershipStatus.Pending, updated!.Status);
         Assert.Null(updated.DateActivated);
+    }
+
+    [Fact]
+    public async Task ApproveMembershipAsync_ReturnsFalseForAlreadyActiveMember()
+    {
+        using var db = TestDbFactory.CreateContext();
+        var payments = new StubPaymentService();
+        var service = new MembershipService(db, payments);
+
+        var membership = await service.CreateAsync("member-already-active");
+        membership.Status = MembershipStatus.Active;
+        membership.DateActivated = DateTime.UtcNow.AddDays(-7);
+        db.JoiningFeePayments.Add(new JoiningFeePayment
+        {
+            MembershipId = membership.Id,
+            PaymentReference = membership.MembershipNumber,
+            PaymentDate = DateTime.UtcNow.AddDays(-1),
+            Status = PaymentStatus.Pending
+        });
+        await db.SaveChangesAsync();
+
+        var ok = await service.ApproveMembershipAsync(membership.Id, "admin-1");
+
+        Assert.False(ok);
     }
 
     [Fact]

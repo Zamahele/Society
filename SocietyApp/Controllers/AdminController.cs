@@ -66,10 +66,13 @@ public class AdminController : Controller
         var monthlyHistory = await _paymentService.GetMonthlyHistoryAsync(id);
         var claims = await _claimService.GetByMembershipAsync(id);
         var eligibility = await _claimService.CheckEligibilityAsync(id);
+        var joiningFees = await _paymentService.GetJoiningFeesByMembershipAsync(id);
 
         ViewBag.MonthlyHistory = monthlyHistory;
         ViewBag.Claims = claims;
         ViewBag.Eligibility = eligibility;
+        ViewBag.JoiningFeePayments = joiningFees;
+        ViewBag.HasPendingJoiningFee = joiningFees.Any(p => p.Status == PaymentStatus.Pending);
 
         if (membership.DateActivated.HasValue)
         {
@@ -86,18 +89,14 @@ public class AdminController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ApproveMember(int id)
     {
-        var membership = await _membershipService.GetByIdAsync(id);
-        if (membership == null)
-            return NotFound();
+        var adminId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
-        if (membership.Status != MembershipStatus.Pending)
-        {
-            TempData["Error"] = "Only pending memberships can be approved.";
-            return RedirectToAction(nameof(MemberDetails), new { id });
-        }
+        var ok = await _membershipService.ApproveMembershipAsync(id, adminId);
+        if (!ok)
+            TempData["Error"] = "Cannot approve: ensure the member is pending and has submitted a joining fee.";
+        else
+            TempData["Success"] = "Member approved and activated.";
 
-        await _membershipService.ActivateAsync(id);
-        TempData["Success"] = "Member approved. Joining fee payment is still required before activation.";
         return RedirectToAction(nameof(MemberDetails), new { id });
     }
 

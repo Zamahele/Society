@@ -30,6 +30,17 @@ public class AdminControllerTests
         public Task<string> GenerateMembershipNumberAsync() => Task.FromResult("SOC-0001");
         public Task<Membership> CreateAsync(string userId) => throw new NotImplementedException();
         public Task ActivateAsync(int membershipId) { var m = Members.Find(x => x.Id == membershipId); if (m != null) m.Status = MembershipStatus.PendingPayment; return Task.CompletedTask; }
+        public bool ApproveCalled { get; private set; }
+        public string? LastApproveAdminId { get; private set; }
+        public bool ApproveReturn { get; set; } = true;
+        public Task<bool> ApproveMembershipAsync(int membershipId, string? adminUserId)
+        {
+            ApproveCalled = true;
+            LastApproveAdminId = adminUserId;
+            var m = Members.Find(x => x.Id == membershipId);
+            if (m != null && ApproveReturn) { m.Status = MembershipStatus.Active; m.DateActivated = DateTime.UtcNow; }
+            return Task.FromResult(ApproveReturn);
+        }
         public Task SuspendAsync(int membershipId) => Task.CompletedTask;
         public Task CheckAndSuspendIfOverdueAsync(int membershipId) => Task.CompletedTask;
         public Task<bool> CanAddDependantAsync(int membershipId) => Task.FromResult(true);
@@ -93,7 +104,9 @@ public class AdminControllerTests
             paymentService: payments ?? new StubPaymentServiceFull(),
             claimService: claims ?? new StubClaimService());
 
-        controller.TempData = new TempDataDictionary(new DefaultHttpContext(), new TestTempDataProvider());
+        var httpContext = new DefaultHttpContext();
+        controller.ControllerContext = new ControllerContext { HttpContext = httpContext };
+        controller.TempData = new TempDataDictionary(httpContext, new TestTempDataProvider());
         return controller;
     }
 
@@ -156,7 +169,7 @@ public class AdminControllerTests
     }
 
     [Fact]
-    public async Task ApproveMember_CallsActivate_AndRedirects()
+    public async Task ApproveMember_CallsApproveMembership_ActivatesAndRedirects()
     {
         var membershipSvc = new StubMembershipService
         {
@@ -171,6 +184,28 @@ public class AdminControllerTests
 
         Assert.NotNull(result);
         Assert.Equal("MemberDetails", result!.ActionName);
-        Assert.Equal(MembershipStatus.PendingPayment, membershipSvc.Members[0].Status);
+        Assert.True(membershipSvc.ApproveCalled);
+        Assert.Equal(MembershipStatus.Active, membershipSvc.Members[0].Status);
+    }
+
+    [Fact]
+    public async Task ApproveMember_WhenServiceRefuses_KeepsStatusAndRedirects()
+    {
+        var membershipSvc = new StubMembershipService
+        {
+            ApproveReturn = false,
+            Members = new List<Membership>
+            {
+                new() { Id = 8, Status = MembershipStatus.Pending }
+            }
+        };
+
+        var controller = BuildController(membership: membershipSvc);
+        var result = await controller.ApproveMember(8) as RedirectToActionResult;
+
+        Assert.NotNull(result);
+        Assert.Equal("MemberDetails", result!.ActionName);
+        Assert.True(membershipSvc.ApproveCalled);
+        Assert.Equal(MembershipStatus.Pending, membershipSvc.Members[0].Status);
     }
 }

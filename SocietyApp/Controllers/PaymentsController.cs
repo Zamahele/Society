@@ -190,7 +190,7 @@ public class PaymentsController : Controller
     {
         var user = await _userManager.GetUserAsync(User);
         await _paymentService.ConfirmJoiningFeeAsync(id, user!.Id);
-        TempData["Success"] = "Joining fee confirmed. Membership activated.";
+        TempData["Success"] = "Joining fee marked as confirmed. To activate the membership, use Approve Member on the member's detail page.";
         return RedirectToAction(nameof(PendingJoiningFees));
     }
 
