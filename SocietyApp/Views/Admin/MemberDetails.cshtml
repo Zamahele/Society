@@ -30,7 +30,9 @@
         else if (Model.Status == SocietyApp.Models.MembershipStatus.Pending
               || Model.Status == SocietyApp.Models.MembershipStatus.PendingPayment)
         {
-            <span class="text-muted align-self-center small fst-italic">Awaiting joining fee from member before approval.</span>
+            <a asp-controller="Payments" asp-action="SubmitJoiningFee" asp-route-membershipId="@Model.Id"
+               class="btn btn-outline-primary">Submit Joining Fee on behalf</a>
+            <span class="text-muted align-self-center small fst-italic">No joining fee on record yet.</span>
         }
 
         @if (Model.Status == SocietyApp.Models.MembershipStatus.Suspended)
@@ -294,7 +296,14 @@
         }
 
         <div class="card mb-4">
-            <div class="card-header bg-dark text-white">Monthly Payment History</div>
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                <span>Monthly Payment History</span>
+                @if (Model.Status == SocietyApp.Models.MembershipStatus.Active)
+                {
+                    <a asp-controller="Payments" asp-action="SubmitMonthly" asp-route-membershipId="@Model.Id"
+                       class="btn btn-sm btn-outline-light">+ Submit Monthly Payment</a>
+                }
+            </div>
             <div class="card-body p-0">
                 <table class="table table-sm mb-0">
                     <thead><tr><th>Month</th><th>Reference</th><th>Status</th><th>Confirmed By</th><th></th></tr></thead>

@@ -23,16 +23,22 @@ public class PaymentsController : Controller
         _paymentService = paymentService;
     }
 
-    // ---- Member: Submit Joining Fee ----
+    // ---- Submit Joining Fee (Member self-submit; Admin/Clerk on behalf) ----
 
-    [Authorize(Roles = "Member")]
+    [Authorize(Roles = "Member,Admin,Clerk")]
     [HttpGet]
-    public async Task<IActionResult> SubmitJoiningFee()
+    public async Task<IActionResult> SubmitJoiningFee(int? membershipId = null)
     {
         var user = await _userManager.GetUserAsync(User);
-        var membership = await _membershipService.GetByUserIdAsync(user!.Id);
+        var isStaff = User.IsInRole("Admin") || User.IsInRole("Clerk");
+
+        Membership? membership = isStaff && membershipId.HasValue
+            ? await _membershipService.GetByIdAsync(membershipId.Value)
+            : await _membershipService.GetByUserIdAsync(user!.Id);
+
         if (membership == null) return NotFound();
 
+        ViewBag.IsStaffSubmit = isStaff && membershipId.HasValue;
         return View(new SubmitJoiningFeeViewModel
         {
             MembershipId = membership.Id,
@@ -40,38 +46,52 @@ public class PaymentsController : Controller
         });
     }
 
-    [Authorize(Roles = "Member")]
+    [Authorize(Roles = "Member,Admin,Clerk")]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> SubmitJoiningFee(SubmitJoiningFeeViewModel model, string? returnTo = null)
     {
+        var user = await _userManager.GetUserAsync(User);
+        var isStaff = User.IsInRole("Admin") || User.IsInRole("Clerk");
+
         if (!ModelState.IsValid)
         {
             if (returnTo == "Dashboard") return RedirectToAction("Dashboard", "Members");
+            ViewBag.IsStaffSubmit = isStaff;
             return View(model);
         }
 
         if (await _paymentService.HasPendingJoiningFeeAsync(model.MembershipId))
         {
             TempData["Error"] = "A joining fee submission is already pending confirmation. Please wait for a clerk to review it.";
-            return RedirectToAction("Dashboard", "Members");
+            return isStaff
+                ? RedirectToAction("MemberDetails", "Admin", new { id = model.MembershipId })
+                : RedirectToAction("Dashboard", "Members");
         }
 
-        await _paymentService.SubmitJoiningFeeAsync(model.MembershipId, model.PaymentReference, model.PaymentDate);
+        await _paymentService.SubmitJoiningFeeAsync(model.MembershipId, model.PaymentReference, model.PaymentDate, isStaff ? user!.Id : null);
         TempData["Success"] = "Joining fee payment submitted. A clerk will confirm it shortly.";
-        return RedirectToAction("Dashboard", "Members");
+        return isStaff
+            ? RedirectToAction("MemberDetails", "Admin", new { id = model.MembershipId })
+            : RedirectToAction("Dashboard", "Members");
     }
 
-    // ---- Member: Submit Monthly Payment ----
+    // ---- Submit Monthly Payment (Member self-submit; Admin/Clerk on behalf) ----
 
-    [Authorize(Roles = "Member")]
+    [Authorize(Roles = "Member,Admin,Clerk")]
     [HttpGet]
-    public async Task<IActionResult> SubmitMonthly()
+    public async Task<IActionResult> SubmitMonthly(int? membershipId = null)
     {
         var user = await _userManager.GetUserAsync(User);
-        var membership = await _membershipService.GetByUserIdAsync(user!.Id);
+        var isStaff = User.IsInRole("Admin") || User.IsInRole("Clerk");
+
+        Membership? membership = isStaff && membershipId.HasValue
+            ? await _membershipService.GetByIdAsync(membershipId.Value)
+            : await _membershipService.GetByUserIdAsync(user!.Id);
+
         if (membership == null) return NotFound();
 
+        ViewBag.IsStaffSubmit = isStaff && membershipId.HasValue;
         return View(new SubmitMonthlyPaymentViewModel
         {
             MembershipId = membership.Id,
@@ -79,20 +99,26 @@ public class PaymentsController : Controller
         });
     }
 
-    [Authorize(Roles = "Member")]
+    [Authorize(Roles = "Member,Admin,Clerk")]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> SubmitMonthly(SubmitMonthlyPaymentViewModel model, string? returnTo = null)
     {
+        var user = await _userManager.GetUserAsync(User);
+        var isStaff = User.IsInRole("Admin") || User.IsInRole("Clerk");
+
         if (!ModelState.IsValid)
         {
             if (returnTo == "Dashboard") return RedirectToAction("Dashboard", "Members");
+            ViewBag.IsStaffSubmit = isStaff;
             return View(model);
         }
 
-        await _paymentService.SubmitMonthlyPaymentAsync(model.MembershipId, model.ForMonth, model.PaymentReference, model.PaymentDate);
+        await _paymentService.SubmitMonthlyPaymentAsync(model.MembershipId, model.ForMonth, model.PaymentReference, model.PaymentDate, isStaff ? user!.Id : null);
         TempData["Success"] = "Monthly payment submitted. A clerk will confirm it shortly.";
-        return RedirectToAction("Dashboard", "Members");
+        return isStaff
+            ? RedirectToAction("MemberDetails", "Admin", new { id = model.MembershipId })
+            : RedirectToAction("Dashboard", "Members");
     }
 
     // ---- Member: Unified Submit Payment ----
