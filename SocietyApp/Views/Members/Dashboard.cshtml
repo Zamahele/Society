@@ -38,8 +38,10 @@
             }
             else if (Model.Status == SocietyApp.Models.MembershipStatus.Pending && !hasAnyJoiningFee)
             {
-                <a asp-controller="Admin" asp-action="SubmitJoiningFeeForMember" asp-route-membershipId="@Model.Id"
-                   class="btn btn-outline-primary">Submit Joining Fee on behalf</a>
+                <button class="btn btn-outline-primary" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#adminSubmitJoiningFee">
+                    Submit Joining Fee on behalf
+                </button>
             }
 
             @if (User.IsInRole("Admin") && Model.Status == SocietyApp.Models.MembershipStatus.Suspended)
@@ -62,12 +64,19 @@
             @if (Model.Status == SocietyApp.Models.MembershipStatus.Active
                  || Model.Status == SocietyApp.Models.MembershipStatus.Suspended)
             {
-                <a asp-controller="Admin" asp-action="SubmitMonthlyForMember" asp-route-membershipId="@Model.Id"
-                   class="btn btn-outline-primary">Submit Monthly on behalf</a>
+                <button class="btn btn-outline-primary" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#adminSubmitMonthly">
+                    Submit Monthly on behalf
+                </button>
             }
 
-            <a asp-controller="Admin" asp-action="SubmitClaimForMember" asp-route-membershipId="@Model.Id"
-               class="btn btn-outline-primary">Submit Claim on behalf</a>
+            @if (Model.Status == SocietyApp.Models.MembershipStatus.Active)
+            {
+                <button class="btn btn-outline-primary" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#adminSubmitClaim">
+                    Submit Claim on behalf
+                </button>
+            }
 
             <a asp-controller="Admin" asp-action="AddDependantForMember" asp-route-membershipId="@Model.Id"
                class="btn btn-outline-dark">Add Dependant</a>
@@ -99,6 +108,123 @@
                         data-bs-toggle="collapse" data-bs-target="#adminDeleteMember">Delete Member Data</button>
             }
         </div>
+
+        <div class="collapse" id="adminSubmitJoiningFee">
+            <div class="card-body border-top">
+                <div class="alert alert-info py-2 px-3 small mb-3">
+                    R150 via EFT to Capitec acc <strong>1054981680</strong> (Give Compassion NPC), branch 450105, using <strong>@Model.MembershipNumber</strong> as reference.
+                </div>
+                <form asp-controller="Payments" asp-action="SubmitPayment" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="MembershipId" value="@Model.Id" />
+                    <input type="hidden" name="MembershipNumber" value="@Model.MembershipNumber" />
+                    <input type="hidden" name="PaymentType" value="JoiningFee" />
+                    <div class="row g-2">
+                        <div class="col-sm-6">
+                            <label class="form-label form-label-sm">EFT Reference</label>
+                            <input name="PaymentReference" class="form-control form-control-sm" required />
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label form-label-sm">
+                                <i class="bi bi-camera"></i> Proof of Payment <span class="text-muted">(optional)</span>
+                            </label>
+                            <input name="Proof" type="file" class="form-control form-control-sm" accept="image/*,.pdf" capture="environment" />
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-sm btn-dark">Submit</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary"
+                                    data-bs-toggle="collapse" data-bs-target="#adminSubmitJoiningFee">Cancel</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="collapse" id="adminSubmitMonthly">
+            <div class="card-body border-top">
+                <div class="alert alert-info py-2 px-3 small mb-3">
+                    R150 via EFT to Capitec acc <strong>1054981680</strong> (Give Compassion NPC), branch 450105, using <strong>@Model.MembershipNumber</strong> as reference.
+                </div>
+                <form asp-controller="Payments" asp-action="SubmitPayment" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="MembershipId" value="@Model.Id" />
+                    <input type="hidden" name="MembershipNumber" value="@Model.MembershipNumber" />
+                    <input type="hidden" name="PaymentType" value="Monthly" />
+                    <div class="row g-2">
+                        <div class="col-sm-4">
+                            <label class="form-label form-label-sm">For Month</label>
+                            <input name="ForMonth" type="date" class="form-control form-control-sm"
+                                   value="@(new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1).ToString("yyyy-MM-dd"))" required />
+                        </div>
+                        <div class="col-sm-4">
+                            <label class="form-label form-label-sm">EFT Reference</label>
+                            <input name="PaymentReference" class="form-control form-control-sm" required />
+                        </div>
+                        <div class="col-sm-4">
+                            <label class="form-label form-label-sm">
+                                <i class="bi bi-camera"></i> Proof of Payment <span class="text-muted">(optional)</span>
+                            </label>
+                            <input name="Proof" type="file" class="form-control form-control-sm" accept="image/*,.pdf" capture="environment" />
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-sm btn-dark">Submit</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary"
+                                    data-bs-toggle="collapse" data-bs-target="#adminSubmitMonthly">Cancel</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        @if (Model.Status == SocietyApp.Models.MembershipStatus.Active)
+        {
+            <div class="collapse" id="adminSubmitClaim">
+                <div class="card-body border-top">
+                    <form asp-controller="Admin" asp-action="SubmitClaimForMember" method="post" enctype="multipart/form-data">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="MembershipId" value="@Model.Id" />
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <label class="form-label form-label-sm">Who Passed Away</label>
+                                <select name="DeceasedType" id="adminClaimDeceasedType" class="form-select form-select-sm" required>
+                                    @foreach (var dt in Enum.GetValues<SocietyApp.Models.DeceasedType>())
+                                    {
+                                        <option value="@dt">@dt</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-6" id="adminClaimDependantRow" style="display:none;">
+                                <label class="form-label form-label-sm">Dependant</label>
+                                <select name="DependantId" class="form-select form-select-sm">
+                                    <option value="">-- Select Dependant --</option>
+                                    @foreach (var dep in Model.Dependants)
+                                    {
+                                        <option value="@dep.Id">@dep.FullName</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label form-label-sm">Full Name of Deceased</label>
+                                <input name="DeceasedFullName" class="form-control form-control-sm" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label form-label-sm">Date of Death</label>
+                                <input name="DateOfDeath" type="date" class="form-control form-control-sm" required />
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label form-label-sm">Death Certificate (PDF/JPG/PNG)</label>
+                                <input name="DeathCertificate" type="file" class="form-control form-control-sm" accept=".pdf,.jpg,.jpeg,.png" />
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-sm btn-dark">Submit Claim</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary"
+                                        data-bs-toggle="collapse" data-bs-target="#adminSubmitClaim">Cancel</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        }
 
         <div class="collapse" id="adminEditProfile">
             <div class="card-body border-top">
@@ -924,6 +1050,10 @@ else
 
         document.getElementById('claimDeceasedType')?.addEventListener('change', function () {
             document.getElementById('claimDependantRow').style.display = this.value === 'Dependant' ? '' : 'none';
+        });
+
+        document.getElementById('adminClaimDeceasedType')?.addEventListener('change', function () {
+            document.getElementById('adminClaimDependantRow').style.display = this.value === 'Dependant' ? '' : 'none';
         });
 
         function openEditDependant(btn) {
