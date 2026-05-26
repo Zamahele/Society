@@ -34,33 +34,7 @@ public class PaymentServiceTests
         Assert.NotNull(updatedMembership);
         Assert.Equal(PaymentStatus.Confirmed, updatedPayment!.Status);
         Assert.Equal("clerk-1", updatedPayment.ConfirmedByClerkId);
-        Assert.Equal(MembershipStatus.Active, updatedMembership!.Status);
-        Assert.NotNull(updatedMembership.DateActivated);
-    }
-
-    [Fact]
-    public async Task ConfirmJoiningFeeAsync_ActivatesPendingPaymentMembership()
-    {
-        using var db = TestDbFactory.CreateContext();
-        var service = new PaymentService(db);
-
-        var membership = new Membership
-        {
-            MembershipNumber = "SOC-9002",
-            UserId = "member-2",
-            Status = MembershipStatus.PendingPayment,
-            DateIssued = DateTime.UtcNow
-        };
-
-        db.Memberships.Add(membership);
-        await db.SaveChangesAsync();
-
-        var payment = await service.SubmitJoiningFeeAsync(membership.Id, "SOC-9002", DateTime.UtcNow.AddDays(-1));
-        await service.ConfirmJoiningFeeAsync(payment.Id, "clerk-2");
-
-        var updatedMembership = await db.Memberships.FindAsync(membership.Id);
-
-        Assert.NotNull(updatedMembership);
+        // Confirming joining fee activates the member (single approval step)
         Assert.Equal(MembershipStatus.Active, updatedMembership!.Status);
         Assert.NotNull(updatedMembership.DateActivated);
     }

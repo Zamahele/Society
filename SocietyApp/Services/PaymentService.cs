@@ -48,8 +48,9 @@ public class PaymentService : IPaymentService
         payment.ConfirmedByClerkId = clerkId;
         payment.ConfirmedDate = DateTime.UtcNow;
 
-        // Activate membership after approval once the joining fee is confirmed.
-        if (payment.Membership.Status == MembershipStatus.Pending || payment.Membership.Status == MembershipStatus.PendingPayment)
+        // Activate membership when joining fee is confirmed.
+        // This is the single approval step: confirming payment = approving member.
+        if (payment.Membership.Status == MembershipStatus.Pending)
         {
             payment.Membership.Status = MembershipStatus.Active;
             payment.Membership.DateActivated = DateTime.UtcNow;

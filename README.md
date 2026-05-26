@@ -33,13 +33,7 @@ Member registers online using ID Number
 System generates MembershipNumber (e.g. SOC-0001)
             |
             v
-Status: PENDING (awaiting admin approval)
-            |
-            v
-Admin approves member
-            |
-            v
-Status: PENDING PAYMENT
+Status: PENDING
             |
             v
 Member adds dependants (up to 10)
@@ -47,9 +41,10 @@ Member adds dependants (up to 10)
             v
 Member pays R150 joining fee via EFT
 using MembershipNumber as payment reference
+and uploads proof of payment
             |
             v
-Clerk confirms payment in system
+Admin/Clerk reviews proof and confirms payment
             |
             v
 Status: ACTIVE

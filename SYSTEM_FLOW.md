@@ -7,14 +7,11 @@ This document captures the core end-to-end flows that must keep working.
 ```mermaid
 flowchart TD
    A[Member Registers] --> B[System Creates Membership<br/>Status: Pending]
-   B --> C{Admin Approves?}
-   C -- No --> B
-   C -- Yes --> D[Status: Pending Payment]
-   D --> E[Member Can Add Dependants<br/>Up to 10]
+   B --> E[Member Can Add Dependants<br/>Up to 10]
    E --> F[Member Pays Joining Fee<br/>R150 EFT]
-   F --> G[Member or Clerk Submits Proof]
-   G --> H{Clerk/Admin Confirms Payment?}
-   H -- No --> D
+   F --> G[Member Uploads Proof of Payment]
+   G --> H{Admin/Clerk Confirms Payment?}
+   H -- No --> G
    H -- Yes --> I[Status: Active<br/>Set DateActivated]
    I --> J[Member Pays Monthly Fee<br/>R150 per month]
    J --> K[Clerk/Admin Confirms Monthly Payment]
@@ -55,11 +52,10 @@ flowchart TD
 1. Member registers through `Account/Register`.
 2. System creates `ApplicationUser` and assigns role `Member`.
 3. System creates `Membership` with status `Pending` and generated membership number (`SOC-xxxx`).
-4. Admin approves the member, which transitions the membership to `PendingPayment`.
-5. Member can add up to 10 dependants while pending/pending-payment/active/suspended.
-6. Member submits joining fee proof from member portal, or office staff submits on behalf of the member.
-7. Clerk/Admin confirms joining fee in pending-joining-fees queue.
-8. On confirmation, system transitions membership to `Active` and sets `DateActivated`.
+4. Member can add up to 10 dependants while pending/active/suspended.
+5. Member pays joining fee and uploads proof of payment.
+6. Admin/Clerk reviews proof and confirms joining fee in pending-joining-fees queue.
+7. On confirmation, system transitions membership to `Active` and sets `DateActivated`.
 
 ## 2) Dependant Management
 
