@@ -76,6 +76,7 @@ public class MembershipService : IMembershipService
         return await _db.Memberships
             .Include(m => m.User)
             .Include(m => m.Dependants)
+            .Include(m => m.JoiningFeePayments)
             .OrderByDescending(m => m.DateIssued)
             .ToListAsync();
     }
