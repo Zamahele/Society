@@ -46,7 +46,6 @@ public class PaymentsControllerTests
         public Task<List<Membership>> GetAllAsync() => Task.FromResult(new List<Membership>());
         public Task<string> GenerateMembershipNumberAsync() => Task.FromResult("SOC-0001");
         public Task<Membership> CreateAsync(string userId) => throw new NotImplementedException();
-        public Task ActivateAsync(int membershipId) => Task.CompletedTask;
         public Task<bool> ApproveMembershipAsync(int membershipId, string? adminUserId) => Task.FromResult(true);
         public Task SuspendAsync(int membershipId) => Task.CompletedTask;
         public Task CancelAsync(int membershipId) => Task.CompletedTask;

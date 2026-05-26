@@ -29,7 +29,6 @@ public class AdminControllerTests
         public Task<Membership?> GetByIdAsync(int id) => Task.FromResult(Members.Find(m => m.Id == id));
         public Task<string> GenerateMembershipNumberAsync() => Task.FromResult("SOC-0001");
         public Task<Membership> CreateAsync(string userId) => throw new NotImplementedException();
-        public Task ActivateAsync(int membershipId) { var m = Members.Find(x => x.Id == membershipId); if (m != null) m.Status = MembershipStatus.PendingPayment; return Task.CompletedTask; }
         public bool ApproveCalled { get; private set; }
         public string? LastApproveAdminId { get; private set; }
         public bool ApproveReturn { get; set; } = true;
@@ -121,8 +120,7 @@ public class AdminControllerTests
             {
                 new() { Id = 1, Status = MembershipStatus.Active },
                 new() { Id = 2, Status = MembershipStatus.Pending },
-                new() { Id = 3, Status = MembershipStatus.PendingPayment },
-                new() { Id = 4, Status = MembershipStatus.Suspended },
+                new() { Id = 3, Status = MembershipStatus.Suspended },
             }
         };
         var claimSvc = new StubClaimService
@@ -138,11 +136,9 @@ public class AdminControllerTests
         var result = await controller.Dashboard() as ViewResult;
 
         Assert.NotNull(result);
-        Assert.Equal(4, result!.ViewData["TotalMembers"] is null ? controller.ViewBag.TotalMembers : controller.ViewBag.TotalMembers);
-        Assert.Equal(4, controller.ViewBag.TotalMembers);
+        Assert.Equal(3, controller.ViewBag.TotalMembers);
         Assert.Equal(1, controller.ViewBag.ActiveMembers);
         Assert.Equal(1, controller.ViewBag.PendingMembers);
-        Assert.Equal(1, controller.ViewBag.PendingPaymentMembers);
         Assert.Equal(1, controller.ViewBag.SuspendedMembers);
         Assert.Equal(2, controller.ViewBag.TotalClaims);
         Assert.Equal(1, controller.ViewBag.PendingClaims);

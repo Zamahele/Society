@@ -4,8 +4,7 @@
     var joiningFees = (IEnumerable<SocietyApp.Models.JoiningFeePayment>)(ViewBag.JoiningFeePayments
         ?? new List<SocietyApp.Models.JoiningFeePayment>());
     var hasPendingJoiningFee = ViewBag.HasPendingJoiningFee as bool? ?? false;
-    var canApprove = (Model.Status == SocietyApp.Models.MembershipStatus.Pending
-                   || Model.Status == SocietyApp.Models.MembershipStatus.PendingPayment)
+    var canApprove = Model.Status == SocietyApp.Models.MembershipStatus.Pending
                    && hasPendingJoiningFee;
 }
 
@@ -27,8 +26,7 @@
                 </button>
             </form>
         }
-        else if (Model.Status == SocietyApp.Models.MembershipStatus.Pending
-              || Model.Status == SocietyApp.Models.MembershipStatus.PendingPayment)
+        else if (Model.Status == SocietyApp.Models.MembershipStatus.Pending)
         {
             <a asp-controller="Payments" asp-action="SubmitJoiningFee" asp-route-membershipId="@Model.Id"
                class="btn btn-outline-primary">Submit Joining Fee on behalf</a>
@@ -42,7 +40,7 @@
                 <button type="submit" class="btn btn-success">Reactivate Member</button>
             </form>
         }
-        else if (Model.Status == SocietyApp.Models.MembershipStatus.Active || Model.Status == SocietyApp.Models.MembershipStatus.PendingPayment)
+        else if (Model.Status == SocietyApp.Models.MembershipStatus.Active)
         {
             <form asp-action="DeactivateMember" method="post">
                 <input type="hidden" name="id" value="@Model.Id" />
@@ -120,27 +118,17 @@
                         {
                             SocietyApp.Models.MembershipStatus.Active => "bg-success",
                             SocietyApp.Models.MembershipStatus.Pending => "bg-warning text-dark",
-                            SocietyApp.Models.MembershipStatus.PendingPayment => "bg-info text-dark",
                             SocietyApp.Models.MembershipStatus.Suspended => "bg-danger",
                             SocietyApp.Models.MembershipStatus.Cancelled => "bg-dark",
                             _ => "bg-secondary"
                         };
-                        var detailStatusLabel = Model.Status == SocietyApp.Models.MembershipStatus.PendingPayment
-                            ? "Pending Payment"
-                            : Model.Status.ToString();
                     }
-                    <span class="badge @statusBadge">@detailStatusLabel</span>
+                    <span class="badge @statusBadge">@Model.Status</span>
                 </p>
                 <p><strong>Joined:</strong> @Model.DateIssued.ToString("dd MMM yyyy")</p>
                 @if (Model.DateActivated.HasValue)
                 {
                     <p><strong>Activated:</strong> @Model.DateActivated.Value.ToString("dd MMM yyyy")</p>
-                }
-                @if (Model.Status == SocietyApp.Models.MembershipStatus.PendingPayment)
-                {
-                    <div class="alert alert-info mt-3 mb-0">
-                        Member is approved, but the joining fee still needs to be paid and confirmed before activation.
-                    </div>
                 }
                 @if (Model.Status == SocietyApp.Models.MembershipStatus.Active && Model.DateActivated.HasValue)
                 {

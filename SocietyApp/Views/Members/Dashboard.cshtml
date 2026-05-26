@@ -19,16 +19,12 @@
                         {
                             SocietyApp.Models.MembershipStatus.Active => "bg-success",
                             SocietyApp.Models.MembershipStatus.Pending => "bg-warning text-dark",
-                            SocietyApp.Models.MembershipStatus.PendingPayment => "bg-info text-dark",
                             SocietyApp.Models.MembershipStatus.Suspended => "bg-danger",
                             SocietyApp.Models.MembershipStatus.Cancelled => "bg-dark",
                             _ => "bg-secondary"
                         };
-                        var statusLabel = Model.Status == SocietyApp.Models.MembershipStatus.PendingPayment
-                            ? "Pending Payment"
-                            : Model.Status.ToString();
                     }
-                    <span class="badge @badgeClass">@statusLabel</span>
+                    <span class="badge @badgeClass">@Model.Status</span>
                 </p>
                 <p class="mb-1"><strong>Joined:</strong> @Model.DateIssued.ToString("dd MMM yyyy")</p>
                 @if (Model.DateActivated.HasValue)
@@ -73,8 +69,7 @@
             </div>
         </div>
 
-        @if (Model.Status == SocietyApp.Models.MembershipStatus.Pending
-          || Model.Status == SocietyApp.Models.MembershipStatus.PendingPayment)
+        @if (Model.Status == SocietyApp.Models.MembershipStatus.Pending)
         {
             var hasPending = ViewBag.HasPendingJoiningFee as bool? ?? false;
             if (hasPending)
@@ -361,8 +356,7 @@
 
         @{
             var hasPendingFee = ViewBag.HasPendingJoiningFee as bool? ?? false;
-            var canSubmitJoiningFee = (Model.Status == SocietyApp.Models.MembershipStatus.Pending
-                                       || Model.Status == SocietyApp.Models.MembershipStatus.PendingPayment)
+            var canSubmitJoiningFee = Model.Status == SocietyApp.Models.MembershipStatus.Pending
                                        && !hasPendingFee;
             var canSubmitMonthly = Model.Status == SocietyApp.Models.MembershipStatus.Active
                                   || Model.Status == SocietyApp.Models.MembershipStatus.Suspended;

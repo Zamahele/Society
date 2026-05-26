@@ -80,22 +80,12 @@ public class MembershipService : IMembershipService
             .ToListAsync();
     }
 
-    public async Task ActivateAsync(int membershipId)
-    {
-        var membership = await _db.Memberships.FindAsync(membershipId);
-        if (membership == null) return;
-
-        membership.Status = MembershipStatus.PendingPayment;
-        await _db.SaveChangesAsync();
-    }
-
     public async Task<bool> ApproveMembershipAsync(int membershipId, string? adminUserId)
     {
         var membership = await _db.Memberships.FindAsync(membershipId);
         if (membership == null) return false;
 
-        if (membership.Status != MembershipStatus.Pending
-         && membership.Status != MembershipStatus.PendingPayment)
+        if (membership.Status != MembershipStatus.Pending)
             return false;
 
         var pendingFee = await _db.JoiningFeePayments

@@ -9,7 +9,6 @@ public interface IMembershipService
     Task<Membership?> GetByIdAsync(int id);
     Task<List<Membership>> GetAllAsync();
     Task<Membership> CreateAsync(string userId);
-    Task ActivateAsync(int membershipId);
     Task<bool> ApproveMembershipAsync(int membershipId, string? adminUserId);
     Task SuspendAsync(int membershipId);
     Task CancelAsync(int membershipId);

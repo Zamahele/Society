@@ -28,19 +28,17 @@ else
                         {
                             SocietyApp.Models.MembershipStatus.Active => "bg-success",
                             SocietyApp.Models.MembershipStatus.Pending => "bg-warning text-dark",
-                            SocietyApp.Models.MembershipStatus.PendingPayment => "bg-info text-dark",
                             SocietyApp.Models.MembershipStatus.Suspended => "bg-danger",
                             SocietyApp.Models.MembershipStatus.Cancelled => "bg-dark",
                             _ => "bg-secondary"
                         };
-                        var statusLabel = m.Status == SocietyApp.Models.MembershipStatus.PendingPayment ? "Pending Payment" : m.Status.ToString();
                     <tr>
                         <td><strong>@m.MembershipNumber</strong></td>
                         <td>@m.User.FullName</td>
                         <td>@m.User.IDNumber</td>
                         <td>@m.User.Phone</td>
                         <td>@m.Dependants.Count</td>
-                        <td><span class="badge @badge">@statusLabel</span></td>
+                        <td><span class="badge @badge">@m.Status</span></td>
                         <td>@m.DateIssued.ToString("dd MMM yyyy")</td>
                         <td>
                             <a asp-action="MemberDetails" asp-route-id="@m.Id" class="btn btn-sm btn-outline-dark">View</a>
@@ -59,12 +57,10 @@ else
                 {
                     SocietyApp.Models.MembershipStatus.Active => "bg-success",
                     SocietyApp.Models.MembershipStatus.Pending => "bg-warning text-dark",
-                    SocietyApp.Models.MembershipStatus.PendingPayment => "bg-info text-dark",
                     SocietyApp.Models.MembershipStatus.Suspended => "bg-danger",
                     SocietyApp.Models.MembershipStatus.Cancelled => "bg-dark",
                     _ => "bg-secondary"
                 };
-                var mLabel = m.Status == SocietyApp.Models.MembershipStatus.PendingPayment ? "Pending Payment" : m.Status.ToString();
             <div class="col-12">
                 <div class="card shadow-sm">
                     <div class="card-body">
@@ -73,7 +69,7 @@ else
                                 <h6 class="fw-bold mb-1">@m.User.FullName</h6>
                                 <small class="text-muted">@m.MembershipNumber</small>
                             </div>
-                            <span class="badge @mbadge">@mLabel</span>
+                            <span class="badge @mbadge">@m.Status</span>
                         </div>
                         <hr class="my-2">
                         <div class="row small">

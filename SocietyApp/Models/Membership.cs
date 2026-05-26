@@ -25,5 +25,6 @@ public enum MembershipStatus
     Active = 1,
     Suspended = 2,
     Cancelled = 3,
+    [Obsolete("Removed from the approval flow. Reserved enum value so historic DB rows remain decodable; do not assign.")]
     PendingPayment = 4
 }
