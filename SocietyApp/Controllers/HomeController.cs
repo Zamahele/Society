@@ -1,7 +1,9 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using QuestPDF.Fluent;
 using SocietyApp.Data;
+using SocietyApp.Documents;
 using SocietyApp.Models;
 using SocietyApp.ViewModels;
 
@@ -53,6 +55,18 @@ namespace SocietyApp.Controllers
         public IActionResult Privacy()
         {
             return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> DownloadApplicationForm()
+        {
+            var settings = await _dbContext.PublicSiteSettings.AsNoTracking().FirstOrDefaultAsync()
+                          ?? new PublicSiteSettings();
+
+            var document = new ApplicationFormPdfDocument(settings);
+            var pdfBytes = document.GeneratePdf();
+
+            return File(pdfBytes, "application/pdf", "application-form.pdf");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

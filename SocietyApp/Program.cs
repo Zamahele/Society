@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using QuestPDF.Infrastructure;
 using SocietyApp.Data;
 using SocietyApp.Middleware;
 using SocietyApp.Models;
@@ -7,6 +8,8 @@ using SocietyApp.Services;
 using SocietyApp.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
+
+QuestPDF.Settings.License = LicenseType.Community;
 
 // Database
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -69,7 +72,7 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     var dbContext = services.GetRequiredService<AppDbContext>();
 
-    await dbContext.Database.MigrateAsync();
+   // await dbContext.Database.MigrateAsync();
     await DbSeeder.SeedAsync(services);
 }
 
