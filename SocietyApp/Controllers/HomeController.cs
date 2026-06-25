@@ -18,7 +18,7 @@ namespace SocietyApp.Controllers
             _dbContext = dbContext;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             if (User.Identity?.IsAuthenticated == true)
             {
@@ -27,12 +27,19 @@ namespace SocietyApp.Controllers
                 return RedirectToAction("Dashboard", "Members");
             }
 
-            var settings = _dbContext.PublicSiteSettings.FirstOrDefault() ?? new PublicSiteSettings();
-            var committee = _dbContext.CommitteeMembers
+            var settings = await _dbContext.PublicSiteSettings.FirstOrDefaultAsync();
+            if (settings == null)
+            {
+                settings = new PublicSiteSettings();
+                _dbContext.PublicSiteSettings.Add(settings);
+                await _dbContext.SaveChangesAsync();
+            }
+
+            var committee = await _dbContext.CommitteeMembers
                 .Where(c => c.IsActive)
                 .OrderBy(c => c.DisplayOrder)
                 .ThenBy(c => c.Id)
-                .ToList();
+                .ToListAsync();
 
             var vm = new PublicLandingViewModel
             {

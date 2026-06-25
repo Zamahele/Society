@@ -2,11 +2,11 @@
 @inject SocietyApp.Data.AppDbContext DbContext
 @{
     var siteSettings = await DbContext.PublicSiteSettings.AsNoTracking().FirstOrDefaultAsync();
-    var organizationName = siteSettings?.OrganizationName ?? "Give Compassion NPC";
-    var registrationNumber = siteSettings?.RegistrationNumber ?? "K2026009248 / 2026/009248/08";
-    var enterpriseType = siteSettings?.EnterpriseType ?? "Non Profit Company";
-    var enterpriseStatus = siteSettings?.EnterpriseStatus ?? "In Business";
-    var registeredOfficeAddress = siteSettings?.RegisteredOfficeAddress ?? "Ulundi, Kwa-Zulu Natal";
+    var organizationName = string.IsNullOrWhiteSpace(siteSettings?.OrganizationName) ? "Organization name" : siteSettings.OrganizationName;
+    var registrationNumber = string.IsNullOrWhiteSpace(siteSettings?.RegistrationNumber) ? "Not provided" : siteSettings.RegistrationNumber;
+    var enterpriseType = string.IsNullOrWhiteSpace(siteSettings?.EnterpriseType) ? "Not provided" : siteSettings.EnterpriseType;
+    var enterpriseStatus = string.IsNullOrWhiteSpace(siteSettings?.EnterpriseStatus) ? "Not provided" : siteSettings.EnterpriseStatus;
+    var registeredOfficeAddress = string.IsNullOrWhiteSpace(siteSettings?.RegisteredOfficeAddress) ? "Not provided" : siteSettings.RegisteredOfficeAddress;
     var phone1 = siteSettings?.ContactPhone1 ?? string.Empty;
     var phone2 = siteSettings?.ContactPhone2 ?? string.Empty;
     var phone3 = siteSettings?.ContactPhone3 ?? string.Empty;

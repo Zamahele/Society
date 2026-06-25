@@ -1,6 +1,13 @@
+@using Microsoft.EntityFrameworkCore
+@inject SocietyApp.Data.AppDbContext DbContext
 @model SocietyApp.Models.Membership
 @{
     ViewData["Title"] = "Member Details";
+    var _settings = await DbContext.PublicSiteSettings.AsNoTracking().FirstOrDefaultAsync();
+    var _bankName = string.IsNullOrWhiteSpace(_settings?.BankName) ? "Not provided" : _settings.BankName;
+    var _accountName = string.IsNullOrWhiteSpace(_settings?.BankAccountName) ? "Not provided" : _settings.BankAccountName;
+    var _accountNumber = string.IsNullOrWhiteSpace(_settings?.BankAccountNumber) ? "Not provided" : _settings.BankAccountNumber;
+    var _branchCode = string.IsNullOrWhiteSpace(_settings?.BankBranchCode) ? "Not provided" : _settings.BankBranchCode;
     var joiningFees = (IEnumerable<SocietyApp.Models.JoiningFeePayment>)(ViewBag.JoiningFeePayments
         ?? new List<SocietyApp.Models.JoiningFeePayment>());
     var hasPendingJoiningFee = ViewBag.HasPendingJoiningFee as bool? ?? false;
@@ -83,7 +90,7 @@
             <div class="card-header bg-primary text-white">Submit Joining Fee on behalf of @Model.User.FullName</div>
             <div class="card-body">
                 <div class="alert alert-info py-2 px-3 small mb-3">
-                    R150 via EFT to Capitec acc <strong>1054981680</strong> (Give Compassion NPC), branch 450105, using <strong>@Model.MembershipNumber</strong> as reference.
+                    R150 via EFT to @_bankName acc <strong>@_accountNumber</strong> (@_accountName), branch @_branchCode, using <strong>@Model.MembershipNumber</strong> as reference.
                 </div>
                 <form asp-controller="Payments" asp-action="SubmitPayment" method="post" enctype="multipart/form-data">
                     @Html.AntiForgeryToken()
@@ -343,7 +350,7 @@
                 <div class="collapse" id="submitMonthlyForm">
                     <div class="card-body border-bottom">
                         <div class="alert alert-info py-2 px-3 small mb-3">
-                            R150 via EFT to Capitec acc <strong>1054981680</strong> (Give Compassion NPC), branch 450105, using <strong>@Model.MembershipNumber</strong> as reference.
+                            R150 via EFT to @_bankName acc <strong>@_accountNumber</strong> (@_accountName), branch @_branchCode, using <strong>@Model.MembershipNumber</strong> as reference.
                         </div>
                         <form asp-controller="Payments" asp-action="SubmitPayment" method="post" enctype="multipart/form-data">
                             @Html.AntiForgeryToken()

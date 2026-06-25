@@ -1,21 +1,20 @@
-@using Microsoft.EntityFrameworkCore
-@inject SocietyApp.Data.AppDbContext DbContext
+@model SocietyApp.ViewModels.PublicLandingViewModel
 @{
     ViewData["Title"] = "Welcome";
     Layout = "_LayoutLanding";
-    var _settings = await DbContext.PublicSiteSettings.AsNoTracking().FirstOrDefaultAsync();
-    var _phone1 = _settings?.ContactPhone1 ?? "073 105 4674";
-    var _phone2 = _settings?.ContactPhone2 ?? "060 708 1052";
-    var _phone3 = _settings?.ContactPhone3 ?? "076 738 4252";
-    var _address = _settings?.ContactAddress ?? "D1707 Mashona, Mahlabathini, Ulundi, Kwa-Zulu Natal, 3838";
-    var _emailInfo = _settings?.ContactEmailInfo ?? "No official email provided";
-    var _emailClaims = _settings?.ContactEmailClaims ?? "Please contact committee by phone";
+    var _settings = Model.Settings;
+    var _phone1 = string.IsNullOrWhiteSpace(_settings.ContactPhone1) ? "Not provided" : _settings.ContactPhone1;
+    var _phone2 = string.IsNullOrWhiteSpace(_settings.ContactPhone2) ? "Not provided" : _settings.ContactPhone2;
+    var _phone3 = string.IsNullOrWhiteSpace(_settings.ContactPhone3) ? "Not provided" : _settings.ContactPhone3;
+    var _address = string.IsNullOrWhiteSpace(_settings.ContactAddress) ? "Not provided" : _settings.ContactAddress;
+    var _emailInfo = string.IsNullOrWhiteSpace(_settings.ContactEmailInfo) ? "Not provided" : _settings.ContactEmailInfo;
+    var _emailClaims = string.IsNullOrWhiteSpace(_settings.ContactEmailClaims) ? "Not provided" : _settings.ContactEmailClaims;
 }
 
 <!-- HERO -->
 <section class="hero text-white">
     <div class="container text-center">
-        <h1 class="hero-title">Give Compassion NPC</h1>
+        <h1 class="hero-title">@_settings.OrganizationName</h1>
         <p class="mt-3 mb-4 col-md-8 mx-auto">
             We stand with families in their most difficult moments. Affordable monthly contributions,
             guaranteed payouts, and a community that cares.
@@ -150,23 +149,23 @@
                 <div class="card shadow-sm p-4">
                     <div class="bank-detail-row d-flex justify-content-between">
                         <span class="text-muted">Bank</span>
-                        <strong>Capitec</strong>
+                        <strong>@_settings.BankName</strong>
                     </div>
                     <div class="bank-detail-row d-flex justify-content-between">
                         <span class="text-muted">Account Name</span>
-                        <strong>Give Compassion NPC</strong>
+                        <strong>@_settings.BankAccountName</strong>
                     </div>
                     <div class="bank-detail-row d-flex justify-content-between">
                         <span class="text-muted">Account Number</span>
-                        <strong>1054981680</strong>
+                        <strong>@_settings.BankAccountNumber</strong>
                     </div>
                     <div class="bank-detail-row d-flex justify-content-between">
                         <span class="text-muted">Branch Code</span>
-                        <strong>450105</strong>
+                        <strong>@_settings.BankBranchCode</strong>
                     </div>
                     <div class="bank-detail-row d-flex justify-content-between">
                         <span class="text-muted">Account Type</span>
-                        <strong>Current</strong>
+                        <strong>@_settings.BankAccountType</strong>
                     </div>
                     <div class="bank-detail-row d-flex justify-content-between">
                         <span class="text-muted">Reference</span>
@@ -187,38 +186,27 @@
         <h2 class="section-title text-center">Our Committee</h2>
         <div class="section-divider"></div>
         <div class="row g-4 justify-content-center">
-            <div class="col-md-3 text-center">
-                <div class="card committee-card p-4 h-100">
-                    <div class="avatar-placeholder mx-auto mb-3">N</div>
-                    <h6 class="fw-bold mb-1">Nonto Ngubane</h6>
-                    <span class="badge bg-primary mb-2">Chairperson</span>
-                    <p class="text-muted small mb-1">&#128222; 073 105 4674</p>
+            @if (Model.CommitteeMembers.Any())
+            {
+                @foreach (var member in Model.CommitteeMembers)
+                {
+                    var avatarLetter = string.IsNullOrWhiteSpace(member.FullName) ? "?" : member.FullName.Trim()[0].ToString().ToUpperInvariant();
+                    <div class="col-md-3 text-center">
+                        <div class="card committee-card p-4 h-100">
+                            <div class="avatar-placeholder mx-auto mb-3">@avatarLetter</div>
+                            <h6 class="fw-bold mb-1">@member.FullName</h6>
+                            <span class="badge bg-primary mb-2">@member.RoleTitle</span>
+                            <p class="text-muted small mb-1">&#128222; @member.Phone</p>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-12 text-center">
+                    <p class="text-muted mb-0">Committee details will appear once added in Admin - Public Content.</p>
                 </div>
-            </div>
-            <div class="col-md-3 text-center">
-                <div class="card committee-card p-4 h-100">
-                    <div class="avatar-placeholder mx-auto mb-3" style="background:#198754;">B</div>
-                    <h6 class="fw-bold mb-1">Bonga Buthelezi</h6>
-                    <span class="badge bg-success mb-2">Secretary</span>
-                    <p class="text-muted small mb-1">&#128222; 060 708 1052</p>
-                </div>
-            </div>
-            <div class="col-md-3 text-center">
-                <div class="card committee-card p-4 h-100">
-                    <div class="avatar-placeholder mx-auto mb-3" style="background:#dc3545;">T</div>
-                    <h6 class="fw-bold mb-1">Thuli Buthelezi</h6>
-                    <span class="badge bg-danger mb-2">Treasurer</span>
-                    <p class="text-muted small mb-1">&#128222; 076 738 4252</p>
-                </div>
-            </div>
-            <div class="col-md-3 text-center">
-                <div class="card committee-card p-4 h-100">
-                    <div class="avatar-placeholder mx-auto mb-3" style="background:#6f42c1;">N</div>
-                    <h6 class="fw-bold mb-1">Nothi Dube</h6>
-                    <span class="badge mb-2" style="background:#6f42c1; color:#fff;">Admin Clerk</span>
-                    <p class="text-muted small mb-1">&#128222; 076 224 8345</p>
-                </div>
-            </div>
+            }
         </div>
     </div>
 </section>

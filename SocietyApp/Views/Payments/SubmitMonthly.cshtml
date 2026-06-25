@@ -1,5 +1,15 @@
+@using Microsoft.EntityFrameworkCore
+@inject SocietyApp.Data.AppDbContext DbContext
 @model SocietyApp.ViewModels.SubmitMonthlyPaymentViewModel
-@{ ViewData["Title"] = "Submit Monthly Payment"; }
+@{
+    ViewData["Title"] = "Submit Monthly Payment";
+    var _settings = await DbContext.PublicSiteSettings.AsNoTracking().FirstOrDefaultAsync();
+    var _bankName = string.IsNullOrWhiteSpace(_settings?.BankName) ? "Not provided" : _settings.BankName;
+    var _accountName = string.IsNullOrWhiteSpace(_settings?.BankAccountName) ? "Not provided" : _settings.BankAccountName;
+    var _accountNumber = string.IsNullOrWhiteSpace(_settings?.BankAccountNumber) ? "Not provided" : _settings.BankAccountNumber;
+    var _branchCode = string.IsNullOrWhiteSpace(_settings?.BankBranchCode) ? "Not provided" : _settings.BankBranchCode;
+    var _accountType = string.IsNullOrWhiteSpace(_settings?.BankAccountType) ? "Not provided" : _settings.BankAccountType;
+}
 
 <div class="row justify-content-center">
     <div class="col-md-6">
@@ -14,11 +24,11 @@
             </div>
             <div class="card-body">
                 <table class="table table-sm mb-0">
-                    <tr><th>Bank</th><td>Capitec</td></tr>
-                    <tr><th>Account Name</th><td>Give Compassion NPC</td></tr>
-                    <tr><th>Account No</th><td>1054981680</td></tr>
-                    <tr><th>Branch Code</th><td>450105</td></tr>
-                    <tr><th>Account Type</th><td>Current</td></tr>
+                    <tr><th>Bank</th><td>@_bankName</td></tr>
+                    <tr><th>Account Name</th><td>@_accountName</td></tr>
+                    <tr><th>Account No</th><td>@_accountNumber</td></tr>
+                    <tr><th>Branch Code</th><td>@_branchCode</td></tr>
+                    <tr><th>Account Type</th><td>@_accountType</td></tr>
                     <tr><th>Reference</th><td><strong>@Model.MembershipNumber</strong></td></tr>
                 </table>
             </div>

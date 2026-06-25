@@ -3,6 +3,10 @@
 @using SocietyApp.Models
 @inject UserManager<ApplicationUser> UserManager
 @inject SocietyApp.Data.AppDbContext LayoutDb
+@{
+    var siteSettings = await LayoutDb.PublicSiteSettings.AsNoTracking().FirstOrDefaultAsync();
+    var organizationName = string.IsNullOrWhiteSpace(siteSettings?.OrganizationName) ? "Organization name" : siteSettings.OrganizationName;
+}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,15 +22,15 @@
         <div class="container">
             @if (User.IsInRole("Admin") || User.IsInRole("Clerk"))
             {
-                <a class="navbar-brand fw-bold" asp-controller="Admin" asp-action="Dashboard">Give Compassion NPC</a>
+                <a class="navbar-brand fw-bold" asp-controller="Admin" asp-action="Dashboard">@organizationName</a>
             }
             else if (User.IsInRole("Member"))
             {
-                <a class="navbar-brand fw-bold" asp-controller="Members" asp-action="Dashboard">Give Compassion NPC</a>
+                <a class="navbar-brand fw-bold" asp-controller="Members" asp-action="Dashboard">@organizationName</a>
             }
             else
             {
-                <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index">Give Compassion NPC</a>
+                <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index">@organizationName</a>
             }
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -121,14 +125,12 @@
         </div>
     </div>
 
-    @{
-        var footerSettings = await LayoutDb.PublicSiteSettings.AsNoTracking().FirstOrDefaultAsync();
-    }
+    @{ var footerSettings = siteSettings; }
     <footer class="bg-dark text-light py-3 mt-4">
         <div class="container">
             <div class="row g-2 align-items-center">
                 <div class="col-md-6 text-center text-md-start">
-                    <small class="text-muted">&copy; @DateTime.Now.Year @(footerSettings?.OrganizationName ?? "Give Compassion NPC")</small>
+                    <small class="text-muted">&copy; @DateTime.Now.Year @organizationName</small>
                 </div>
                 <div class="col-md-6 text-center text-md-end">
                     @if (!string.IsNullOrEmpty(footerSettings?.ContactPhone1))
