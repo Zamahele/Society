@@ -1,96 +1,101 @@
-@{ ViewData["Title"] = "Dashboard"; }
+@{
+    ViewData["Title"] = "Dashboard";
+    var openItems = Convert.ToInt32(ViewBag.PendingMembers) + Convert.ToInt32(ViewBag.PendingClaims) + Convert.ToInt32(ViewBag.PendingJoiningFees) + Convert.ToInt32(ViewBag.PendingMonthlyPayments) + Convert.ToInt32(ViewBag.PendingOrganizationMembers);
+}
 
-<h2 class="fw-bold mb-4" style="color:var(--navy);">Admin Dashboard</h2>
-
-<div class="row g-3">
-
-    @* Overview *@
-    <div class="col-xl-4 col-md-6">
-        <a asp-controller="Admin" asp-action="Members" class="text-decoration-none">
-            <div class="card card-navy h-100 dashboard-card">
-                <div class="card-body px-4 py-3">
-                    <div class="text-white-50 small text-uppercase fw-semibold mb-1">Total Members</div>
-                    <div class="display-5 fw-bold">@ViewBag.TotalMembers</div>
-                </div>
-            </div>
-        </a>
-    </div>
-
-    <div class="col-xl-4 col-md-6">
-        <a asp-controller="Admin" asp-action="Members" class="text-decoration-none">
-            <div class="card card-teal h-100 dashboard-card">
-                <div class="card-body px-4 py-3">
-                    <div class="text-white-50 small text-uppercase fw-semibold mb-1">Active Members</div>
-                    <div class="display-5 fw-bold">@ViewBag.ActiveMembers</div>
-                </div>
-            </div>
-        </a>
-    </div>
-
-    <div class="col-xl-4 col-md-6">
-        <a asp-controller="Admin" asp-action="Members" class="text-decoration-none">
-            <div class="card card-rust h-100 dashboard-card">
-                <div class="card-body px-4 py-3">
-                    <div class="text-white-50 small text-uppercase fw-semibold mb-1">Suspended</div>
-                    <div class="display-5 fw-bold">@ViewBag.SuspendedMembers</div>
-                </div>
-            </div>
-        </a>
-    </div>
-
-    @* Grouped action cards *@
-    <div class="col-xl-4 col-md-6">
-        <a asp-controller="Admin" asp-action="Members" class="text-decoration-none">
-            <div class="card card-gold h-100 dashboard-card">
-                <div class="card-body px-4 py-3">
-                    <div class="text-white-50 small text-uppercase fw-semibold mb-3">Pending Members</div>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="text-white">Awaiting Approval</span>
-                        <span class="display-6 fw-bold">@ViewBag.PendingMembers</span>
-                    </div>
-                </div>
-            </div>
-        </a>
-    </div>
-
-    <div class="col-xl-4 col-md-6">
-        <a asp-controller="Claims" asp-action="Index" class="text-decoration-none">
-            <div class="card card-plum h-100 dashboard-card">
-                <div class="card-body px-4 py-3">
-                    <div class="text-white-50 small text-uppercase fw-semibold mb-3">Claims</div>
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="text-white">Pending Review</span>
-                        <span class="display-6 fw-bold">@ViewBag.PendingClaims</span>
-                    </div>
-                    <hr class="border-white-50 my-2" />
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="text-white">Total Claims</span>
-                        <span class="display-6 fw-bold">@ViewBag.TotalClaims</span>
-                    </div>
-                </div>
-            </div>
-        </a>
-    </div>
-
-    <div class="col-xl-4 col-md-6">
-        <div class="card card-navy2 h-100 dashboard-card">
-            <div class="card-body px-4 py-3">
-                <div class="text-white-50 small text-uppercase fw-semibold mb-3">Payment Confirmations</div>
-                <a asp-controller="Payments" asp-action="PendingJoiningFees" class="text-decoration-none">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="text-white">Joining Fees</span>
-                        <span class="display-6 fw-bold text-white">@ViewBag.PendingJoiningFees</span>
-                    </div>
-                </a>
-                <hr class="border-white-50 my-2" />
-                <a asp-controller="Payments" asp-action="PendingMonthly" class="text-decoration-none">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="text-white">Monthly Payments</span>
-                        <span class="display-6 fw-bold text-white">@ViewBag.PendingMonthlyPayments</span>
-                    </div>
-                </a>
-            </div>
+<main class="dashboard-shell">
+    <header class="dashboard-header">
+        <div>
+            <p class="dashboard-eyebrow">Operations overview</p>
+            <h1>Good day, System Admin</h1>
+            <p class="dashboard-subtitle">Here is what needs your attention today.</p>
         </div>
-    </div>
+        <a asp-controller="Admin" asp-action="Members" class="btn btn-primary dashboard-header-action">
+            <i class="bi bi-people" aria-hidden="true"></i>
+            <span>View members</span>
+        </a>
+    </header>
 
-</div>
+    <section class="dashboard-stat-grid" aria-label="Membership overview">
+        <a asp-controller="Admin" asp-action="Members" class="dashboard-stat">
+            <span class="dashboard-stat-icon dashboard-stat-icon-blue"><i class="bi bi-people-fill" aria-hidden="true"></i></span>
+            <span class="dashboard-stat-copy"><span>Total members</span><strong>@ViewBag.TotalMembers</strong></span>
+            <i class="bi bi-arrow-up-right dashboard-stat-arrow" aria-hidden="true"></i>
+        </a>
+        <a asp-controller="Admin" asp-action="Members" class="dashboard-stat">
+            <span class="dashboard-stat-icon dashboard-stat-icon-green"><i class="bi bi-person-check-fill" aria-hidden="true"></i></span>
+            <span class="dashboard-stat-copy"><span>Active members</span><strong>@ViewBag.ActiveMembers</strong></span>
+            <i class="bi bi-arrow-up-right dashboard-stat-arrow" aria-hidden="true"></i>
+        </a>
+        <a asp-controller="Admin" asp-action="Members" class="dashboard-stat">
+            <span class="dashboard-stat-icon dashboard-stat-icon-red"><i class="bi bi-person-x-fill" aria-hidden="true"></i></span>
+            <span class="dashboard-stat-copy"><span>Suspended</span><strong>@ViewBag.SuspendedMembers</strong></span>
+            <i class="bi bi-arrow-up-right dashboard-stat-arrow" aria-hidden="true"></i>
+        </a>
+    </section>
+
+    <div class="dashboard-content-grid">
+        <section class="dashboard-panel action-panel">
+            <div class="dashboard-panel-heading">
+                <div>
+                    <p class="dashboard-eyebrow">Priority work</p>
+                    <h2>Action queue</h2>
+                </div>
+                <span class="queue-count">@openItems <small>open</small></span>
+            </div>
+            <div class="action-list">
+                <a asp-controller="Admin" asp-action="Members" class="action-row">
+                    <span class="action-icon action-icon-gold"><i class="bi bi-person-plus" aria-hidden="true"></i></span>
+                    <span class="action-copy"><strong>Member applications</strong><small>Awaiting approval</small></span>
+                    <span class="action-number">@ViewBag.PendingMembers</span><i class="bi bi-chevron-right action-chevron" aria-hidden="true"></i>
+                </a>
+                <a asp-controller="Payments" asp-action="PendingJoiningFees" class="action-row">
+                    <span class="action-icon action-icon-blue"><i class="bi bi-receipt" aria-hidden="true"></i></span>
+                    <span class="action-copy"><strong>Joining fees</strong><small>Awaiting confirmation</small></span>
+                    <span class="action-number">@ViewBag.PendingJoiningFees</span><i class="bi bi-chevron-right action-chevron" aria-hidden="true"></i>
+                </a>
+                <a asp-controller="Payments" asp-action="PendingMonthly" class="action-row">
+                    <span class="action-icon action-icon-teal"><i class="bi bi-arrow-repeat" aria-hidden="true"></i></span>
+                    <span class="action-copy"><strong>Monthly payments</strong><small>Awaiting confirmation</small></span>
+                    <span class="action-number">@ViewBag.PendingMonthlyPayments</span><i class="bi bi-chevron-right action-chevron" aria-hidden="true"></i>
+                </a>
+                <a asp-controller="Claims" asp-action="Index" class="action-row">
+                    <span class="action-icon action-icon-red"><i class="bi bi-file-earmark-medical" aria-hidden="true"></i></span>
+                    <span class="action-copy"><strong>Claims</strong><small>Awaiting review</small></span>
+                    <span class="action-number">@ViewBag.PendingClaims</span><i class="bi bi-chevron-right action-chevron" aria-hidden="true"></i>
+                </a>
+                <a asp-controller="Admin" asp-action="OrganizationMembers" class="action-row">
+                    <span class="action-icon action-icon-purple"><i class="bi bi-diagram-3" aria-hidden="true"></i></span>
+                    <span class="action-copy"><strong>Organization members</strong><small>Awaiting action</small></span>
+                    <span class="action-number">@ViewBag.PendingOrganizationMembers</span><i class="bi bi-chevron-right action-chevron" aria-hidden="true"></i>
+                </a>
+            </div>
+        </section>
+
+        <aside class="dashboard-panel snapshot-panel">
+            <div class="dashboard-panel-heading">
+                <div>
+                    <p class="dashboard-eyebrow">At a glance</p>
+                    <h2>Case snapshot</h2>
+                </div>
+                <i class="bi bi-bar-chart-line snapshot-heading-icon" aria-hidden="true"></i>
+            </div>
+            <div class="snapshot-item">
+                <span><i class="bi bi-person-plus" aria-hidden="true"></i> Pending members</span>
+                <strong>@ViewBag.PendingMembers</strong>
+            </div>
+            <div class="snapshot-item">
+                <span><i class="bi bi-file-earmark-medical" aria-hidden="true"></i> Total claims</span>
+                <strong>@ViewBag.TotalClaims</strong>
+            </div>
+            <div class="snapshot-item">
+                <span><i class="bi bi-credit-card" aria-hidden="true"></i> Payments to confirm</span>
+                <strong>@(Convert.ToInt32(ViewBag.PendingJoiningFees) + Convert.ToInt32(ViewBag.PendingMonthlyPayments))</strong>
+            </div>
+            <div class="snapshot-note">
+                <i class="bi bi-lightbulb" aria-hidden="true"></i>
+                <span>Start with the action queue to keep member records and payments moving.</span>
+            </div>
+        </aside>
+    </div>
+</main>

@@ -2,25 +2,27 @@
 @using SocietyApp.Models
 @{ ViewData["Title"] = "Organization Members"; var members = (IEnumerable<OrganizationMember>)ViewBag.Members; }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="page-shell">
+<div class="page-header">
     <div>
-        <h2>@Model.Name</h2>
-        <p class="text-muted mb-0">Registration number: @Model.RegistrationNumber</p>
+        <p class="dashboard-eyebrow">Organization account</p>
+        <h1>@Model.Name</h1>
+        <p>Registration number: @Model.RegistrationNumber</p>
     </div>
-    <a asp-action="AddMember" class="btn btn-dark">Add Member</a>
+    <a asp-action="AddMember" class="btn btn-primary"><i class="bi bi-person-plus" aria-hidden="true"></i> Add member</a>
 </div>
 
-<div class="card shadow-sm border-0">
-    <div class="card-body">
-        <h5 class="card-title">People under this organization</h5>
+<div class="page-panel">
+    <div class="page-panel-heading"><h3>People under this organization</h3><span class="page-count">@members.Count() members</span></div>
+    <div class="page-panel-body">
         @if (!members.Any())
         {
-            <p class="text-muted mb-0">No members have been added yet.</p>
+            <div class="empty-state"><i class="bi bi-people" aria-hidden="true"></i><strong>No members have been added yet.</strong><span>Add people to start managing this organization.</span></div>
         }
         else
         {
             <div class="table-responsive">
-                <table class="table align-middle">
+                <table class="table align-middle data-table">
                     <thead><tr><th>Name</th><th>ID Number</th><th>Phone</th><th>Date of Birth</th><th>Status</th><th></th></tr></thead>
                     <tbody>
                     @foreach (var member in members)
@@ -44,4 +46,5 @@
             </div>
         }
     </div>
+</div>
 </div>

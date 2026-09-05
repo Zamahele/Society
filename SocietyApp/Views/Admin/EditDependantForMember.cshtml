@@ -1,19 +1,15 @@
 @model SocietyApp.ViewModels.EditDependantViewModel
 @{ ViewData["Title"] = "Edit Dependant"; }
 
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="d-flex align-items-center mb-4 gap-3">
+<div class="page-shell">
+    <div class="form-shell">
+        <div class="d-flex align-items-center mb-3 gap-3">
             <a asp-action="MemberDetails" asp-route-id="@Model.MembershipId" class="btn btn-outline-secondary">&larr; Back</a>
-            <div>
-                <h2 class="mb-0">Edit Dependant</h2>
-                <small class="text-muted">@ViewBag.MemberName — @ViewBag.MembershipNumber</small>
-            </div>
         </div>
-
-        <div class="card">
-            <div class="card-body p-4">
-                <form asp-action="EditDependantForMember" method="post">
+        <p class="dashboard-eyebrow">Member record</p>
+        <h1>Edit dependant</h1>
+        <p>@ViewBag.MemberName <span class="member-header-separator">&middot;</span> @ViewBag.MembershipNumber</p>
+        <form asp-action="EditDependantForMember" method="post" class="form-section">
                     @Html.AntiForgeryToken()
                     <input asp-for="Id" type="hidden" />
                     <input asp-for="MembershipId" type="hidden" />
@@ -43,9 +39,7 @@
                     <button type="submit" class="btn btn-dark">Save Changes</button>
                     <a asp-action="MemberDetails" asp-route-id="@Model.MembershipId"
                        class="btn btn-outline-secondary ms-2">Cancel</a>
-                </form>
-            </div>
-        </div>
+        </form>
     </div>
 </div>
 

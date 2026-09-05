@@ -19,14 +19,20 @@
                      && hasAnyJoiningFee;
 }
 
+<main class="member-detail-shell">
+
 @if (adminViewing)
 {
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="fw-bold mb-0" style="color:var(--navy);">@Model.User.FullName — @Model.MembershipNumber</h2>
+    <div class="member-detail-header">
+        <div>
+            <p class="dashboard-eyebrow">Member record</p>
+            <h1>@Model.User.FullName</h1>
+            <p><span class="member-number">@Model.MembershipNumber</span><span class="member-header-separator">&middot;</span>Member detail view</p>
+        </div>
         <a asp-controller="Admin" asp-action="Members" class="btn btn-outline-secondary">Back to Members</a>
     </div>
 
-    <div class="card border-warning mb-4">
+    <div class="card member-action-panel mb-4">
         <div class="card-header bg-warning-subtle d-flex justify-content-between align-items-center">
             <strong>Admin Actions</strong>
             <span class="text-muted small">Viewing this member's dashboard on their behalf.</span>
@@ -308,7 +314,14 @@
 }
 else
 {
-    <h2 class="mb-4">My Membership</h2>
+    <div class="page-header">
+        <div>
+            <p class="dashboard-eyebrow">Member portal</p>
+            <h1>My membership</h1>
+            <p>Manage your profile, dependants, nominee, and payment history.</p>
+        </div>
+        <span class="page-count">@Model.MembershipNumber</span>
+    </div>
 }
 
 <div class="row">
@@ -332,7 +345,7 @@ else
                             _ => "bg-secondary"
                         };
                     }
-                    <span class="badge @badgeClass">@Model.Status</span>
+                    <span class="badge status-badge @badgeClass">@Model.Status</span>
                 </p>
                 <p class="mb-1"><strong>Joined:</strong> @Model.DateIssued.ToString("dd MMM yyyy")</p>
                 @if (Model.DateActivated.HasValue)
@@ -1002,6 +1015,8 @@ else
         </div>
     </div>
 </div>
+
+</main>
 
 @section Scripts {
     <script>

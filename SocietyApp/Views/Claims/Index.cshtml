@@ -1,21 +1,23 @@
 @model IEnumerable<SocietyApp.Models.DeathClaim>
 @{ ViewData["Title"] = "All Claims"; }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="fw-bold mb-0" style="color:var(--navy);">All Claims</h2>
-    @if (Model.Any()) { <span class="badge bg-secondary fs-6">@Model.Count() claims</span> }
+<div class="page-shell">
+<div class="page-header">
+    <div><p class="dashboard-eyebrow">Claims desk</p><h1>All claims</h1><p>Review and process member claims.</p></div>
+    @if (Model.Any()) { <span class="page-count">@Model.Count() claims</span> }
 </div>
 
 @if (!Model.Any())
 {
-    <div class="alert alert-info">No claims in the system.</div>
+    <div class="empty-state"><i class="bi bi-file-earmark-medical" aria-hidden="true"></i><strong>No claims in the system.</strong><span>Submitted claims will appear here for review.</span></div>
 }
 else
 {
     <!-- Desktop table (md+) -->
     <div class="d-none d-md-block">
-        <table class="table table-hover align-middle">
-            <thead style="background:var(--navy); color:#fff;">
+        <div class="table-shell">
+        <table class="table table-hover align-middle data-table">
+            <thead>
                 <tr><th>Membership No</th><th>Member</th><th>Deceased</th><th>Claim Date</th><th>Status</th><th></th></tr>
             </thead>
             <tbody>
@@ -34,12 +36,13 @@ else
                         <td>@c.Membership.User.FullName</td>
                         <td>@c.DeceasedFullName</td>
                         <td>@c.ClaimDate.ToString("dd MMM yyyy")</td>
-                        <td><span class="badge @badge">@c.ClaimStatus</span></td>
+                        <td><span class="badge status-badge @badge">@c.ClaimStatus</span></td>
                         <td><a asp-action="Details" asp-route-id="@c.Id" class="btn btn-sm btn-outline-dark">View</a></td>
                     </tr>
                 }
             </tbody>
         </table>
+        </div>
     </div>
 
     <!-- Mobile cards (< md) -->
@@ -62,7 +65,7 @@ else
                                 <h6 class="fw-bold mb-1">@c.Membership.User.FullName</h6>
                                 <small class="text-muted">@c.Membership.MembershipNumber</small>
                             </div>
-                            <span class="badge @mbadge">@c.ClaimStatus</span>
+                            <span class="badge status-badge @mbadge">@c.ClaimStatus</span>
                         </div>
                         <hr class="my-2">
                         <div class="row small">
@@ -78,3 +81,4 @@ else
         }
     </div>
 }
+</div>

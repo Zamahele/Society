@@ -1,21 +1,23 @@
 @model IEnumerable<SocietyApp.Models.MonthlyPayment>
 @{ ViewData["Title"] = "Pending Monthly Payments"; }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="fw-bold mb-0" style="color:var(--navy);">Pending Monthly Payments</h2>
-    @if (Model.Any()) { <span class="badge bg-secondary fs-6">@Model.Count() pending</span> }
+<div class="page-shell">
+<div class="page-header">
+    <div><p class="dashboard-eyebrow">Payment review</p><h1>Monthly payments</h1><p>Review recurring contributions and payment proof.</p></div>
+    @if (Model.Any()) { <span class="page-count">@Model.Count() pending</span> }
 </div>
 
 @if (!Model.Any())
 {
-    <div class="alert alert-info">No pending monthly payments.</div>
+    <div class="empty-state"><i class="bi bi-arrow-repeat" aria-hidden="true"></i><strong>No pending monthly payments.</strong><span>New payment submissions will appear here.</span></div>
 }
 else
 {
     <!-- Desktop table (md+) -->
     <div class="d-none d-md-block">
-        <table class="table table-hover align-middle">
-            <thead style="background:var(--navy); color:#fff;">
+        <div class="table-shell">
+        <table class="table table-hover align-middle data-table">
+            <thead>
                 <tr><th>Membership No</th><th>Member Name</th><th>For Month</th><th>Amount</th><th>Reference</th><th>Payment Date</th><th>Proof</th><th>Action</th></tr>
             </thead>
             <tbody>
@@ -73,6 +75,7 @@ else
                 }
             </tbody>
         </table>
+        </div>
     </div>
 
     <!-- Mobile cards (< md) -->
@@ -131,6 +134,7 @@ else
         }
     </div>
 }
+</div>
 
 <!-- Proof lightbox modal -->
 <div class="modal fade" id="proofModal" tabindex="-1">

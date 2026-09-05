@@ -1,13 +1,15 @@
 @model SocietyApp.ViewModels.SubmitClaimViewModel
 @{ ViewData["Title"] = "Submit Claim"; }
 
-<div class="row justify-content-center">
-    <div class="col-md-7">
-        <h2 class="mb-3">Submit Death Claim</h2>
+<div class="page-shell">
+    <div class="form-shell">
+        <p class="dashboard-eyebrow">Member services</p>
+        <h1>Submit death claim</h1>
+        <p class="mb-4">Send the details and documents required for review.</p>
         <div class="alert alert-warning">
             Payout: <strong>R15,000 cash</strong> + <strong>R15,000 grocery voucher</strong>. A death certificate and saved banking details are required.
         </div>
-        <form asp-action="Submit" method="post" enctype="multipart/form-data">
+        <form asp-action="Submit" method="post" enctype="multipart/form-data" class="form-section">
             <input type="hidden" asp-for="MembershipId" />
             <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 

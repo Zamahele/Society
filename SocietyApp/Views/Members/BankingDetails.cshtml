@@ -1,12 +1,13 @@
 @model SocietyApp.ViewModels.UpdateBankingDetailsViewModel
 @{ ViewData["Title"] = "Banking Details"; }
 
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <h2 class="mb-4">Banking Details</h2>
-        <p class="text-muted mb-3">Add or update your banking details for claim payouts.</p>
+<div class="page-shell">
+    <div class="form-shell">
+        <p class="dashboard-eyebrow">Member portal</p>
+        <h1>Banking details</h1>
+        <p class="mb-4">Add or update your banking details for claim payouts.</p>
 
-        <form asp-action="BankingDetails" method="post">
+        <form asp-action="BankingDetails" method="post" class="form-section">
             <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
             <div class="mb-3">
