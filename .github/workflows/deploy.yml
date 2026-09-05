@@ -59,7 +59,6 @@ jobs:
       - name: Publish
         run: |
           dotnet publish SocietyApp/SocietyApp.csproj --configuration Release --output ./publish
-          cp deployment/app_offline.htm ./publish/app_offline.htm
 
       - name: Upload published artifact
         uses: actions/upload-artifact@v4
@@ -88,17 +87,6 @@ jobs:
           mkdir -p ./publish/logs
           echo "Deployment files prepared"
 
-      - name: Take application offline
-        env:
-          FTP_SERVER: ${{ secrets.FTP_SERVER }}
-          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
-          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
-        run: |
-          curl --fail --silent --show-error --ftp-create-dirs \
-            --user "$FTP_USERNAME:$FTP_PASSWORD" \
-            --upload-file ./publish/app_offline.htm \
-            "ftp://$FTP_SERVER/ikhayasociety.co.za/wwwroot/app_offline.htm"
-
       - name: Deploy to FTP server
         uses: SamKirkland/FTP-Deploy-Action@v4.4.0
         with:
@@ -117,8 +105,7 @@ jobs:
             **/appsettings.Production.json
             **/logs/**
             **/app_offline.htm
-
-      - name: Upload production settings
+          - name: Upload production settings
         env:
           FTP_SERVER: ${{ secrets.FTP_SERVER }}
           FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
@@ -128,18 +115,6 @@ jobs:
             --user "$FTP_USERNAME:$FTP_PASSWORD" \
             --upload-file ./publish/appsettings.Production.json \
             "ftp://$FTP_SERVER/ikhayasociety.co.za/wwwroot/appsettings.Production.json"
-
-      - name: Remove application offline file
-        if: always()
-        env:
-          FTP_SERVER: ${{ secrets.FTP_SERVER }}
-          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
-          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
-        run: |
-          curl --fail --silent --show-error \
-            --user "$FTP_USERNAME:$FTP_PASSWORD" \
-            --quote "DELE app_offline.htm" \
-            "ftp://$FTP_SERVER/ikhayasociety.co.za/wwwroot/"
 
       - name: Deployment Summary
         run: |
