@@ -1,0 +1,47 @@
+@model SocietyApp.Models.Organization
+@using SocietyApp.Models
+@{ ViewData["Title"] = "Organization Members"; var members = (IEnumerable<OrganizationMember>)ViewBag.Members; }
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2>@Model.Name</h2>
+        <p class="text-muted mb-0">Registration number: @Model.RegistrationNumber</p>
+    </div>
+    <a asp-action="AddMember" class="btn btn-dark">Add Member</a>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body">
+        <h5 class="card-title">People under this organization</h5>
+        @if (!members.Any())
+        {
+            <p class="text-muted mb-0">No members have been added yet.</p>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead><tr><th>Name</th><th>ID Number</th><th>Phone</th><th>Date of Birth</th><th>Status</th><th></th></tr></thead>
+                    <tbody>
+                    @foreach (var member in members)
+                    {
+                        <tr>
+                            <td>@member.FullName</td>
+                            <td>@member.IDNumber</td>
+                            <td>@member.Phone</td>
+                            <td>@member.DateOfBirth.ToString("dd MMM yyyy")</td>
+                            <td><span class="badge bg-warning text-dark">@member.Status</span></td>
+                            <td class="text-end">
+                                <form asp-action="RemoveMember" method="post">
+                                    <input type="hidden" name="id" value="@member.Id" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

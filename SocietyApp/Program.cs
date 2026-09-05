@@ -39,6 +39,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IMembershipService, MembershipService>();
 builder.Services.AddScoped<IClaimService, ClaimService>();
+builder.Services.AddScoped<IOrganizationService, OrganizationService>();
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();

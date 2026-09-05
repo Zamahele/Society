@@ -28,6 +28,10 @@
             {
                 <a class="navbar-brand fw-bold" asp-controller="Members" asp-action="Dashboard">@organizationName</a>
             }
+            else if (User.IsInRole("Organization"))
+            {
+                <a class="navbar-brand fw-bold" asp-controller="Organization" asp-action="Dashboard">@organizationName</a>
+            }
             else
             {
                 <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index">@organizationName</a>
@@ -41,6 +45,12 @@
                     {
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Members" asp-action="Dashboard">My Membership</a>
+                        </li>
+                    }
+                    @if (User.IsInRole("Organization"))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Organization" asp-action="Dashboard">Organization Members</a>
                         </li>
                     }
                     @if (User.IsInRole("Admin") || User.IsInRole("Clerk"))

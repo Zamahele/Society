@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using SocietyApp.Data;
 using SocietyApp.Models;
 using SocietyApp.Services.Interfaces;
 using SocietyApp.ViewModels;
@@ -11,18 +12,64 @@ public class AccountController : Controller
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IMembershipService _membershipService;
+    private readonly AppDbContext _dbContext;
 
     public AccountController(UserManager<ApplicationUser> userManager,
         SignInManager<ApplicationUser> signInManager,
-        IMembershipService membershipService)
+        IMembershipService membershipService,
+        AppDbContext dbContext)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _membershipService = membershipService;
+        _dbContext = dbContext;
     }
 
     [HttpGet]
     public IActionResult Register() => View();
+
+    [HttpGet]
+    public IActionResult RegisterOrganization() => View(new OrganizationRegisterViewModel());
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RegisterOrganization(OrganizationRegisterViewModel model)
+    {
+        if (!ModelState.IsValid) return View(model);
+
+        var user = new ApplicationUser
+        {
+            UserName = model.Email,
+            Email = model.Email,
+            FullName = model.Name,
+            Phone = model.Phone,
+            Address = model.Address,
+            DateRegistered = DateTime.UtcNow
+        };
+
+        var result = await _userManager.CreateAsync(user, model.Password);
+        if (!result.Succeeded)
+        {
+            foreach (var error in result.Errors)
+                ModelState.AddModelError(string.Empty, error.Description);
+            return View(model);
+        }
+
+        await _userManager.AddToRoleAsync(user, "Organization");
+        _dbContext.Organizations.Add(new Organization
+        {
+            UserId = user.Id,
+            Name = model.Name.Trim(),
+            RegistrationNumber = model.RegistrationNumber.Trim(),
+            ContactPerson = model.ContactPerson.Trim(),
+            Phone = model.Phone.Trim(),
+            Address = model.Address.Trim()
+        });
+        await _dbContext.SaveChangesAsync();
+        await _signInManager.SignInAsync(user, isPersistent: false);
+
+        return RedirectToAction("Dashboard", "Organization");
+    }
 
     [HttpPost]
     [ValidateAntiForgeryToken]

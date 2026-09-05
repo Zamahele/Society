@@ -17,6 +17,8 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<PublicSiteSettings> PublicSiteSettings { get; set; }
     public DbSet<CommitteeMember> CommitteeMembers { get; set; }
     public DbSet<ErrorLog> ErrorLogs { get; set; }
+    public DbSet<Organization> Organizations { get; set; }
+    public DbSet<OrganizationMember> OrganizationMembers { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -34,6 +36,29 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
                 .WithMany()
                 .HasForeignKey(m => m.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<Organization>(e =>
+        {
+            e.HasIndex(o => o.UserId).IsUnique();
+            e.HasIndex(o => o.RegistrationNumber).IsUnique();
+            e.Property(o => o.Name).HasMaxLength(200);
+            e.Property(o => o.RegistrationNumber).HasMaxLength(100);
+            e.HasOne(o => o.User)
+                .WithMany()
+                .HasForeignKey(o => o.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<OrganizationMember>(e =>
+        {
+            e.HasIndex(m => new { m.OrganizationId, m.IDNumber }).IsUnique();
+            e.Property(m => m.FullName).HasMaxLength(200);
+            e.Property(m => m.IDNumber).HasMaxLength(50);
+            e.HasOne(m => m.Organization)
+                .WithMany(o => o.Members)
+                .HasForeignKey(m => m.OrganizationId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         // MemberNominee — one per membership
