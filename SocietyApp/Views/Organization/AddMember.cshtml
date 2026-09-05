@@ -1,0 +1,38 @@
+@model SocietyApp.ViewModels.AddOrganizationMemberViewModel
+@{ ViewData["Title"] = "Add Organization Member"; }
+
+<div class="row justify-content-center">
+    <div class="col-md-7">
+        <h2 class="mb-4">Add Organization Member</h2>
+        <p class="text-muted">The person will be recorded as pending until the insurance approval process is defined.</p>
+        <form asp-action="AddMember" method="post">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+            <div class="mb-3">
+                <label asp-for="FullName" class="form-label"></label>
+                <input asp-for="FullName" class="form-control" />
+                <span asp-validation-for="FullName" class="text-danger"></span>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="IDNumber" class="form-label"></label>
+                    <input asp-for="IDNumber" class="form-control" />
+                    <span asp-validation-for="IDNumber" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Phone" class="form-label"></label>
+                    <input asp-for="Phone" class="form-control" />
+                    <span asp-validation-for="Phone" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label asp-for="DateOfBirth" class="form-label"></label>
+                <input asp-for="DateOfBirth" class="form-control" type="date" />
+                <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-dark">Add Member</button>
+            <a asp-action="Dashboard" class="btn btn-outline-secondary ms-2">Cancel</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts { @{await Html.RenderPartialAsync("_ValidationScriptsPartial");} }

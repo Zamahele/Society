@@ -14,7 +14,7 @@ public class ErrorLoggingMiddleware
         _logger = logger;
     }
 
-    public async Task InvokeAsync(HttpContext context, AppDbContext dbContext)
+    public async Task InvokeAsync(HttpContext context, IServiceScopeFactory scopeFactory)
     {
         try
         {
@@ -39,6 +39,9 @@ public class ErrorLoggingMiddleware
                     OccurredAtUtc = DateTime.UtcNow
                 };
 
+                // Use a fresh context because the request context may contain the failed entity operation.
+                await using var scope = scopeFactory.CreateAsyncScope();
+                var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
                 dbContext.ErrorLogs.Add(log);
                 await dbContext.SaveChangesAsync();
             }
