@@ -38,6 +38,8 @@ public class AdminController : Controller
         var claims = await _claimService.GetAllAsync();
         var pendingJoining = await _paymentService.GetPendingJoiningFeesAsync();
         var pendingMonthly = await _paymentService.GetPendingMonthlyPaymentsAsync();
+        var pendingOrganizationMembers = await _dbContext.OrganizationMembers
+            .CountAsync(m => m.Status == OrganizationMemberStatus.Pending);
 
         ViewBag.TotalMembers = memberships.Count;
         ViewBag.ActiveMembers = memberships.Count(m => m.Status == MembershipStatus.Active);
@@ -47,8 +49,20 @@ public class AdminController : Controller
         ViewBag.PendingClaims = claims.Count(c => c.ClaimStatus == ClaimStatus.Submitted || c.ClaimStatus == ClaimStatus.UnderReview);
         ViewBag.PendingJoiningFees = pendingJoining.Count;
         ViewBag.PendingMonthlyPayments = pendingMonthly.Count;
+        ViewBag.PendingOrganizationMembers = pendingOrganizationMembers;
 
         return View();
+    }
+
+    public async Task<IActionResult> OrganizationMembers()
+    {
+        var members = await _dbContext.OrganizationMembers
+            .Include(m => m.Organization)
+            .Where(m => m.Status == OrganizationMemberStatus.Pending)
+            .OrderBy(m => m.DateAdded)
+            .ToListAsync();
+
+        return View(members);
     }
 
     public async Task<IActionResult> Members()

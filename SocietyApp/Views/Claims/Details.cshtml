@@ -1,8 +1,9 @@
 @model SocietyApp.Models.DeathClaim
 @{ ViewData["Title"] = "Claim Details"; }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Claim Details</h2>
+<div class="page-shell">
+<div class="page-header">
+    <div><p class="dashboard-eyebrow">Claims desk</p><h1>Claim details</h1><p>@Model.Membership.MembershipNumber <span class="member-header-separator">&middot;</span> @Model.Membership.User.FullName</p></div>
     <a asp-action="Index" class="btn btn-outline-secondary">Back to Claims</a>
 </div>
 
@@ -30,7 +31,7 @@
                             _ => "bg-warning text-dark"
                         };
                     }
-                    <span class="badge @badge">@Model.ClaimStatus</span>
+                    <span class="badge status-badge @badge">@Model.ClaimStatus</span>
                 </p>
                 @if (Model.RejectionReason != null)
                 {
@@ -108,4 +109,5 @@
             </div>
         }
     </div>
+</div>
 </div>

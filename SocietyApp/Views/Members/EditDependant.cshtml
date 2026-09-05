@@ -1,16 +1,14 @@
 @model SocietyApp.ViewModels.EditDependantViewModel
 @{ ViewData["Title"] = "Edit Dependant"; }
 
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="d-flex align-items-center mb-4 gap-3">
+<div class="page-shell">
+    <div class="form-shell">
+        <div class="d-flex align-items-center mb-3 gap-3">
             <a asp-action="Dashboard" class="btn btn-outline-secondary">&larr; Back</a>
-            <h2 class="mb-0">Edit Dependant</h2>
         </div>
-
-        <div class="card">
-            <div class="card-body p-4">
-                <form asp-action="EditDependant" method="post">
+        <p class="dashboard-eyebrow">Member portal</p>
+        <h1>Edit dependant</h1>
+        <form asp-action="EditDependant" method="post" class="form-section">
                     @Html.AntiForgeryToken()
                     <input asp-for="Id" type="hidden" />
                     <input asp-for="MembershipId" type="hidden" />
@@ -39,9 +37,7 @@
 
                     <button type="submit" class="btn btn-dark">Save Changes</button>
                     <a asp-action="Dashboard" class="btn btn-outline-secondary ms-2">Cancel</a>
-                </form>
-            </div>
-        </div>
+        </form>
     </div>
 </div>
 

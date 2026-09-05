@@ -1,21 +1,22 @@
 @model IList<SocietyApp.Models.ApplicationUser>
 @{ ViewData["Title"] = "Clerk Accounts"; }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="fw-bold mb-0" style="color:var(--navy);">Clerk Accounts</h2>
-    <a asp-action="CreateClerk" class="btn btn-dark">+ Add Clerk</a>
+<div class="page-shell">
+<div class="page-header">
+    <div><p class="dashboard-eyebrow">Team access</p><h1>Clerk accounts</h1><p>Manage staff access to daily operations.</p></div>
+    <a asp-action="CreateClerk" class="btn btn-primary"><i class="bi bi-person-plus" aria-hidden="true"></i> Add clerk</a>
 </div>
 
 @if (!Model.Any())
 {
-    <div class="alert alert-info">No clerk accounts found.</div>
+    <div class="empty-state"><i class="bi bi-person-badge" aria-hidden="true"></i><strong>No clerk accounts found.</strong><span>Add a clerk to share operational responsibilities.</span></div>
 }
 else
 {
-    <div class="card">
+    <div class="table-shell">
         <div class="card-body p-0">
-            <table class="table table-hover align-middle mb-0">
-                <thead style="background:var(--navy); color:#fff;">
+            <table class="table table-hover align-middle mb-0 data-table">
+                <thead>
                     <tr>
                         <th>Name</th>
                         <th>ID Number</th>
@@ -35,11 +36,11 @@ else
                             <td>
                                 @if (isLocked)
                                 {
-                                    <span class="badge bg-danger">Deactivated</span>
+                                    <span class="badge status-badge bg-danger">Deactivated</span>
                                 }
                                 else
                                 {
-                                    <span class="badge bg-success">Active</span>
+                                    <span class="badge status-badge bg-success">Active</span>
                                 }
                             </td>
                             <td class="text-end">
@@ -78,3 +79,4 @@ else
         </div>
     </div>
 }
+</div>

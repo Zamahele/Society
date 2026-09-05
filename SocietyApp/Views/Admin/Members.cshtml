@@ -1,24 +1,30 @@
 @model IEnumerable<SocietyApp.Models.Membership>
 @{ ViewData["Title"] = "All Members"; }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="fw-bold mb-0" style="color:var(--navy);">All Members</h2>
-    <div class="d-flex align-items-center gap-2">
-        <span class="badge bg-secondary fs-6">@Model.Count() members</span>
-        <a asp-action="CreateMember" class="btn btn-sm btn-dark">+ Create Member</a>
+<div class="page-shell">
+<div class="page-header">
+    <div>
+        <p class="dashboard-eyebrow">Membership registry</p>
+        <h1>All members</h1>
+        <p>Review member status, dependants, and registration details.</p>
+    </div>
+    <div class="page-header-actions">
+        <span class="page-count">@Model.Count() members</span>
+        <a asp-action="CreateMember" class="btn btn-primary"><i class="bi bi-person-plus" aria-hidden="true"></i> Create member</a>
     </div>
 </div>
 
 @if (!Model.Any())
 {
-    <div class="alert alert-info">No members registered yet.</div>
+    <div class="empty-state"><i class="bi bi-people" aria-hidden="true"></i><strong>No members registered yet.</strong><span>New member applications will appear here.</span></div>
 }
 else
 {
     <!-- Desktop table (md+) -->
     <div class="d-none d-md-block">
-        <table class="table table-hover align-middle">
-            <thead style="background:var(--navy); color:#fff;">
+        <div class="table-shell">
+        <table class="table table-hover align-middle data-table">
+            <thead>
                 <tr><th>Membership No</th><th>Name</th><th>ID Number</th><th>Phone</th><th>Dependants</th><th>Status</th><th>Joined</th><th></th></tr>
             </thead>
             <tbody>
@@ -38,7 +44,7 @@ else
                         <td>@m.User.IDNumber</td>
                         <td>@m.User.Phone</td>
                         <td>@m.Dependants.Count</td>
-                        <td><span class="badge @badge">@m.Status</span></td>
+                        <td><span class="badge status-badge @badge">@m.Status</span></td>
                         <td>@m.DateIssued.ToString("dd MMM yyyy")</td>
                         <td>
                             <a asp-controller="Members" asp-action="Dashboard" asp-route-id="@m.Id" class="btn btn-sm btn-outline-dark">View</a>
@@ -47,6 +53,7 @@ else
                 }
             </tbody>
         </table>
+        </div>
     </div>
 
     <!-- Mobile cards (< md) -->
@@ -69,7 +76,7 @@ else
                                 <h6 class="fw-bold mb-1">@m.User.FullName</h6>
                                 <small class="text-muted">@m.MembershipNumber</small>
                             </div>
-                            <span class="badge @mbadge">@m.Status</span>
+                            <span class="badge status-badge @mbadge">@m.Status</span>
                         </div>
                         <hr class="my-2">
                         <div class="row small">
@@ -87,3 +94,4 @@ else
         }
     </div>
 }
+</div>

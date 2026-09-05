@@ -2,245 +2,99 @@
 @{
     ViewData["Title"] = "Welcome";
     Layout = "_LayoutLanding";
-    var _settings = Model.Settings;
-    var _phone1 = string.IsNullOrWhiteSpace(_settings.ContactPhone1) ? "Not provided" : _settings.ContactPhone1;
-    var _phone2 = string.IsNullOrWhiteSpace(_settings.ContactPhone2) ? "Not provided" : _settings.ContactPhone2;
-    var _phone3 = string.IsNullOrWhiteSpace(_settings.ContactPhone3) ? "Not provided" : _settings.ContactPhone3;
-    var _address = string.IsNullOrWhiteSpace(_settings.ContactAddress) ? "Not provided" : _settings.ContactAddress;
-    var _emailInfo = string.IsNullOrWhiteSpace(_settings.ContactEmailInfo) ? "Not provided" : _settings.ContactEmailInfo;
-    var _emailClaims = string.IsNullOrWhiteSpace(_settings.ContactEmailClaims) ? "Not provided" : _settings.ContactEmailClaims;
+    var settings = Model.Settings;
+    var phone1 = string.IsNullOrWhiteSpace(settings.ContactPhone1) ? "Not provided" : settings.ContactPhone1;
+    var phone2 = string.IsNullOrWhiteSpace(settings.ContactPhone2) ? "Not provided" : settings.ContactPhone2;
+    var phone3 = string.IsNullOrWhiteSpace(settings.ContactPhone3) ? "Not provided" : settings.ContactPhone3;
+    var address = string.IsNullOrWhiteSpace(settings.ContactAddress) ? "Not provided" : settings.ContactAddress;
+    var email = string.IsNullOrWhiteSpace(settings.ContactEmailInfo) ? "Not provided" : settings.ContactEmailInfo;
 }
 
-<!-- HERO -->
-<section class="hero text-white">
-    <div class="container text-center">
-        <h1 class="hero-title">@_settings.OrganizationName</h1>
-        <p class="mt-3 mb-4 col-md-8 mx-auto">
-            We stand with families in their most difficult moments. Affordable monthly contributions,
-            guaranteed payouts, and a community that cares.
-        </p>
-        <a asp-controller="Account" asp-action="Register" class="btn btn-warning btn-lg me-3 px-5">Join Now</a>
-        <a asp-controller="Account" asp-action="Login" class="btn btn-outline-light btn-lg px-5">Member Login</a>
-        <div class="mt-3">
-            <a asp-controller="Home" asp-action="DownloadApplicationForm" class="btn btn-light btn-lg px-5">
-                Download Application Form (PDF)
-            </a>
-        </div>
-        <div class="row justify-content-center mt-5 g-4">
-            <div class="col-auto">
-                <div class="text-warning fw-bold fs-4">R15,000</div>
-                <small>Cash Payout</small>
-            </div>
-            <div class="col-auto px-4 border-start border-end border-secondary">
-                <div class="text-warning fw-bold fs-4">R15,000</div>
-                <small>Grocery Voucher</small>
-            </div>
-            <div class="col-auto">
-                <div class="text-warning fw-bold fs-4">R150/mo</div>
-                <small>Monthly Contribution</small>
+<main class="home-page">
+    <section class="home-hero">
+        <div class="home-hero-copy">
+            <p class="home-kicker">Funeral benefit society</p>
+            <h1>@settings.OrganizationName</h1>
+            <p class="home-lead">Practical support for families when it matters most, with affordable contributions and dependable benefits.</p>
+            <div class="home-actions">
+                <a asp-controller="Account" asp-action="Register" class="btn btn-home-primary">Join the society</a>
+                <a asp-controller="Account" asp-action="Login" class="btn btn-home-secondary">Member login</a>
             </div>
         </div>
-    </div>
-</section>
+        <div class="home-hero-proof">
+            <div><strong>R15,000</strong><span>Cash payout</span></div>
+            <div><strong>R15,000</strong><span>Grocery voucher</span></div>
+            <div><strong>R150</strong><span>Monthly contribution</span></div>
+        </div>
+    </section>
 
-<!-- HOW IT WORKS -->
-<section id="how-it-works" class="py-5">
-    <div class="container">
-        <h2 class="section-title text-center">How It Works</h2>
-        <div class="section-divider"></div>
-        <div class="row g-4 text-center">
-            <div class="col-md-3">
-                <div class="step-circle">1</div>
-                <h5 class="fw-bold">Register Online</h5>
-                <p class="text-muted">Create your account with your ID number and personal details. Takes less than 5 minutes.</p>
+    <section class="home-board" aria-label="Society information">
+        <div class="home-board-main">
+            <div class="home-panel home-process-panel">
+                <div class="home-panel-heading"><span class="home-label">Your membership</span><h2>Simple support, from joining to claiming</h2></div>
+                <div class="home-process-grid">
+                    <article><span>01</span><h3>Register online</h3><p>Create your account with your ID number and personal details.</p></article>
+                    <article><span>02</span><h3>Pay once</h3><p>Pay the R150 joining fee to activate your membership.</p></article>
+                    <article><span>03</span><h3>Stay active</h3><p>Keep your cover active with a R150 monthly contribution.</p></article>
+                    <article><span>04</span><h3>Claim when needed</h3><p>Submit a claim after the six-month waiting period.</p></article>
+                </div>
             </div>
-            <div class="col-md-3">
-                <div class="step-circle">2</div>
-                <h5 class="fw-bold">Pay Joining Fee</h5>
-                <p class="text-muted">Make a once-off joining fee payment of <strong>R150</strong> to activate your membership.</p>
-            </div>
-            <div class="col-md-3">
-                <div class="step-circle">3</div>
-                <h5 class="fw-bold">Pay Monthly</h5>
-                <p class="text-muted">Keep your membership active with a <strong>R150</strong> monthly contribution via EFT.</p>
-            </div>
-            <div class="col-md-3">
-                <div class="step-circle">4</div>
-                <h5 class="fw-bold">Claim When Needed</h5>
-                <p class="text-muted">Submit a death claim after the 6-month waiting period. We process quickly and with care.</p>
-            </div>
-        </div>
-    </div>
-</section>
 
-<!-- BENEFITS -->
-<section id="benefits" class="py-5 bg-light">
-    <div class="container">
-        <h2 class="section-title text-center">What You Are Covered For</h2>
-        <div class="section-divider"></div>
-        <div class="row g-4">
-            <div class="col-md-4">
-                <div class="card benefit-card h-100 p-4 text-center">
-                    <div class="benefit-icon mb-3">&#128176;</div>
-                    <h5 class="fw-bold">Cash Payout</h5>
-                    <div class="display-6 fw-bold text-primary">R15,000</div>
-                    <p class="text-muted mt-2">Direct cash payment to assist with funeral and related costs.</p>
+            <div class="home-panel home-benefits-panel">
+                <div class="home-panel-heading"><span class="home-label">What is covered</span><h2>Benefits built for difficult days</h2></div>
+                <div class="home-benefit-grid">
+                    <article><i class="bi bi-cash-stack" aria-hidden="true"></i><div><h3>Cash payout</h3><strong>R15,000</strong><p>Direct support for funeral and related costs.</p></div></article>
+                    <article><i class="bi bi-basket2" aria-hidden="true"></i><div><h3>Grocery voucher</h3><strong>R15,000</strong><p>Help with food for family and guests.</p></div></article>
+                    <article><i class="bi bi-people" aria-hidden="true"></i><div><h3>Dependants</h3><strong>Up to 10</strong><p>Cover spouse, children, and extended family.</p></div></article>
                 </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card benefit-card h-100 p-4 text-center">
-                    <div class="benefit-icon mb-3">&#127873;</div>
-                    <h5 class="fw-bold">Grocery Voucher</h5>
-                    <div class="display-6 fw-bold text-primary">R15,000</div>
-                    <p class="text-muted mt-2">Grocery voucher to feed family and guests during the mourning period.</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card benefit-card h-100 p-4 text-center">
-                    <div class="benefit-icon mb-3">&#128106;</div>
-                    <h5 class="fw-bold">Dependants Covered</h5>
-                    <div class="display-6 fw-bold text-primary">Up to 10</div>
-                    <p class="text-muted mt-2">Add up to 10 dependants — spouse, children, and extended family — under your membership.</p>
-                </div>
+                <div class="home-notices"><span><strong>Waiting:</strong> 6 months from activation</span><span><strong>Grace:</strong> 30 days overdue before suspension</span></div>
             </div>
         </div>
 
-        <div class="row g-3 mt-4">
-            <div class="col-md-6">
-                <div class="alert alert-info mb-0">
-                    <strong>Waiting Period:</strong> 6 months from activation before a claim can be submitted.
-                </div>
+        <aside class="home-board-side">
+            <div class="home-panel home-bank-panel">
+                <div class="home-panel-heading"><span class="home-label">Payment details</span><h2>Pay by EFT</h2></div>
+                <dl class="home-details">
+                    <div><dt>Bank</dt><dd>@settings.BankName</dd></div>
+                    <div><dt>Account name</dt><dd>@settings.BankAccountName</dd></div>
+                    <div><dt>Account number</dt><dd>@settings.BankAccountNumber</dd></div>
+                    <div><dt>Branch code</dt><dd>@settings.BankBranchCode</dd></div>
+                    <div><dt>Reference</dt><dd>Your membership number</dd></div>
+                </dl>
+                <p class="home-callout"><i class="bi bi-info-circle" aria-hidden="true"></i> Always use your membership number as payment reference.</p>
             </div>
-            <div class="col-md-6">
-                <div class="alert alert-warning mb-0">
-                    <strong>Grace Period:</strong> Payments more than 30 days overdue will suspend claim eligibility.
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
 
-<!-- FEES -->
-<section class="py-5">
-    <div class="container">
-        <h2 class="section-title text-center">Membership Fees</h2>
-        <div class="section-divider"></div>
-        <div class="row g-4 justify-content-center">
-            <div class="col-md-4 text-center">
-                <div class="card border-primary h-100 p-4">
-                    <h5 class="text-muted">Once-off Joining Fee</h5>
-                    <div class="display-4 fw-bold text-primary">R150</div>
-                    <p class="text-muted mt-2">Paid once to activate your membership. A clerk will confirm your payment.</p>
-                </div>
+            <div class="home-panel home-fees-panel">
+                <div class="home-panel-heading"><span class="home-label">Contribution</span><h2>Membership fees</h2></div>
+                <div class="home-fee-row"><span>Joining fee</span><strong>R150 once-off</strong></div>
+                <div class="home-fee-row"><span>Monthly contribution</span><strong>R150 / month</strong></div>
             </div>
-            <div class="col-md-4 text-center">
-                <div class="card border-success h-100 p-4">
-                    <h5 class="text-muted">Monthly Contribution</h5>
-                    <div class="display-4 fw-bold text-success">R150</div>
-                    <p class="text-muted mt-2">Paid every month via EFT. Submit your proof of payment through the portal.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+        </aside>
+    </section>
 
-<!-- BANKING DETAILS -->
-<section id="banking" class="py-5 banking-section">
-    <div class="container">
-        <h2 class="section-title text-center">Banking Details</h2>
-        <div class="section-divider"></div>
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="card shadow-sm p-4">
-                    <div class="bank-detail-row d-flex justify-content-between">
-                        <span class="text-muted">Bank</span>
-                        <strong>@_settings.BankName</strong>
-                    </div>
-                    <div class="bank-detail-row d-flex justify-content-between">
-                        <span class="text-muted">Account Name</span>
-                        <strong>@_settings.BankAccountName</strong>
-                    </div>
-                    <div class="bank-detail-row d-flex justify-content-between">
-                        <span class="text-muted">Account Number</span>
-                        <strong>@_settings.BankAccountNumber</strong>
-                    </div>
-                    <div class="bank-detail-row d-flex justify-content-between">
-                        <span class="text-muted">Branch Code</span>
-                        <strong>@_settings.BankBranchCode</strong>
-                    </div>
-                    <div class="bank-detail-row d-flex justify-content-between">
-                        <span class="text-muted">Account Type</span>
-                        <strong>@_settings.BankAccountType</strong>
-                    </div>
-                    <div class="bank-detail-row d-flex justify-content-between">
-                        <span class="text-muted">Reference</span>
-                        <strong>Your Membership Number</strong>
-                    </div>
-                    <div class="alert alert-warning mt-3 mb-0">
-                        <small>Always use your <strong>membership number</strong> as payment reference so your payment can be matched.</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- COMMITTEE -->
-<section id="committee" class="py-5">
-    <div class="container">
-        <h2 class="section-title text-center">Our Committee</h2>
-        <div class="section-divider"></div>
-        <div class="row g-4 justify-content-center">
-            @if (Model.CommitteeMembers.Any())
-            {
-                @foreach (var member in Model.CommitteeMembers)
+    <section class="home-footer-board">
+        <div class="home-committee">
+            <div><span class="home-label">Your people</span><h2>Committee</h2></div>
+            <div class="home-committee-list">
+                @if (Model.CommitteeMembers.Any())
                 {
-                    var avatarLetter = string.IsNullOrWhiteSpace(member.FullName) ? "?" : member.FullName.Trim()[0].ToString().ToUpperInvariant();
-                    <div class="col-md-3 text-center">
-                        <div class="card committee-card p-4 h-100">
-                            <div class="avatar-placeholder mx-auto mb-3">@avatarLetter</div>
-                            <h6 class="fw-bold mb-1">@member.FullName</h6>
-                            <span class="badge bg-primary mb-2">@member.RoleTitle</span>
-                            <p class="text-muted small mb-1">&#128222; @member.Phone</p>
-                        </div>
-                    </div>
+                    foreach (var member in Model.CommitteeMembers)
+                    {
+                        var initial = string.IsNullOrWhiteSpace(member.FullName) ? "?" : member.FullName.Trim()[0].ToString().ToUpperInvariant();
+                        <div class="home-person"><span>@initial</span><div><strong>@member.FullName</strong><small>@member.RoleTitle · @member.Phone</small></div></div>
+                    }
                 }
-            }
-            else
-            {
-                <div class="col-12 text-center">
-                    <p class="text-muted mb-0">Committee details will appear once added in Admin - Public Content.</p>
-                </div>
-            }
-        </div>
-    </div>
-</section>
-
-<!-- CONTACT -->
-<section id="contact" class="py-5 contact-section text-white">
-    <div class="container">
-        <h2 class="section-title text-center">Contact Us</h2>
-        <div class="section-divider" style="background:#f0ad4e;"></div>
-        <div class="row g-4 text-center">
-            <div class="col-md-4">
-                <div class="contact-icon mx-auto mb-2">&#128205;</div>
-                <h6 class="fw-bold">Office Address</h6>
-                <p class="text-muted small">@_address</p>
-            </div>
-            <div class="col-md-4">
-                <div class="contact-icon mx-auto mb-2">&#128222;</div>
-                <h6 class="fw-bold">Phone</h6>
-                <p class="text-muted small">@_phone1<br>@_phone2<br>@_phone3</p>
-            </div>
-            <div class="col-md-4">
-                <div class="contact-icon mx-auto mb-2">&#9993;</div>
-                <h6 class="fw-bold">Email</h6>
-                <p class="text-muted small">@_emailInfo<br>@_emailClaims<br>&nbsp;</p>
+                else
+                {
+                    <p class="text-muted mb-0">Committee details will appear here.</p>
+                }
             </div>
         </div>
-        <div class="text-center mt-4">
-            <a asp-controller="Account" asp-action="Register" class="btn btn-warning btn-lg px-5 me-3">Join Now</a>
-            <a asp-controller="Account" asp-action="Login" class="btn btn-outline-light btn-lg px-5">Login</a>
+        <div class="home-contact">
+            <div><span class="home-label">Need help?</span><h2>Contact us</h2></div>
+            <p><i class="bi bi-geo-alt" aria-hidden="true"></i>@address</p>
+            <p><i class="bi bi-telephone" aria-hidden="true"></i>@phone1 · @phone2 · @phone3</p>
+            <p><i class="bi bi-envelope" aria-hidden="true"></i>@email</p>
         </div>
-    </div>
-</section>
+    </section>
+</main>

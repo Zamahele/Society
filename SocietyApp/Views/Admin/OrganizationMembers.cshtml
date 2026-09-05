@@ -1,0 +1,43 @@
+@model IEnumerable<SocietyApp.Models.OrganizationMember>
+@{ ViewData["Title"] = "Pending Organization Members"; }
+
+<div class="page-shell">
+<div class="page-header">
+    <div>
+        <p class="dashboard-eyebrow">Organization review</p>
+        <h1>Pending organization members</h1>
+        <p>People registered by organizations awaiting staff action.</p>
+    </div>
+    <a asp-action="Dashboard" class="btn btn-outline-secondary">Back to Dashboard</a>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="empty-state"><i class="bi bi-diagram-3" aria-hidden="true"></i><strong>No pending organization members.</strong><span>New organization registrations will appear here.</span></div>
+}
+else
+{
+    <div class="table-shell">
+        <div class="table-responsive">
+            <table class="table mb-0 align-middle data-table">
+                <thead>
+                    <tr><th>Name</th><th>ID Number</th><th>Organization</th><th>Phone</th><th>Added</th><th>Status</th></tr>
+                </thead>
+                <tbody>
+                @foreach (var member in Model)
+                {
+                    <tr>
+                        <td>@member.FullName</td>
+                        <td>@member.IDNumber</td>
+                        <td>@member.Organization.Name</td>
+                        <td>@member.Phone</td>
+                        <td>@member.DateAdded.ToString("dd MMM yyyy")</td>
+                        <td><span class="badge status-badge bg-warning text-dark">@member.Status</span></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+</div>
